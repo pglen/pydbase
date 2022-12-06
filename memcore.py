@@ -225,17 +225,19 @@ class DbCore():
         #print("chash", chash)
 
         doffs = self.getint(LINKDATA)
+
         for aa in range(chash):
             if aa < HASH_LIM:
                 rec = self.getint(FIRSTHASH + aa * INTSIZE * 2)
                 hh  = self.getint(FIRSTHASH + aa * INTSIZE * 2 + INTSIZE)
+                self.dump_rec(rec)
             else:
                 nlink = self.getint(LINKHASH)
                 rec, hh = self.gethash_offs(nlink + (aa-HASH_LIM) * INTSIZE * 2)
-                rec += doffs
+                #rec += doffs
+                self.dump_rec(rec)
 
             print(aa, "offs:", rec, "\thash:", hex(hh))
-            self.dump_rec(rec)
 
     # --------------------------------------------------------------------
     # Save data to database file
