@@ -17,11 +17,15 @@ gettext.textdomain('thisapp')
 _ = gettext.gettext
 
 #import dbcore
-import memcore
+#import memcore
+import twincore
 
 pgdebug = 0
 verbose = 0
 version = "1.0"
+ncount  = 1
+
+deffile = "data/pydbase.pydb"
 
 allstr =    " " + \
             string.ascii_lowercase +  string.ascii_uppercase +  \
@@ -41,14 +45,20 @@ def randstr(lenx):
 writex = 0
 
 def help():
-    print("Helping")
+    print("Usage: pydebase.py [opt]")
+    print("Options: ")
+    print("         -h   help")
+    print("         -w   write record")
+    print("         -n   number of records")
+    print("         -V   print version")
+
 
 if __name__ == "__main__":
 
     opts = []; args = []
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h?fvxctVow")
+        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vxctVown:")
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
         sys.exit(1)
@@ -74,14 +84,22 @@ if __name__ == "__main__":
         if aa[0] == "-w":
             writex = True
 
+        if aa[0] == "-n":
+            ncount = int(aa[1])
+            print("ncount", ncount)
+
+        if aa[0] == "-f":
+            deffile = aa[1]
+            print("deffile", deffile)
+
     #print("args", args)
 
-    fname = "first.pydb"
-    core = memcore.DbCore(fname)
+    core = twincore.DbTwinCore(deffile)
     #core.save_data("111 " + randstr(12) + " 222", "333 " + randstr(24) + " 444")
 
     if writex:
-        core.save_data("111 222", "333  444")
+        for aa in range(ncount):
+            core.save_data("111 222", "333  444")
     else:
         core.dump_data()
 

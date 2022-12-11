@@ -5,7 +5,6 @@ import  random, stat, os.path, datetime, threading, warnings
 
 import struct, io
 
-
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -16,7 +15,7 @@ from gi.repository import GLib
 DIRTY_MAX   = 0xffffffff
 
 # Must be less than (512 - (32 + 16)) / 8  = 58
-HASH_LIM    = 10
+HASH_LIM    = 50
 
 # Must be less than (4096 - 512) / 8  = 448
 DATA_LIM    = 10
@@ -26,8 +25,8 @@ HEADSIZE    = 512
 RECSIZE     = 32
 JUMPSIZE    = 4096
 
-CURROFFSET  = 16
-CURRHASH    = 20
+CURRDAOFFS  = 16
+CURRHSOFFS  = 20
 LINKHASH    = 24
 LINKDATA    = 28
 FIRSTHASH   = 32
@@ -37,14 +36,27 @@ RECSIG      = b"RECB"
 RECSEP      = b"RECS"
 RECEND      = b"RECE"
 
-# ------------------------------------------------------------------------
-#
+def softcreate(fname):
 
-class DbCore():
+    fp = None
+    try:
+        fp = open(fname, "rb+")
+    except:
+        try:
+            fp = open(fname, "wb+")
+        except:
+            print("Cannot open /create ", fname, sys.exc_info())
+    return fp
+
+# ------------------------------------------------------------------------
+# Data file and index file; protected by locks
+# The TWIN refers to separate files for data / index
+
+class DbTwinCore():
 
     def __init__(self, fname):
 
-        #print("initializing core with", fname)
+        print("initializing core with", fname)
 
         self.hdirty      = DIRTY_MAX
         self.hdirty_end  = 0
@@ -53,15 +65,16 @@ class DbCore():
         self.dirty_end  = 0
 
         self.dirtyarr = []
+        self.fname = fname
+        self.idxname = os.path.splitext(self.fname)[0] + ".pidx"
+        self.lckname = os.path.splitext(self.fname)[0] + ".lock"
 
-        try:
-            self.fp = open(fname, "rb+")
-        except:
-            try:
-                self.fp = open(fname, "wb+")
-            except:
-                print("Cannot open /create ", fname)
-                self.fp = None
+        print("fname", fname, "idxname", self.idxname, self.lckname)
+
+        self.waitlock()
+
+        self.fp = softcreate(self.fname)
+        self.xfp = softcreate(self.idxname)
 
         self.head = io.BytesIO(self.fp.read(HEADSIZE))
         self.buffer = io.BytesIO(self.fp.read())
@@ -92,12 +105,40 @@ class DbCore():
             self.fp.write(self.head.getbuffer())
             self.fp.seek(0)
 
+
         # help on memoryview
         buff = self.head.getbuffer()
         #print("Got sig", self.head.getvalue()[0:4], bytes(buff[0:4]))
         if  self.head.getvalue()[0:4] != FILESIG:
             #print("Invalid data signature")
+            self.dellock()
             raise  RuntimeError("Invalid database signature.")
+
+        self.dellock()
+
+
+    # Simple file system based locking system
+    def waitlock(self):
+        cnt = 0
+        while True:
+            if os.path.isfile(self.lckname):
+                #print("waitlock")
+                cnt += 1
+                time.sleep(0.2)
+                # Taking too long; break in
+                if cnt > 5:
+                    print("Warn: waitlock breaking lock")
+                    self.dellock()
+                    break
+            else:
+                softcreate(self.lckname)
+                break
+
+    def dellock(self):
+        try:
+            os.unlink(self.lckname)
+        except:
+            pass
 
     # Deliver a 32 bit hash of whatever
     def hash32(self, strx):
@@ -196,7 +237,7 @@ class DbCore():
 
         hash = self.getbuffint(rec+4)
         blen = self.getbuffint(rec+8)
-        #print("sig", sig, "hash", hex(hash), "len=", blen)
+        print("pos", rec, "sig", sig, "hash", hex(hash), "len=", blen, end=" ")
 
         data = self.getbuffstr(rec+12, blen)
         #data = self.buffer.getbuffer()[rec+12:rec+12+blen]
@@ -212,16 +253,16 @@ class DbCore():
         blen2 = self.getbuffint(rec2+4)
         data2 = self.getbuffstr(rec2+8, blen2)
 
-        print("buff", data, "buff2", data2)
+        print("  buff =", data)
+        #print()
 
         #print("hash2", hex(hash2), "len2=", blen2)
 
-
     def  dump_data(self):
 
-        curr = self.getint(CURROFFSET)
+        curr = self.getint(CURRDAOFFS)
         #print("curr", curr)
-        chash = self.getint(CURRHASH)
+        chash = self.getint(CURRHSOFFS)
         #print("chash", chash)
 
         doffs = self.getint(LINKDATA)
@@ -230,24 +271,24 @@ class DbCore():
             if aa < HASH_LIM:
                 rec = self.getint(FIRSTHASH + aa * INTSIZE * 2)
                 hh  = self.getint(FIRSTHASH + aa * INTSIZE * 2 + INTSIZE)
-                self.dump_rec(rec)
             else:
                 nlink = self.getint(LINKHASH)
                 rec, hh = self.gethash_offs(nlink + (aa-HASH_LIM) * INTSIZE * 2)
-                #rec += doffs
-                self.dump_rec(rec)
 
             print(aa, "offs:", rec, "\thash:", hex(hh))
+            self.dump_rec(rec)
 
     # --------------------------------------------------------------------
     # Save data to database file
 
     def  save_data(self, arg2, arg3):
 
+        self.waitlock()
+
         #print("args", arg2, "---", arg3)
-        curr = self.getint(CURROFFSET)
+        curr = self.getint(CURRDAOFFS)
         #print("curr", curr)
-        chash = self.getint(CURRHASH)
+        chash = self.getint(CURRHSOFFS)
         #print("chash", chash)
 
         hhh = self.hash32(arg2)
@@ -262,12 +303,12 @@ class DbCore():
             if nlink == 0:
                 nlink = (curr // JUMPSIZE + 1) * JUMPSIZE
                 self.putint(LINKHASH, nlink)
-                print("New link", chash, curr, nlink)
+                #print("New link", chash, curr, "link", nlink)
 
-            self.puthash_offs(nlink + (chash - HASH_LIM) * 2 * INTSIZE, curr, hhh)
+            self.puthash_offs(nlink + (chash-HASH_LIM) * 2 * INTSIZE, curr, hhh)
 
-        self.putint(CURRHASH, chash + 1)
-
+        self.putint(CURRHSOFFS, chash + 1)
+        dlink = 0
         if chash < DATA_LIM:
             pos = curr
         else:
@@ -276,7 +317,10 @@ class DbCore():
             if dlink == 0:
                 dlink = (curr // JUMPSIZE + 4) * JUMPSIZE
                 self.putint(LINKDATA, dlink)
-            pos = (curr - DATA_LIM ) + dlink
+                #print("New dlink", chash, curr, "link", dlink)
+            pos = curr # + dlink
+
+        #print("pos", pos, "dlink", dlink)
 
         # Update data
         self.buffer.seek(pos)
@@ -290,11 +334,14 @@ class DbCore():
 
         # Update lenght
         if chash < DATA_LIM:
-            self.putint(CURROFFSET, self.buffer.tell())
+            self.putint(CURRDAOFFS, self.buffer.tell())
         else:
-            self.putint(CURROFFSET, self.buffer.tell() - dlink)
+            self.putint(CURRDAOFFS, self.buffer.tell()) #// - dlink + DATA_LIM)
+
+        #print("endd = ", self.getint(CURRDAOFFS))
 
         self.flushx()
+        self.dellock()
 
 
     def flushx(self):
