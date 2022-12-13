@@ -16,14 +16,15 @@ gettext.bindtextdomain('thisapp', './locale/')
 gettext.textdomain('thisapp')
 _ = gettext.gettext
 
-#import dbcore
-#import memcore
 import twincore
 
 pgdebug = 0
 verbose = 0
 version = "1.0"
 ncount  = 1
+scount  = 0
+lcount  = 0xffffffff
+quiet   = 0
 
 deffile = "data/pydbase.pydb"
 
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     opts = []; args = []
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vxctVown:")
+        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vxctVown:ql:s:")
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
         sys.exit(1)
@@ -84,24 +85,46 @@ if __name__ == "__main__":
         if aa[0] == "-w":
             writex = True
 
+        if aa[0] == "-q":
+            quiet = True
+            #print("Quiet")
+
         if aa[0] == "-n":
             ncount = int(aa[1])
-            print("ncount", ncount)
+            #print("ncount", ncount)
+
+        if aa[0] == "-l":
+            lcount = int(aa[1])
+            #print("lcount", lcount)
+
+        if aa[0] == "-s":
+            scount = int(aa[1])
+            #print("scount", scount)
 
         if aa[0] == "-f":
             deffile = aa[1]
-            print("deffile", deffile)
+            #print("deffile", deffile)
 
     #print("args", args)
 
     core = twincore.DbTwinCore(deffile)
+
+    twincore.core_quiet = quiet
+    twincore.core_verbose = verbose
+
+    #sys.exit(0)
+
+    # Test one
     #core.save_data("111 " + randstr(12) + " 222", "333 " + randstr(24) + " 444")
+    #core.save_data("111 222", "333 444")
+    #sys.exit(0)
 
     if writex:
         for aa in range(ncount):
-            core.save_data("111 222", "333  444")
+            core.save_data(randstr(4), randstr(8))
+            #core.save_data("111 222", "333 444")
     else:
-        core.dump_data()
+        core.dump_data(lcount, scount)
 
 # EOF
 
