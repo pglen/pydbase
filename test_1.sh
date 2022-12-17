@@ -1,13 +1,13 @@
 #!/bin/bash
 
-rm data/first.pydb
+rm -f data/*
 echo -n "Creating data ... "
 
-for aa in  {1..10}
+for aa in  {1..5}
 do
     ./pydbase.py -w
 done
 
 echo "OK"
 
-./pydbase.py
+./pydbase.py $1

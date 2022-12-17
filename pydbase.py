@@ -25,6 +25,10 @@ ncount  = 1
 scount  = 0
 lcount  = 0xffffffff
 quiet   = 0
+getit = ""
+keyx  = ""
+datax = ""
+maxx  = 10
 
 deffile = "data/pydbase.pydb"
 
@@ -59,7 +63,7 @@ if __name__ == "__main__":
     opts = []; args = []
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vxctVown:ql:s:")
+        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vx:ctVown:ql:s:g:k:a:")
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
         sys.exit(1)
@@ -97,6 +101,10 @@ if __name__ == "__main__":
             lcount = int(aa[1])
             #print("lcount", lcount)
 
+        if aa[0] == "-x":
+            maxx = int(aa[1])
+            #print("maxx", maxx)
+
         if aa[0] == "-s":
             scount = int(aa[1])
             #print("scount", scount)
@@ -105,6 +113,18 @@ if __name__ == "__main__":
             deffile = aa[1]
             #print("deffile", deffile)
 
+        if aa[0] == "-g":
+            getit = aa[1]
+            #print("getit", getit)
+
+        if aa[0] == "-k":
+            keyx = aa[1]
+            #print("keyx", keyx)
+
+        if aa[0] == "-a":
+            datax = aa[1]
+            #print("datax", datax)
+
     #print("args", args)
 
     core = twincore.DbTwinCore(deffile)
@@ -112,7 +132,8 @@ if __name__ == "__main__":
     twincore.core_quiet = quiet
     twincore.core_verbose = verbose
 
-    #sys.exit(0)
+    # Correct maxx
+    if maxx == 0 : maxx = 1
 
     # Test one
     #core.save_data("111 " + randstr(12) + " 222", "333 " + randstr(24) + " 444")
@@ -121,8 +142,25 @@ if __name__ == "__main__":
 
     if writex:
         for aa in range(ncount):
-            core.save_data(randstr(4), randstr(8))
-            #core.save_data("111 222", "333 444")
+            #core.save_data(randstr(4), randstr(8))
+            core.save_data("111 222", "333 444")
+    elif keyx:
+        if not datax:
+            print("Must specify data")
+            sys.exit(0)
+        #print("adding", keyx, datax)
+        core.save_data(keyx, datax)
+
+    elif getit:
+        start = 0
+        for aa in range(maxx):
+            ddd = core.get_data(getit, start)
+            if not ddd:
+                break
+
+            start = ddd[0] + 1     # Start fro here
+
+            print("ddd", ddd)
     else:
         core.dump_data(lcount, scount)
 
