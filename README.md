@@ -12,11 +12,12 @@
 
     The module 'twincore' uses two data files and a lock file. The file names are generated
     from the base name of the data file. .pidx for the index, .lock for the lock file.
-    The lock file times out in xx seconds and breaks the lock. (in case of frozen process)
+    The lock file times out in 0.3 seconds and breaks the lock. (in case of frozen process)
 
 ## The test executable
 
-    The file pydbase.py exercises most of the twincore functionality. Here is the help screen to drive it.
+    The file pydbase.py exercises most of the twincore functionality.
+    Here is the help screen to drive it.
 
           Usage: pydebase.py [options]
           Options: -h         help (this screen)
