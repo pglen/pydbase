@@ -1,0 +1,62 @@
+\hypertarget{md_README_autotoc_md1}{}\doxysection{High speed database}\label{md_README_autotoc_md1}
+\hypertarget{md_README_autotoc_md2}{}\doxysubsection{Fast data save / retrieve}\label{md_README_autotoc_md2}
+The motivation was to create a no frills way of saving / retrieving data fast. the command line tester can drive most aspects of this API;\hypertarget{md_README_autotoc_md3}{}\doxysection{API}\label{md_README_autotoc_md3}
+The module \textquotesingle{}twincore\textquotesingle{} uses two data files and a lock file. The file names are generated from the base name of the data file. .pidx for the index, .lock for the lock file. The lock file times out in 0.\+3 seconds and breaks the lock. (in case of frozen process)
+
+Example db creation\+: \begin{DoxyVerb}core = twincore.DbTwinCore(deffile)
+\end{DoxyVerb}
+ Setting verbosity and debug verbosity\+: \begin{DoxyVerb}twincore.core_quiet = quiet
+twincore.core_verbose = verbose
+twincore.core_pgdebug = pgdebug
+twincore.core_showdel = sdelx
+\end{DoxyVerb}
+ Some basic ops\+: \begin{DoxyVerb}dbsize = core.getdbsize()
+
+core.save_data(keyx, datax)
+rec_arr = core.retrieve(keyx, ncount)
+print("rec_arr", rec_arr)
+\end{DoxyVerb}
+\hypertarget{md_README_autotoc_md4}{}\doxysection{The test executable}\label{md_README_autotoc_md4}
+\begin{DoxyVerb}The file pydbase.py exercises most of the twincore functionality.
+Here is the help screen to drive it.
+
+      Usage: pydebase.py [options]
+      Options: -h         help (this screen)
+               -V         print version        ||  -q      quiet on
+               -d         debug level (unused) ||  -v      verbosity on
+               -r         write random data    ||  -w      write record(s)
+               -z         dump backwards(s)    ||  -i      show deleted record(s)
+               -f  file   input or output file (default: 'first.pydb')
+               -n  num    number of records to write
+               -g  num    get number of records
+               -p  num    skip number of records on get
+               -l  lim    limit number of records on get
+               -x  max    limit max number of records to get
+               -k  key    key to save (quotes for multi words)
+               -a  str    data to save (quotes for multi words)
+               -y  key    find by key
+               -t  key    retrieve by key
+               -o  offs   get data from offset
+               -e  offs   delete at offset
+               -u  rec    delete at position
+    The default action is to dump records to screen in reverse order.
+\end{DoxyVerb}
+
+
+Comparison to other databases\+:
+
+This comparison is to show the time it takes to write 500 records. In the tests the record size is about the same (Hello /vs/ \char`\"{}111 222\char`\"{}) Please see the sqlite\+\_\+test.\+sql for details of data output;
+
+The test can be repeated with running the \textquotesingle{}time.\+sh\textquotesingle{} script file. Please note the the time.\+sh clears all files tests/$\ast$ for a fair test. \begin{DoxyVerb}    sqlite time test, 500 records ...
+    real    0m1.537s
+    user    0m0.025s
+    sys 0m0.050s
+    pydbase time test, 500 records ...
+    real    0m0.149s
+    user    0m0.143s
+    sys 0m0.004s
+\end{DoxyVerb}
+ Please mind the fact that the sqlite engine has to do a lot of parsing which we skip doing; That is why pydbase is an order of magnitude faster ...\hypertarget{md_README_autotoc_md5}{}\doxysubsection{TODO}\label{md_README_autotoc_md5}
+\begin{DoxyVerb}Speed up by implementing this a 'C' module
+\end{DoxyVerb}
+ Work in progress .... 

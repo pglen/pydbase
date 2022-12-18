@@ -32,16 +32,7 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
-# warnings
-
-import struct, io
-
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GObject
-from gi.repository import GLib
+import  struct, io
 
 DIRTY_MAX   = 0xffffffff
 
@@ -89,6 +80,7 @@ class DbTwinCore():
         self.idxname = os.path.splitext(self.fname)[0] + ".pidx"
         self.lckname = os.path.splitext(self.fname)[0] + ".lock"
 
+        self.lasterr = ""
         if core_verbose:
             print("fname", fname, "idxname", self.idxname, "lockname", self.lckname)
 
@@ -221,14 +213,15 @@ class DbTwinCore():
 
     def getidxint(self, offs):
         #print("getidxint", offs)
-        val = self.iread(offs, 4)
+        self.ifp.seek(offs, io.SEEK_SET)
+        val = self.ifp.read(4)
         return struct.unpack("I", val)[0]
 
     def putidxint(self, offs, val):
         #print("putidxint", offs, val)
-        self.ifp.seek(offs, io.SEEK_SET)
         pp = struct.pack("I", val)
-        self.iwrite(pp)
+        self.ifp.seek(offs, io.SEEK_SET)
+        self.ifp.write(pp)
 
     def putbuffint(self, offs, val):
         #print("putbuffint", offs, val)
@@ -260,20 +253,19 @@ class DbTwinCore():
         self.dirtyarr.append((bb, ee))
 
     # Read index; if past stream eof, read from file
-    def  iread(self, offs, lenx):
-        self.ifp.seek(offs, io.SEEK_SET)
-        ret = self.ifp.read(lenx)
-        return ret
-
-    # --------------------------------------------------------------------
-    # Index: Mark dirty automatically
-
-    def  iwrite(self, var):
-        ibb = self.ifp.tell()
-        self.ifp.write(var)
-        iee = self.ifp.tell()
-        self.idirtyarr.append((ibb, iee))
-
+    #def  iread(self, offs, lenx):
+    #    self.ifp.seek(offs, io.SEEK_SET)
+    #    ret = self.ifp.read(lenx)
+    #    return ret
+    #
+    ## --------------------------------------------------------------------
+    ## Index: Mark dirty automatically
+    #
+    #def  iwrite(self, var):
+    #    ibb = self.ifp.tell()
+    #    self.ifp.write(var)
+    #    iee = self.ifp.tell()
+    #    self.idirtyarr.append((ibb, iee))
 
     # --------------------------------------------------------------------
     def rec2arr(self, rec):
@@ -313,7 +305,7 @@ class DbTwinCore():
     def  dump_rec(self, rec, cnt):
 
         ''' Print record to the screen '''
-
+        cnt = 0
         sig = self.getbuffstr(rec, INTSIZE)
 
         if sig == DbTwinCore.RECDEL:
@@ -321,26 +313,26 @@ class DbTwinCore():
                 blen = self.getbuffint(rec+8)
                 data = self.getbuffstr(rec+12, blen)
                 print(" Deleted data '%s' at" % sig, rec, "data", trunc(data))
-            return []
+            return cnt
 
         if sig != DbTwinCore.RECSIG:
             if core_verbose:
                 print("Damaged data '%s' at" % sig, rec)
-            return []
+            return cnt
 
         hash = self.getbuffint(rec+4)
         blen = self.getbuffint(rec+8)
 
         if blen < 0:
             print("Invalid key length %d at %d" % (blen, rec))
-            return
+            return cnt
 
         data = self.getbuffstr(rec+12, blen)
 
         endd = self.getbuffstr(rec + 12 + blen, INTSIZE)
         if endd != DbTwinCore.RECSEP:
             print("Damaged end data '%s' at" % endd, rec)
-            return
+            return cnt
 
         rec2 = rec + 16 + blen;
         hash2 = self.getbuffint(rec2)
@@ -348,7 +340,7 @@ class DbTwinCore():
 
         if blen2 < 0:
             print("Invalid data length %d at %d" % (blen2, rec))
-            return
+            return cnt
 
         data2 = self.getbuffstr(rec2+8, blen2)
 
@@ -359,11 +351,13 @@ class DbTwinCore():
         else:
             print("%-5d pos %5d" % (cnt, rec), "Data:", trunc(data, 18), "Data2:", trunc(data2, 18))
 
+        cnt += 1
+
         #print("buff =", data, "buff2 =", data2)
         #print("hash2 %x" % hash2)
         #print("hhh1 %x" % self.__hash32(str(data)))
         #print("hhh2 %x" % self.__hash32(str(data2)))
-
+        return cnt
 
     def  dump_data(self, lim, skip = 0):
 
@@ -377,12 +371,13 @@ class DbTwinCore():
             rec = self.getidxint(aa)
             #print(aa, rec)
             if not core_quiet:
-                self.dump_rec(rec, cnt)
-            cnt += 1
-            if cnt >= lim:
-                break
+                ret = self.dump_rec(rec, cnt)
+                if ret:
+                    cnt += 1
+                    if cnt >= lim:
+                        break
 
-    def  revdump_data(self, lim):
+    def  revdump_data(self, lim, skip = 0):
 
         ''' Put all data to screen in reverse order'''
         curr = self.getbuffint(CURROFFS)
@@ -394,10 +389,11 @@ class DbTwinCore():
             rec = self.getidxint(aa)
             #print(aa, rec)
             if not core_quiet:
-                self.dump_rec(rec, cnt)
-            cnt += 1
-            if cnt >= lim:
-                break
+                ret = self.dump_rec(rec, cnt)
+                if ret:
+                    cnt += 1
+                    if cnt >= lim:
+                        break
 
     def  get_rec(self, recnum):
         rsize = self.getdbsize()

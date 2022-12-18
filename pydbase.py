@@ -4,12 +4,12 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading, warnings
 import string
 
-import gi
-gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
-from gi.repository import Gdk
-from gi.repository import GObject
-from gi.repository import GLib
+#import gi
+#gi.require_version("Gtk", "3.0")
+#from gi.repository import Gtk
+#from gi.repository import Gdk
+#from gi.repository import GObject
+#from gi.repository import GLib
 
 import gettext
 gettext.bindtextdomain('thisapp', './locale/')
@@ -190,7 +190,6 @@ if __name__ == "__main__":
     #print("args", args)
 
     core = twincore.DbTwinCore(deffile)
-
     twincore.core_quiet = quiet
     twincore.core_verbose = verbose
     twincore.core_pgdebug = pgdebug
@@ -202,16 +201,17 @@ if __name__ == "__main__":
     dbsize = core.getdbsize()
     #print("DBsize", dbsize)
 
-    # Test one
-    #core.save_data("111 " + randstr(12) + " 222", "333 " + randstr(24) + " 444")
-    #core.save_data("111 222", "333 444")
-    #sys.exit(0)
-
     if keyx and datax:
         if verbose:
             print("adding", keyx, datax)
         for aa in range(ncount):
             core.save_data(keyx, datax)
+
+    elif keyx:
+        if verbose:
+            print("adding", keyx)
+        for aa in range(ncount):
+            core.save_data(keyx, "dddd dddd")
 
     elif writex:
         if randx:
@@ -220,9 +220,6 @@ if __name__ == "__main__":
         else:
             for aa in range(ncount):
                 core.save_data("111 222", "333 444")
-
-        #print("Must specify data")
-        #sys.exit(0)
 
     elif findx:
         if lcount == 0: lcount = 1
@@ -234,12 +231,10 @@ if __name__ == "__main__":
             maxx = dbsize
         if verbose:
             print("Getting %d records" % maxx);
-        #for aa in range(maxx):
         ddd = core.get_rec(int(getit))
         print(ddd)
 
     elif retrx != "":
-        #print("retrx exex", retrx)
         if ncount == 0: ncount = 1
         ddd = core.retrieve(retrx, ncount)
         print(ddd)
@@ -253,13 +248,12 @@ if __name__ == "__main__":
         print(ddd)
 
     elif delrx2:
-        #print("delrx", delrx)
         ddd = core.del_rec(int(delrx))
         print(ddd)
     else:
         if backx:
-            core.dump_data(lcount)
+            core.dump_data(lcount, skipx)
         else:
-            core.revdump_data(lcount) #, scount)
+            core.revdump_data(lcount, skipx)
 
 # EOF

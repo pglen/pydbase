@@ -1,0 +1,85 @@
+\hypertarget{namespacetwincore}{}\doxysection{twincore Namespace Reference}
+\label{namespacetwincore}\index{twincore@{twincore}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classtwincore_1_1DbTwinCore}{Db\+Twin\+Core}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+def \mbox{\hyperlink{namespacetwincore_a5416355346eb4d094c06065a35c52e52}{trunc}} (strx, num=8)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{namespacetwincore_a3cf83a9b6e1cbafc942aa8cd3285f1ad}\label{namespacetwincore_a3cf83a9b6e1cbafc942aa8cd3285f1ad}} 
+int {\bfseries DIRTY\+\_\+\+MAX} = 0xffffffff
+\item 
+\mbox{\Hypertarget{namespacetwincore_af8117395df45314c3206514aefa3aba7}\label{namespacetwincore_af8117395df45314c3206514aefa3aba7}} 
+int {\bfseries INTSIZE} = 4
+\item 
+\mbox{\Hypertarget{namespacetwincore_a398023cc80fea83a00ab59a305dde3f3}\label{namespacetwincore_a398023cc80fea83a00ab59a305dde3f3}} 
+int {\bfseries HEADSIZE} = 32
+\item 
+\mbox{\Hypertarget{namespacetwincore_a0bd307b075faa5cdeab0d90421df60bf}\label{namespacetwincore_a0bd307b075faa5cdeab0d90421df60bf}} 
+int {\bfseries CURROFFS} = 16
+\item 
+\mbox{\Hypertarget{namespacetwincore_a2a55d382f26c49aac96a7f3a569f0ed8}\label{namespacetwincore_a2a55d382f26c49aac96a7f3a569f0ed8}} 
+int {\bfseries FIRSTHASH} = HEADSIZE
+\item 
+\mbox{\Hypertarget{namespacetwincore_a1260b9010ebb9904ecf6e303238abb92}\label{namespacetwincore_a1260b9010ebb9904ecf6e303238abb92}} 
+int {\bfseries FIRSTDATA} = HEADSIZE
+\item 
+\mbox{\Hypertarget{namespacetwincore_a04b1204de1eaeafb51c0f900f19e18da}\label{namespacetwincore_a04b1204de1eaeafb51c0f900f19e18da}} 
+int {\bfseries core\+\_\+verbose} = 0
+\item 
+\mbox{\Hypertarget{namespacetwincore_a00c95c8a5f3c059adcabeda82f2c7ef6}\label{namespacetwincore_a00c95c8a5f3c059adcabeda82f2c7ef6}} 
+int {\bfseries core\+\_\+quiet} = 0
+\item 
+\mbox{\Hypertarget{namespacetwincore_ab9ad36fc665b1ebcd04d3ca46c8a2b47}\label{namespacetwincore_ab9ad36fc665b1ebcd04d3ca46c8a2b47}} 
+int {\bfseries core\+\_\+pgdebug} = 0
+\item 
+\mbox{\Hypertarget{namespacetwincore_a33b58ab9283246e14e668e55f49c0973}\label{namespacetwincore_a33b58ab9283246e14e668e55f49c0973}} 
+int {\bfseries core\+\_\+showdel} = 0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}    Twincore;
+    The reason for this name is that two files are created to contain the data.
+    The first contains the data, the second contains the offsets (indexes) and hashes.
+    The second file can be re-built easily from the first.
+
+    Structure of the data:
+
+    32 byte header, starating with FILESIG
+
+    4 bytes    4 bytes          4 bytes         Variable
+    ------------------------------------------------------------
+    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+        .
+        .
+        .
+
+    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+    Deleted records are marked with RECSIG mutated from RECB to RECX
+
+    New data is appended to the end, no duplicate filtering is done.
+    Retrieval is searched from reverse, the latest record with this key
+    is retrieved first.\end{DoxyVerb}
+ 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespacetwincore_a5416355346eb4d094c06065a35c52e52}\label{namespacetwincore_a5416355346eb4d094c06065a35c52e52}} 
+\index{twincore@{twincore}!trunc@{trunc}}
+\index{trunc@{trunc}!twincore@{twincore}}
+\doxysubsubsection{\texorpdfstring{trunc()}{trunc()}}
+{\footnotesize\ttfamily def twincore.\+trunc (\begin{DoxyParamCaption}\item[{}]{strx,  }\item[{}]{num = {\ttfamily 8} }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} truncate for printing nicely \end{DoxyVerb}
+ 

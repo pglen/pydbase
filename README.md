@@ -34,6 +34,30 @@ Some basic ops:
     print("rec_arr", rec_arr)
 
 
+
+### Structure of the data:
+
+    32 byte header, starating with FILESIG
+
+    4 bytes    4 bytes          4 bytes         Variable
+    ------------------------------------------------------------
+    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+        .
+        .
+        .
+
+    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+    Deleted records are marked with RECSIG mutated from RECB to RECX
+
+    New data is appended to the end, no duplicate filtering is done.
+    Retrieval is searched from reverse, the latest record with this key
+    is retrieved first.
+
+
 ## The test executable
 
     The file pydbase.py exercises most of the twincore functionality.
