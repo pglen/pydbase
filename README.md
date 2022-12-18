@@ -10,9 +10,29 @@
 
 ## API
 
-    The module 'twincore' uses two data files and a lock file. The file names are generated
-    from the base name of the data file. .pidx for the index, .lock for the lock file.
-    The lock file times out in 0.3 seconds and breaks the lock. (in case of frozen process)
+The module 'twincore' uses two data files and a lock file. The file names are generated
+from the base name of the data file. .pidx for the index, .lock for the lock file.
+The lock file times out in 0.3 seconds and breaks the lock. (in case of frozen process)
+
+Example db creation:
+
+    core = twincore.DbTwinCore(deffile)
+
+Setting verbosity and debug verbosity:
+
+    twincore.core_quiet = quiet
+    twincore.core_verbose = verbose
+    twincore.core_pgdebug = pgdebug
+    twincore.core_showdel = sdelx
+
+Some basic ops:
+
+    dbsize = core.getdbsize()
+
+    core.save_data(keyx, datax)
+    rec_arr = core.retrieve(keyx, ncount)
+    print("rec_arr", rec_arr)
+
 
 ## The test executable
 
