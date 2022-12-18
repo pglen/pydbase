@@ -258,8 +258,8 @@ if __name__ == "__main__":
         print(ddd)
     else:
         if backx:
-            core.revdump_data(lcount) #, scount)
-        else:
             core.dump_data(lcount)
+        else:
+            core.revdump_data(lcount) #, scount)
 
 # EOF
