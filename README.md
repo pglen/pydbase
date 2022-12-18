@@ -57,10 +57,10 @@ Some basic ops:
 
 ## The test executable
 
-    The file pydbase.py exercises most of the twincore functionality. It also
-    provides examples of how to drive it.
+The file pydbase.py exercises most of the twincore functionality. It also
+provides examples of how to drive it.
 
-    Here is the help screen to drive it.
+Here is the help screen to drive it.
 
           Usage: pydebase.py [options]
           Options: -h         help (this screen)
