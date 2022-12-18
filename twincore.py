@@ -54,6 +54,7 @@ FIRSTDATA   = HEADSIZE
 # Accessed from main file
 core_verbose = 0
 core_quiet = 0
+core_pgdebug = 0
 
 # ------------------------------------------------------------------------
 # Data file and index file; protected by locks
@@ -92,7 +93,7 @@ class DbTwinCore():
         #self.buffer = io.BytesIO(self.fp.read(HEADSIZE))
         #self.index = io.BytesIO(self.ifp.read(HEADSIZE))
 
-        buffsize = self.getsize(self.fp)
+        buffsize = self.__getsize(self.fp)
         # Initial file creation
         if buffsize < HEADSIZE:
             #print("initial padding")
@@ -110,7 +111,7 @@ class DbTwinCore():
 
             self.putbuffint(CURROFFS, HEADSIZE)
 
-        indexsize = self.getsize(self.ifp)
+        indexsize = self.__getsize(self.ifp)
         # Initial file creation
         if indexsize < HEADSIZE:
             #print("initial padding")
@@ -191,18 +192,22 @@ class DbTwinCore():
         #print("hashing", strx)
         lenx = len(strx);  hashx = int(0)
         for aa in strx:
-            bb = ord(aa)
-            hashx +=  int((bb << 12) + bb)
+            bb = aa
+            hashx +=  int( (bb << 12) + bb)
             hashx &= 0xffffffff
             hashx = int(hashx << 8) + int(hashx >> 8)
             hashx &= 0xffffffff
         return hashx
 
-    def getsize(self, buffio):
+    def __getsize(self, buffio):
         pos = buffio.tell()
         endd = buffio.seek(0, io.SEEK_END)
         buffio.seek(pos, io.SEEK_SET)
         return endd
+
+    def getdbsize(self):
+        chash = self.getidxint(CURROFFS) - HEADSIZE
+        return int(chash / (2 * INTSIZE))
 
     # --------------------------------------------------------------------
     # Read / write index / data
@@ -236,7 +241,7 @@ class DbTwinCore():
 
     def putbuffstr(self, offs, xstr):
         self.fp.seek(offs, io.SEEK_SET)
-        val = self.buffer.dwrite(xstr)
+        val = self.fp.write(xstr)
 
     # --------------------------------------------------------------------
     # Data: Mark dirty automatically
@@ -262,6 +267,8 @@ class DbTwinCore():
         iee = self.ifp.tell()
         self.idirtyarr.append((ibb, iee))
 
+
+    # --------------------------------------------------------------------
     def rec2arr(self, rec):
 
         arr = []
@@ -273,31 +280,52 @@ class DbTwinCore():
 
         hash = self.getbuffint(rec+4)
         blen = self.getbuffint(rec+8)
+        data = self.getbuffstr(rec + 12, blen)
 
+        #print("hash", hash, "check", self.__hash32(data))
         #print("%5d pos %5d" % (cnt, rec), "hash %8x" % hash, "ok", ok, "len=", blen, end=" ")
 
-        data = self.getbuffstr(rec+12, blen)
         endd = self.getbuffstr(rec + 12 + blen, INTSIZE)
         if endd != DbTwinCore.RECSEP:
             print("Damaged end data '%s' at" % endd, rec)
+            return arr
 
-        rec2 = rec + 12 + blen;
+        rec2 = rec + 16 + blen;
         hash2 = self.getbuffint(rec2)
         blen2 = self.getbuffint(rec2+4)
         data2 = self.getbuffstr(rec2+8, blen2)
+
+        #print("hash2", hash2, "check2", self.__hash32(data2))
+
         arr = [data, data2]
         return arr
 
+    # -------------------------------------------------------------------
+    # originator
+
     def  dump_rec(self, rec, cnt):
 
+        ''' Print record to the screen '''
+
         sig = self.getbuffstr(rec, INTSIZE)
+
+        if sig == DbTwinCore.RECDEL:
+            if core_verbose:
+                print("Deleted data '%s' at" % sig, rec)
+            return []
+
         if sig != DbTwinCore.RECSIG:
-            print("Damaged data '%s' at" % sig, rec)
-            return
+            if core_verbose:
+                print("Damaged data '%s' at" % sig, rec)
+            return []
 
         hash = self.getbuffint(rec+4)
-
         blen = self.getbuffint(rec+8)
+
+        if blen < 0:
+            print("Invalid key length %d at %d" % (blen, rec))
+            return
+
         data = self.getbuffstr(rec+12, blen)
 
         endd = self.getbuffstr(rec + 12 + blen, INTSIZE)
@@ -308,14 +336,18 @@ class DbTwinCore():
         rec2 = rec + 16 + blen;
         hash2 = self.getbuffint(rec2)
         blen2 = self.getbuffint(rec2+4)
-        data2 = self.getbuffstr(rec2+8, blen2)
 
+        if blen2 < 0:
+            print("Invalid data length %d at %d" % (blen2, rec))
+            return
+
+        data2 = self.getbuffstr(rec2+8, blen2)
 
         if core_verbose:
             print("%-5d pos %5d" % (cnt, rec), "hash  %8x" % hash, "blen=", blen, data)
             print("%-5d pos %5d" % (cnt, rec), "hash2 %8x" % hash2,"blen2=", blen2, data2)
         else:
-            print("%-5d pos %5d" % (cnt, rec), "Data:", data, data2)
+            print("%-5d pos %5d" % (cnt, rec), "Data:", data, "Data2:", data2)
 
         #print("buff =", data, "buff2 =", data2)
         #print("hash2 %x" % hash2)
@@ -343,30 +375,101 @@ class DbTwinCore():
             if cnt >= lim:
                 break
 
+    def  revdump_data(self, lim):
 
-    def  get_data(self, hash, skip):
+        ''' Put all data to screen in reverse order'''
+        curr = self.getbuffint(CURROFFS)
+        #print("curr", curr)
+        chash = self.getidxint(CURROFFS)
+        #print("chash", chash)
+        cnt = 0
+        for aa in range(chash - INTSIZE * 2, HEADSIZE  - INTSIZE * 2, -INTSIZE * 2):
+            rec = self.getidxint(aa)
+            #print(aa, rec)
+            if not core_quiet:
+                self.dump_rec(rec, cnt)
+            cnt += 1
+            if cnt >= lim:
+                break
 
-        cnt = skip
-        hhhh = int(hash, 16)
-        #print("hash", hash, hhhh)
+    def  get_rec(self, recnum):
+        rsize = self.getdbsize()
+        if recnum >= rsize:
+            #print("Past end of data.");
+            raise  RuntimeError( \
+                    "Past end of Data. Asking for %d Max is %d records." \
+                                     % (recnum, rsize) )
+            return []
 
         chash = self.getidxint(CURROFFS)
         #print("chash", chash)
+        offs = self.getidxint(HEADSIZE + recnum * INTSIZE * 2)
+        #print("offs", offs)
+        return self.rec2arr(offs)
 
+    def  get_rec_offs(self, recoffs):
+
+        rsize = self.__getsize(self.fp)
+        if recoffs >= rsize:
+            #print("Past end of data.");
+            raise  RuntimeError( \
+                    "Past end of File. Asking for offset %d file size is %d." \
+                                     % (recoffs, rsize) )
+            return []
+
+        sig = self.getbuffstr(recoffs, INTSIZE)
+        if sig == DbTwinCore.RECDEL:
+            print("Deleted record")
+            return []
+        if sig != DbTwinCore.RECSIG:
+            print("Unlikely offset %d is not at record boundary." % recoffs, sig)
+            return []
+        #print("recoffs", recoffs)
+        return self.rec2arr(recoffs)
+
+    def  del_rec_offs(self, recoffs):
+
+        rsize = self.__getsize(self.fp)
+        if recoffs >= rsize:
+            #print("Past end of data.");
+            raise  RuntimeError( \
+                    "Past end of File. Asking for offset %d file size is %d." \
+                                     % (recoffs, rsize) )
+            return False
+
+        sig = self.getbuffstr(recoffs, INTSIZE)
+        if sig != DbTwinCore.RECSIG  and sig != DbTwinCore.RECDEL:
+            print("Unlikely offset %d is not at record boundary." % recoffs, sig)
+            return False
+
+        self.putbuffstr(recoffs, DbTwinCore.RECDEL)
+        return True
+
+    # --------------------------------------------------------------------
+    # Search from the back end, so latest comes first
+
+    def  find_key(self, hashx, limx = 0xffffffff):
+
+        hhhh = self.__hash32(hashx.encode("cp437"))
+        #print("hashx", hashx, hhhh)
+        chash = self.getidxint(CURROFFS)
+        #print("chash", chash)
         arr = []
-        for aa in range(HEADSIZE + skip * INTSIZE * 2, chash, INTSIZE * 2):
+        #for aa in range(HEADSIZE + INTSIZE * 2, chash, INTSIZE * 2):
+        for aa in range(chash - INTSIZE * 2, HEADSIZE  - INTSIZE * 2, -INTSIZE * 2):
             rec = self.getidxint(aa)
-            hhh = self.getbuffint(rec+4)
-
-            #blen = self.getbuffint(rec+8)
-            #print("data '%s' at" % sig, rec, "blen", blen)
-
-            #sig = self.getbuffint(rec)
-            #if sig != DbTwinCore.RECSIG:
-            #    print("Damaged data '%s' at" % sig, rec)
-
-            cnt += 1
-
+            sig = self.getbuffstr(rec, INTSIZE)
+            if sig == DbTwinCore.RECDEL:
+                if core_verbose:
+                    print("Deleted record '%s' at" % sig, rec)
+            elif sig != DbTwinCore.RECSIG:
+                print("Damaged data '%s' at" % sig, rec)
+            else:
+                hhh = self.getbuffint(rec+4)
+                if hhh == hhhh:
+                    arr.append(rec)
+                    if len(arr) >= limx:
+                        break
         return arr
 
     def  del_data(self, hash, skip):
@@ -394,15 +497,6 @@ class DbTwinCore():
             #print("data '%s' at" % sig, rec, "blen", blen)
 
             hhh = self.getbuffint(rec+4)
-
-            # Non deleted?
-            if hhh & 0x8000000:
-                if hhh == hhhh:
-                    #self.dump_rec(rec, cnt)
-                    arr.append(cnt)
-                    arr += self.rec2arr(rec)
-                    break
-
             cnt += 1
 
         return arr
@@ -412,28 +506,33 @@ class DbTwinCore():
 
     def  save_data(self, arg2, arg3):
 
-        #print("args", arg2, "---", arg3)
+        # Prepare all args
+        arg2e = arg2.encode("cp437")
+        arg3e = arg3.encode("cp437")
+        #print("args", arg2e, "arg3", arg3e)
+
+        hhh2 = self.__hash32(arg2e)
+        hhh3 = self.__hash32(arg3e)
+        #print("hhh2", hhh2, "hhh3", hhh3)
 
         self.__waitlock()
-
-        hhh = self.__hash32(arg2)
-        hhh3 = self.__hash32(arg3)
 
         curr = self.getbuffint(CURROFFS)
         #print("curr", curr)
 
         # Update / Append data
         tmp = DbTwinCore.RECSIG
-        tmp += struct.pack("I", hhh)
-        tmp += struct.pack("I", len(arg2))
-        tmp += arg2.encode("cp437")
+        tmp += struct.pack("I", hhh2)
+        tmp += struct.pack("I", len(arg2e))
+        tmp += arg2e
         tmp += DbTwinCore.RECSEP
         tmp += struct.pack("I", hhh3)
-        tmp += struct.pack("I", len(arg3))
-        tmp += arg3.encode("cp437")
+        tmp += struct.pack("I", len(arg3e))
+        tmp += arg3e
+
         #print(tmp)
 
-        # Pre assemple to string added 20% efficiency
+        # The pre assemple to string added 20% efficiency
         self.fp.seek(curr)
         self.dwrite(tmp)
 
@@ -445,7 +544,7 @@ class DbTwinCore():
 
         # Update / Append index
         self.putidxint(hashpos, curr)
-        self.putidxint(hashpos + INTSIZE, hhh)
+        self.putidxint(hashpos + INTSIZE, hhh2)
         self.putidxint(CURROFFS, self.ifp.tell())
 
         self.__dellock()

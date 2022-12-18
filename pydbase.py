@@ -25,10 +25,17 @@ ncount  = 1
 scount  = 0
 lcount  = 0xffffffff
 quiet   = 0
-getit = ""
-keyx  = ""
-datax = ""
-maxx  = 10
+maxx    = 10
+writex  = 0
+randx   = 0
+skipx   = 0
+offsx   = 0
+delx    = 0
+
+getit   = ""
+keyx    = ""
+datax   = ""
+findx   = ""
 
 deffile = "data/pydbase.pydb"
 
@@ -47,23 +54,39 @@ def randstr(lenx):
     return strx
 
 
-writex = 0
 
 def help():
-    print("Usage: pydebase.py [opt]")
-    print("Options: ")
-    print("         -h   help")
-    print("         -w   write record")
-    print("         -n   number of records")
-    print("         -V   print version")
+    print()
+    print("Usage: pydebase.py [options]")
+    print()
+    print("  Options: -h            help (this screen)")
+    print("           -V            print version")
+    print("           -d            debug level (unused)")
+    print("           -v            verbosity on")
+    print("           -q            quiet on")
+    print("           -r            write random data")
+    print("           -w            write record(s)")
+    print("           -f  file      input or output file (default: 'first.pydb')")
+    print("           -n  num       number of records to write")
+    print("           -g  num       get number of records")
+    print("           -p  num       skip number of records on get")
+    print("           -l  lim       limit number of records on get")
+    print("           -x  max       limit max number of records to get")
+    print("           -k  key       key to save (quotes for multi words)")
+    print("           -a  str       data to save (quotes for multi words)")
+    print("           -y  key       find by key")
+    print("           -o  offs      get data from offset")
+    print("           -e  offs      delete at offset")
+    print("The default action is to dump records to screen in reverse order.")
 
+# ------------------------------------------------------------------------
 
 if __name__ == "__main__":
 
     opts = []; args = []
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vx:ctVown:ql:s:g:k:a:")
+        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vx:ctVo:rwn:ql:s:g:k:a:y:e:")
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
         sys.exit(1)
@@ -125,45 +148,86 @@ if __name__ == "__main__":
             datax = aa[1]
             #print("datax", datax)
 
+        if aa[0] == "-r":
+            randx = True
+            #print("randx", randx)
+
+        if aa[0] == "-p":
+            skipx = aa[1]
+            #print("skipx", skipx)
+
+        if aa[0] == "-y":
+            findx = aa[1]
+            #print("skipx", skipx)
+
+        if aa[0] == "-o":
+            offsx = aa[1]
+            #print("skipx", skipx)
+
+        if aa[0] == "-e":
+            delx = aa[1]
+            #print("skipx", skipx)
+
     #print("args", args)
 
     core = twincore.DbTwinCore(deffile)
 
     twincore.core_quiet = quiet
     twincore.core_verbose = verbose
+    twincore.core_pgdebug = pgdebug
 
     # Correct maxx
     if maxx == 0 : maxx = 1
+
+    dbsize = core.getdbsize()
+    #print("DBsize", dbsize)
 
     # Test one
     #core.save_data("111 " + randstr(12) + " 222", "333 " + randstr(24) + " 444")
     #core.save_data("111 222", "333 444")
     #sys.exit(0)
 
-    if writex:
+    if keyx and datax:
+        if verbose:
+            print("adding", keyx, datax)
         for aa in range(ncount):
-            #core.save_data(randstr(4), randstr(8))
-            core.save_data("111 222", "333 444")
-    elif keyx:
-        if not datax:
-            print("Must specify data")
-            sys.exit(0)
-        #print("adding", keyx, datax)
-        core.save_data(keyx, datax)
+            core.save_data(keyx, datax)
+
+    elif writex:
+        if randx:
+            for aa in range(ncount):
+                core.save_data(randstr(4), randstr(8))
+        else:
+            for aa in range(ncount):
+                core.save_data("111 222", "333 444")
+
+        #print("Must specify data")
+        #sys.exit(0)
+
+    elif findx:
+        if lcount == 0: lcount = 1
+        ddd = core.find_key(findx, lcount)
+        print("ddd", ddd)
 
     elif getit:
-        start = 0
-        for aa in range(maxx):
-            ddd = core.get_data(getit, start)
-            if not ddd:
-                break
+        if maxx > dbsize:
+            maxx = dbsize
+        if verbose:
+            print("Getting %d records" % maxx);
+        #for aa in range(maxx):
+        ddd = core.get_rec(int(getit))
+        print(ddd)
 
-            start = ddd[0] + 1     # Start fro here
+    elif offsx:
+        ddd = core.get_rec_offs(int(offsx))
+        print(ddd)
 
-            print("ddd", ddd)
+    elif delx:
+        ddd = core.del_rec_offs(int(delx))
+        print(ddd)
+
     else:
-        core.dump_data(lcount, scount)
+        #core.dump_data(lcount, scount)
+        core.revdump_data(lcount) #, scount)
 
 # EOF
-
-
