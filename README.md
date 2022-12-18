@@ -33,8 +33,6 @@ Some basic ops:
     rec_arr = core.retrieve(keyx, ncount)
     print("rec_arr", rec_arr)
 
-
-
 ### Structure of the data:
 
     32 byte header, starating with FILESIG
@@ -57,10 +55,11 @@ Some basic ops:
     Retrieval is searched from reverse, the latest record with this key
     is retrieved first.
 
-
 ## The test executable
 
-    The file pydbase.py exercises most of the twincore functionality.
+    The file pydbase.py exercises most of the twincore functionality. It also
+    provides examples of how to drive it.
+
     Here is the help screen to drive it.
 
           Usage: pydebase.py [options]
