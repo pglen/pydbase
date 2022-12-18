@@ -55,6 +55,13 @@ FIRSTDATA   = HEADSIZE
 core_verbose = 0
 core_quiet = 0
 core_pgdebug = 0
+core_showdel = 0
+
+def trunc(strx, num = 8):
+    ''' truncate for printing nicely '''
+    if len(strx) > num:
+        strx = strx[:num] + b".."
+    return strx
 
 # ------------------------------------------------------------------------
 # Data file and index file; protected by locks
@@ -310,8 +317,10 @@ class DbTwinCore():
         sig = self.getbuffstr(rec, INTSIZE)
 
         if sig == DbTwinCore.RECDEL:
-            if core_verbose:
-                print("Deleted data '%s' at" % sig, rec)
+            if core_showdel:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec+12, blen)
+                print(" Deleted data '%s' at" % sig, rec, "data", trunc(data))
             return []
 
         if sig != DbTwinCore.RECSIG:
@@ -344,10 +353,11 @@ class DbTwinCore():
         data2 = self.getbuffstr(rec2+8, blen2)
 
         if core_verbose:
-            print("%-5d pos %5d" % (cnt, rec), "hash  %8x" % hash, "blen=", blen, data)
-            print("%-5d pos %5d" % (cnt, rec), "hash2 %8x" % hash2,"blen2=", blen2, data2)
+            print("%-5d pos %5d" % (cnt, rec), "%8x" % hash, "len", blen, trunc(data),
+                                                        "%8x" % hash2,"len", blen2, trunc(data2))
+            #print("%-5d pos %5d" % (cnt, rec), "hash2 %8x" % hash2,"blen2=", blen2, data2)
         else:
-            print("%-5d pos %5d" % (cnt, rec), "Data:", data, "Data2:", data2)
+            print("%-5d pos %5d" % (cnt, rec), "Data:", trunc(data, 18), "Data2:", trunc(data2, 18))
 
         #print("buff =", data, "buff2 =", data2)
         #print("hash2 %x" % hash2)
@@ -358,17 +368,14 @@ class DbTwinCore():
     def  dump_data(self, lim, skip = 0):
 
         ''' Put all data to screen '''
-
         cnt = skip;
         curr = self.getbuffint(CURROFFS)
         #print("curr", curr)
         chash = self.getidxint(CURROFFS)
         #print("chash", chash)
-
         for aa in range(HEADSIZE + skip * INTSIZE * 2, chash, INTSIZE * 2):
             rec = self.getidxint(aa)
             #print(aa, rec)
-
             if not core_quiet:
                 self.dump_rec(rec, cnt)
             cnt += 1
@@ -419,13 +426,28 @@ class DbTwinCore():
 
         sig = self.getbuffstr(recoffs, INTSIZE)
         if sig == DbTwinCore.RECDEL:
-            print("Deleted record")
+            if core_showdel:
+                print("Deleted record.")
             return []
         if sig != DbTwinCore.RECSIG:
             print("Unlikely offset %d is not at record boundary." % recoffs, sig)
             return []
         #print("recoffs", recoffs)
         return self.rec2arr(recoffs)
+
+    def  del_rec(self, recnum):
+        rsize = self.getdbsize()
+        if recnum >= rsize:
+            if core_verbose:
+                print("Past end of data.");
+            return False
+
+        chash = self.getidxint(CURROFFS)
+        #print("chash", chash)
+        offs = self.getidxint(HEADSIZE + recnum * INTSIZE * 2)
+        #print("offs", offs)
+        self.putbuffstr(offs, DbTwinCore.RECDEL)
+        return True
 
     def  del_rec_offs(self, recoffs):
 
@@ -445,6 +467,33 @@ class DbTwinCore():
         self.putbuffstr(recoffs, DbTwinCore.RECDEL)
         return True
 
+
+    # Retrive in reverse, limit it
+
+    def  retrieve(self, hashx, limx = 1):
+
+        hhhh = self.__hash32(hashx.encode("cp437"))
+        #print("hashx", hashx, hhhh)
+        chash = self.getidxint(CURROFFS)
+        #print("chash", chash)
+        arr = []
+        #for aa in range(HEADSIZE + INTSIZE * 2, chash, INTSIZE * 2):
+        for aa in range(chash - INTSIZE * 2, HEADSIZE  - INTSIZE * 2, -INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, INTSIZE)
+            if sig == DbTwinCore.RECDEL:
+                if core_showdel:
+                    print("Deleted record '%s' at" % sig, rec)
+            elif sig != DbTwinCore.RECSIG:
+                print("Damaged data '%s' at" % sig, rec)
+            else:
+                hhh = self.getbuffint(rec+4)
+                if hhh == hhhh:
+                    arr.append(self.get_rec_offs(rec))
+                    if len(arr) >= limx:
+                        break
+        return arr
+
     # --------------------------------------------------------------------
     # Search from the back end, so latest comes first
 
@@ -460,7 +509,7 @@ class DbTwinCore():
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, INTSIZE)
             if sig == DbTwinCore.RECDEL:
-                if core_verbose:
+                if core_showdel:
                     print("Deleted record '%s' at" % sig, rec)
             elif sig != DbTwinCore.RECSIG:
                 print("Damaged data '%s' at" % sig, rec)

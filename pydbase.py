@@ -31,7 +31,12 @@ randx   = 0
 skipx   = 0
 offsx   = 0
 delx    = 0
+delrx   = 0
+delrx2  = 0
+backx   = 0
+sdelx   = 0
 
+retrx   = ""
 getit   = ""
 keyx    = ""
 datax   = ""
@@ -56,27 +61,25 @@ def randstr(lenx):
 
 
 def help():
-    print()
     print("Usage: pydebase.py [options]")
-    print()
-    print("  Options: -h            help (this screen)")
-    print("           -V            print version")
-    print("           -d            debug level (unused)")
-    print("           -v            verbosity on")
-    print("           -q            quiet on")
-    print("           -r            write random data")
-    print("           -w            write record(s)")
-    print("           -f  file      input or output file (default: 'first.pydb')")
-    print("           -n  num       number of records to write")
-    print("           -g  num       get number of records")
-    print("           -p  num       skip number of records on get")
-    print("           -l  lim       limit number of records on get")
-    print("           -x  max       limit max number of records to get")
-    print("           -k  key       key to save (quotes for multi words)")
-    print("           -a  str       data to save (quotes for multi words)")
-    print("           -y  key       find by key")
-    print("           -o  offs      get data from offset")
-    print("           -e  offs      delete at offset")
+    print("  Options: -h         help (this screen)")
+    print("           -V         print version        ||  -q      quiet on")
+    print("           -d         debug level (unused) ||  -v      verbosity on")
+    print("           -r         write random data    ||  -w      write record(s)")
+    print("           -z         dump backwards(s)    ||  -i      show deleted record(s)")
+    print("           -f  file   input or output file (default: 'first.pydb')")
+    print("           -n  num    number of records to write")
+    print("           -g  num    get number of records")
+    print("           -p  num    skip number of records on get")
+    print("           -l  lim    limit number of records on get")
+    print("           -x  max    limit max number of records to get")
+    print("           -k  key    key to save (quotes for multi words)")
+    print("           -a  str    data to save (quotes for multi words)")
+    print("           -y  key    find by key")
+    print("           -t  key    retrieve by key")
+    print("           -o  offs   get data from offset")
+    print("           -e  offs   delete at offset")
+    print("           -u  rec    delete at position")
     print("The default action is to dump records to screen in reverse order.")
 
 # ------------------------------------------------------------------------
@@ -86,7 +89,7 @@ if __name__ == "__main__":
     opts = []; args = []
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vx:ctVo:rwn:ql:s:g:k:a:y:e:")
+        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vx:ct:iVo:rwzn:ql:s:g:k:a:y:e:u:")
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
         sys.exit(1)
@@ -109,16 +112,32 @@ if __name__ == "__main__":
             #print("Verbose")
             verbose = True
 
+        if aa[0] == "-z":
+            #print("backx")
+            backx = True
+
+        if aa[0] == "-u":
+            #print("delrx")
+            delrx2 = 1
+            delrx = int(aa[1])
+
         if aa[0] == "-w":
             writex = True
 
+        if aa[0] == "-i":
+            sdelx = True
+
         if aa[0] == "-q":
-            quiet = True
             #print("Quiet")
+            quiet = True
 
         if aa[0] == "-n":
             ncount = int(aa[1])
             #print("ncount", ncount)
+
+        if aa[0] == "-t":
+            retrx = aa[1]
+            #print("retrx", retrx)
 
         if aa[0] == "-l":
             lcount = int(aa[1])
@@ -175,6 +194,7 @@ if __name__ == "__main__":
     twincore.core_quiet = quiet
     twincore.core_verbose = verbose
     twincore.core_pgdebug = pgdebug
+    twincore.core_showdel = sdelx
 
     # Correct maxx
     if maxx == 0 : maxx = 1
@@ -218,6 +238,12 @@ if __name__ == "__main__":
         ddd = core.get_rec(int(getit))
         print(ddd)
 
+    elif retrx != "":
+        #print("retrx exex", retrx)
+        if ncount == 0: ncount = 1
+        ddd = core.retrieve(retrx, ncount)
+        print(ddd)
+
     elif offsx:
         ddd = core.get_rec_offs(int(offsx))
         print(ddd)
@@ -226,8 +252,14 @@ if __name__ == "__main__":
         ddd = core.del_rec_offs(int(delx))
         print(ddd)
 
+    elif delrx2:
+        #print("delrx", delrx)
+        ddd = core.del_rec(int(delrx))
+        print(ddd)
     else:
-        #core.dump_data(lcount, scount)
-        core.revdump_data(lcount) #, scount)
+        if backx:
+            core.revdump_data(lcount) #, scount)
+        else:
+            core.dump_data(lcount)
 
 # EOF
