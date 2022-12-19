@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: twincore Namespace Reference</title>
+<title>PyDBase: twincore Namespace Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">My Project
+   <div id="projectname">PyDBase
    </div>
   </td>
  </tr>
@@ -72,7 +72,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtwincore_1_1DbTwinCore.html">DbTwinCore</a></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtwincore_1_1TwinCoreBase.html">TwinCoreBase</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtwincore_1_1TwinCore.html">TwinCore</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -82,64 +84,28 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a3cf83a9b6e1cbafc942aa8cd3285f1ad"><td class="memItemLeft" align="right" valign="top"><a id="a3cf83a9b6e1cbafc942aa8cd3285f1ad"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>DIRTY_MAX</b> = 0xffffffff</td></tr>
+<tr class="memitem:a3cf83a9b6e1cbafc942aa8cd3285f1ad"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#a3cf83a9b6e1cbafc942aa8cd3285f1ad">DIRTY_MAX</a> = 0xffffffff</td></tr>
 <tr class="separator:a3cf83a9b6e1cbafc942aa8cd3285f1ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8117395df45314c3206514aefa3aba7"><td class="memItemLeft" align="right" valign="top"><a id="af8117395df45314c3206514aefa3aba7"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>INTSIZE</b> = 4</td></tr>
+<tr class="memitem:af8117395df45314c3206514aefa3aba7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#af8117395df45314c3206514aefa3aba7">INTSIZE</a> = 4</td></tr>
 <tr class="separator:af8117395df45314c3206514aefa3aba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a398023cc80fea83a00ab59a305dde3f3"><td class="memItemLeft" align="right" valign="top"><a id="a398023cc80fea83a00ab59a305dde3f3"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>HEADSIZE</b> = 32</td></tr>
+<tr class="memitem:a398023cc80fea83a00ab59a305dde3f3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#a398023cc80fea83a00ab59a305dde3f3">HEADSIZE</a> = 32</td></tr>
 <tr class="separator:a398023cc80fea83a00ab59a305dde3f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bd307b075faa5cdeab0d90421df60bf"><td class="memItemLeft" align="right" valign="top"><a id="a0bd307b075faa5cdeab0d90421df60bf"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>CURROFFS</b> = 16</td></tr>
+<tr class="memitem:a0bd307b075faa5cdeab0d90421df60bf"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#a0bd307b075faa5cdeab0d90421df60bf">CURROFFS</a> = 16</td></tr>
 <tr class="separator:a0bd307b075faa5cdeab0d90421df60bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a55d382f26c49aac96a7f3a569f0ed8"><td class="memItemLeft" align="right" valign="top"><a id="a2a55d382f26c49aac96a7f3a569f0ed8"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>FIRSTHASH</b> = HEADSIZE</td></tr>
+<tr class="memitem:a2a55d382f26c49aac96a7f3a569f0ed8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#a2a55d382f26c49aac96a7f3a569f0ed8">FIRSTHASH</a> = <a class="el" href="namespacetwincore.html#a398023cc80fea83a00ab59a305dde3f3">HEADSIZE</a></td></tr>
 <tr class="separator:a2a55d382f26c49aac96a7f3a569f0ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1260b9010ebb9904ecf6e303238abb92"><td class="memItemLeft" align="right" valign="top"><a id="a1260b9010ebb9904ecf6e303238abb92"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>FIRSTDATA</b> = HEADSIZE</td></tr>
+<tr class="memitem:a1260b9010ebb9904ecf6e303238abb92"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#a1260b9010ebb9904ecf6e303238abb92">FIRSTDATA</a> = <a class="el" href="namespacetwincore.html#a398023cc80fea83a00ab59a305dde3f3">HEADSIZE</a></td></tr>
 <tr class="separator:a1260b9010ebb9904ecf6e303238abb92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a04b1204de1eaeafb51c0f900f19e18da"><td class="memItemLeft" align="right" valign="top"><a id="a04b1204de1eaeafb51c0f900f19e18da"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>core_verbose</b> = 0</td></tr>
+<tr class="memitem:a04b1204de1eaeafb51c0f900f19e18da"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#a04b1204de1eaeafb51c0f900f19e18da">core_verbose</a> = 0</td></tr>
 <tr class="separator:a04b1204de1eaeafb51c0f900f19e18da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00c95c8a5f3c059adcabeda82f2c7ef6"><td class="memItemLeft" align="right" valign="top"><a id="a00c95c8a5f3c059adcabeda82f2c7ef6"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>core_quiet</b> = 0</td></tr>
+<tr class="memitem:a00c95c8a5f3c059adcabeda82f2c7ef6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#a00c95c8a5f3c059adcabeda82f2c7ef6">core_quiet</a> = 0</td></tr>
 <tr class="separator:a00c95c8a5f3c059adcabeda82f2c7ef6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9ad36fc665b1ebcd04d3ca46c8a2b47"><td class="memItemLeft" align="right" valign="top"><a id="ab9ad36fc665b1ebcd04d3ca46c8a2b47"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>core_pgdebug</b> = 0</td></tr>
+<tr class="memitem:ab9ad36fc665b1ebcd04d3ca46c8a2b47"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#ab9ad36fc665b1ebcd04d3ca46c8a2b47">core_pgdebug</a> = 0</td></tr>
 <tr class="separator:ab9ad36fc665b1ebcd04d3ca46c8a2b47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33b58ab9283246e14e668e55f49c0973"><td class="memItemLeft" align="right" valign="top"><a id="a33b58ab9283246e14e668e55f49c0973"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>core_showdel</b> = 0</td></tr>
+<tr class="memitem:a33b58ab9283246e14e668e55f49c0973"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacetwincore.html#a33b58ab9283246e14e668e55f49c0973">core_showdel</a> = 0</td></tr>
 <tr class="separator:a33b58ab9283246e14e668e55f49c0973"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><pre class="fragment">    Twincore;
-    The reason for this name is that two files are created to contain the data.
-    The first contains the data, the second contains the offsets (indexes) and hashes.
-    The second file can be re-built easily from the first.
-
-    Structure of the data:
-
-    32 byte header, starating with FILESIG
-
-    4 bytes    4 bytes          4 bytes         Variable
-    ------------------------------------------------------------
-    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
-    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
-
-        .
-        .
-        .
-
-    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
-    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
-
-    Deleted records are marked with RECSIG mutated from RECB to RECX
-
-    New data is appended to the end, no duplicate filtering is done.
-    Retrieval is searched from reverse, the latest record with this key
-    is retrieved first.</pre> </div><h2 class="groupheader">Function Documentation</h2>
+<h2 class="groupheader">Function Documentation</h2>
 <a id="a5416355346eb4d094c06065a35c52e52"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5416355346eb4d094c06065a35c52e52">&#9670;&nbsp;</a></span>trunc()</h2>
 
@@ -166,6 +132,147 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>core_showdel</b> = 0</
       </table>
 </div><div class="memdoc">
 <pre class="fragment"> truncate for printing nicely </pre> 
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="ab9ad36fc665b1ebcd04d3ca46c8a2b47"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9ad36fc665b1ebcd04d3ca46c8a2b47">&#9670;&nbsp;</a></span>core_pgdebug</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.core_pgdebug = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a00c95c8a5f3c059adcabeda82f2c7ef6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a00c95c8a5f3c059adcabeda82f2c7ef6">&#9670;&nbsp;</a></span>core_quiet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.core_quiet = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a33b58ab9283246e14e668e55f49c0973"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33b58ab9283246e14e668e55f49c0973">&#9670;&nbsp;</a></span>core_showdel</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.core_showdel = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a04b1204de1eaeafb51c0f900f19e18da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04b1204de1eaeafb51c0f900f19e18da">&#9670;&nbsp;</a></span>core_verbose</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.core_verbose = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0bd307b075faa5cdeab0d90421df60bf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bd307b075faa5cdeab0d90421df60bf">&#9670;&nbsp;</a></span>CURROFFS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.CURROFFS = 16</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3cf83a9b6e1cbafc942aa8cd3285f1ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3cf83a9b6e1cbafc942aa8cd3285f1ad">&#9670;&nbsp;</a></span>DIRTY_MAX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.DIRTY_MAX = 0xffffffff</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1260b9010ebb9904ecf6e303238abb92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1260b9010ebb9904ecf6e303238abb92">&#9670;&nbsp;</a></span>FIRSTDATA</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.FIRSTDATA = <a class="el" href="namespacetwincore.html#a398023cc80fea83a00ab59a305dde3f3">HEADSIZE</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2a55d382f26c49aac96a7f3a569f0ed8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a55d382f26c49aac96a7f3a569f0ed8">&#9670;&nbsp;</a></span>FIRSTHASH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.FIRSTHASH = <a class="el" href="namespacetwincore.html#a398023cc80fea83a00ab59a305dde3f3">HEADSIZE</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a398023cc80fea83a00ab59a305dde3f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a398023cc80fea83a00ab59a305dde3f3">&#9670;&nbsp;</a></span>HEADSIZE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.HEADSIZE = 32</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af8117395df45314c3206514aefa3aba7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8117395df45314c3206514aefa3aba7">&#9670;&nbsp;</a></span>INTSIZE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int twincore.INTSIZE = 4</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 </div>
 </div>
 </div><!-- contents -->

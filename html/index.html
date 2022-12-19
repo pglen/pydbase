@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: Main Page</title>
+<title>PyDBase: Main Page</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">My Project
+   <div id="projectname">PyDBase
    </div>
   </td>
  </tr>
@@ -60,11 +60,32 @@ $(function() {
 </iframe>
 </div>
 
-<div class="header">
+<div class="PageDoc"><div class="header">
   <div class="headertitle">
-<div class="title">My Project Documentation</div>  </div>
+<div class="title">PyDBase Documentation</div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="textblock"><h1><a class="anchor" id="autotoc_md11"></a>
+Twincore</h1>
+<p>Database with two files. One for data, one for index;</p>
+<p>The reason for this name is that two files are created. The first contains the data, the second contains the offsets (indexes) and hashes.</p>
+<p>The second file can be re-built easily from the first the the reindex option.</p>
+<p>Structure of the data: </p><pre class="fragment">32 byte header, starating with FILESIG;
+
+4 bytes    4 bytes          4 bytes         Variable
+------------------------------------------------------------
+RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+    .
+    .
+    .
+
+RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+</pre><p> Deleted records are marked with RECSIG mutated from RECB to RECX</p>
+<p>New data is appended to the end, no duplicate filtering is done. Retrieval is searched from reverse, the latest record with this key is retrieved first. </p>
+</div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

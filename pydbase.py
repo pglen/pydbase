@@ -50,6 +50,10 @@ allstr =    " " + \
             string.ascii_lowercase +  string.ascii_uppercase +  \
                 string.digits
 
+# ------------------------------------------------------------------------
+
+# Return a random string based upon length
+
 def randstr(lenx):
 
     strx = ""
@@ -57,19 +61,18 @@ def randstr(lenx):
         ridx = random.randint(0, len(allstr)-1)
         rr = allstr[ridx]
         strx += str(rr)
-
     return strx
-
 
 
 def help():
     print("Usage: pydebase.py [options]")
     print("  Options: -h         help (this screen)")
-    print("           -V         print version        ||  -q      quiet on")
-    print("           -d         debug level (0-10)   ||  -v      verbosity on")
-    print("           -r         write random data    ||  -w      write record(s)")
-    print("           -z         dump backwards(s)    ||  -i      show deleted record(s)")
-    print("           -f  file   input or output file (default: 'first.pydb')")
+    print("           -V         print version        ||  -q   quiet on")
+    print("           -d         debug level (0-10)   ||  -v   increment verbosity level")
+    print("           -r         write random data    ||  -w   write record(s)")
+    print("           -z         dump backwards(s)    ||  -i   show deleted record(s)")
+    print("           -U         Vacuum DB            ||  -R   reindex / recover DB")
+    print("           -f  file   input or output file (default: 'pydbase.pydb')")
     print("           -n  num    number of records to write")
     print("           -g  num    get number of records")
     print("           -p  num    skip number of records on get")
@@ -82,13 +85,13 @@ def help():
     print("           -o  offs   get data from offset")
     print("           -e  offs   delete at offset")
     print("           -u  rec    delete at position")
-    print("           -U         Vacuum DB")
-    print("           -R         recover DB")
     print("The default action is to dump records to screen in reverse order.")
 
 # ------------------------------------------------------------------------
 
 if __name__ == "__main__":
+
+    ''' Exersize all funtions of the twincore library '''
 
     opts = []; args = []
 
@@ -116,7 +119,7 @@ if __name__ == "__main__":
 
         if aa[0] == "-v":
             #print("Verbose")
-            verbose = True
+            verbose += 1
 
         if aa[0] == "-z":
             #print("backx")
@@ -233,7 +236,7 @@ if __name__ == "__main__":
     elif writex:
         if randx:
             for aa in range(ncount):
-                core.save_data(randstr(4), randstr(8))
+                core.save_data(randstr(random.randint(2, 10)), randstr(random.randint(10, 20)))
         else:
             for aa in range(ncount):
                 core.save_data("111 222", "333 444")

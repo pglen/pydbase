@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['dump_5fdata_10',['dump_data',['../classtwincore_1_1DbTwinCore.html#ad48c1c92a9a3dba04b3158558c047bb4',1,'twincore::DbTwinCore']]],
-  ['dump_5frec_11',['dump_rec',['../classtwincore_1_1DbTwinCore.html#a3f8e095d61d8a7d50fb022448b165a2d',1,'twincore::DbTwinCore']]]
+  ['_5f_5fdel_5f_5f_129',['__del__',['../classtwincore_1_1TwinCoreBase.html#a4abe46dc9f515555ccc18ec902b8644f',1,'twincore::TwinCoreBase']]],
+  ['_5f_5finit_5f_5f_130',['__init__',['../classpypacker_1_1packbin.html#adadd8d8cd4d3c2d02cec5f78bfb7ea6b',1,'pypacker.packbin.__init__()'],['../classtwincore_1_1TwinCoreBase.html#a5651804e97c292da51b1479166949fd5',1,'twincore.TwinCoreBase.__init__()'],['../classtwincore_1_1TwinCore.html#ada701c4e6095647e6e1f18ecb33cca0a',1,'twincore.TwinCore.__init__()']]]
 ];

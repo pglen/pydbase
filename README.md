@@ -93,7 +93,7 @@ Here is the help screen of pydebase.py:
                    -e  offs   delete at offset
                    -u  rec    delete at position
                    -U         Vacuum DB
-                   -R         recover DB
+                   -R         reindex recover DB
         The default action is to dump records to screen in reverse order.
 
 ### Comparison to other databases:

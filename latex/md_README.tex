@@ -1,11 +1,11 @@
-\hypertarget{md_README_autotoc_md1}{}\doxysection{High speed database}\label{md_README_autotoc_md1}
+\hypertarget{md_README_autotoc_md1}{}\doxysection{High speed database with key / data}\label{md_README_autotoc_md1}
 \hypertarget{md_README_autotoc_md2}{}\doxysubsection{Fast data save / retrieve}\label{md_README_autotoc_md2}
 The motivation was to create a no frills way of saving / retrieving data fast. the command line tester can drive most aspects of this API;\hypertarget{md_README_autotoc_md3}{}\doxysection{API}\label{md_README_autotoc_md3}
 The module \textquotesingle{}twincore\textquotesingle{} uses two data files and a lock file. The file names are generated from the base name of the data file. .pidx for the index, .lock for the lock file. The lock file times out in 0.\+3 seconds and breaks the lock. (in case of frozen process)
 
-Example db creation\+: \begin{DoxyVerb}core = twincore.DbTwinCore(deffile)
+Example db creation\+: \begin{DoxyVerb}core = twincore.TwinCore(deffile)
 \end{DoxyVerb}
- Setting verbosity and debug verbosity\+: \begin{DoxyVerb}twincore.core_quiet = quiet
+ Setting verbosity and debug level\+: \begin{DoxyVerb}twincore.core_quiet = quiet
 twincore.core_verbose = verbose
 twincore.core_pgdebug = pgdebug
 twincore.core_showdel = sdelx
@@ -16,14 +16,46 @@ core.save_data(keyx, datax)
 rec_arr = core.retrieve(keyx, ncount)
 print("rec_arr", rec_arr)
 \end{DoxyVerb}
-\hypertarget{md_README_autotoc_md4}{}\doxysection{The test executable}\label{md_README_autotoc_md4}
-\begin{DoxyVerb}The file pydbase.py exercises most of the twincore functionality.
-Here is the help screen to drive it.
+ \hypertarget{md_README_autotoc_md4}{}\doxysubsection{Structure of the data\+:}\label{md_README_autotoc_md4}
+\begin{DoxyVerb}32 byte header, starting with FILESIG
 
-      Usage: pydebase.py [options]
+4 bytes    4 bytes          4 bytes         Variable
+------------------------------------------------------------
+RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+    .
+    .
+    .
+
+RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+where:
+RECSIG="RECB" (record begin here)
+RECSEP="RECS" (record separated here)
+RECDEL="RECX" (record deleted)
+
+Deleted records are marked with RECSIG mutated from RECB to RECX
+
+  Vacuum will remove the deleted records; Make sure your database has no
+pending ops; or non atomic opts;
+
+    (like: find keys - delete keys in two ops)
+
+  New data is appended to the end, no duplicate filtering is done.
+Retrieval is searched from reverse, the latest record with this key
+is retrieved first. Most of the times this behavior is what people
+want; also the record history is kept this way, also a desirable
+behavior.
+\end{DoxyVerb}
+ \hypertarget{md_README_autotoc_md5}{}\doxysection{The test executable script\+:}\label{md_README_autotoc_md5}
+The file \mbox{\hyperlink{pydbase_8py}{pydbase.\+py}} exercises most of the twincore functionality. It also provides examples of how to drive it.
+
+Here is the help screen of pydebase.\+py\+: \begin{DoxyVerb}    Usage: pydebase.py [options]
       Options: -h         help (this screen)
                -V         print version        ||  -q      quiet on
-               -d         debug level (unused) ||  -v      verbosity on
+               -d         debug level (0-10)   ||  -v      verbosity on
                -r         write random data    ||  -w      write record(s)
                -z         dump backwards(s)    ||  -i      show deleted record(s)
                -f  file   input or output file (default: 'first.pydb')
@@ -39,12 +71,11 @@ Here is the help screen to drive it.
                -o  offs   get data from offset
                -e  offs   delete at offset
                -u  rec    delete at position
+               -U         Vacuum DB
+               -R         recover DB
     The default action is to dump records to screen in reverse order.
 \end{DoxyVerb}
-
-
-Comparison to other databases\+:
-
+ \hypertarget{md_README_autotoc_md6}{}\doxysubsection{Comparison to other databases\+:}\label{md_README_autotoc_md6}
 This comparison is to show the time it takes to write 500 records. In the tests the record size is about the same (Hello /vs/ \char`\"{}111 222\char`\"{}) Please see the sqlite\+\_\+test.\+sql for details of data output;
 
 The test can be repeated with running the \textquotesingle{}time.\+sh\textquotesingle{} script file. Please note the the time.\+sh clears all files tests/$\ast$ for a fair test. \begin{DoxyVerb}    sqlite time test, 500 records ...
@@ -56,7 +87,19 @@ The test can be repeated with running the \textquotesingle{}time.\+sh\textquotes
     user    0m0.143s
     sys 0m0.004s
 \end{DoxyVerb}
- Please mind the fact that the sqlite engine has to do a lot of parsing which we skip doing; That is why pydbase is an order of magnitude faster ...\hypertarget{md_README_autotoc_md5}{}\doxysubsection{TODO}\label{md_README_autotoc_md5}
-\begin{DoxyVerb}Speed up by implementing this a 'C' module
+ Please mind the fact that the sqlite engine has to do a lot of parsing which we skip doing; That is why pydbase is an order of magnitude faster ...\hypertarget{md_README_autotoc_md7}{}\doxysubsection{Saving more complex data}\label{md_README_autotoc_md7}
+The database saves a key / value pair. However, the key can be mutated to contain meta data. (for example adding a string in front of it.) \mbox{[}like\+: CUST\+\_\+ for customer details\mbox{]} Also the key can be made unique by adding a UUID to it.
+
+The data can consist of any text / binary. The library \mbox{\hyperlink{pypacker_8py}{pypacker.\+py}} can pack any data into a string; A copy of pypacker is included here.\hypertarget{md_README_autotoc_md8}{}\doxysection{pypacker.\+py}\label{md_README_autotoc_md8}
+This module can pack arbitrary python data into a string; which can be used to store anything in the pydbase data section.
+
+Example from running \mbox{\hyperlink{testpacker_8py}{testpacker.\+py}}\+: \begin{DoxyVerb}org: (1, 2, 'aa', ['bb', b'dd'])
+packed: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
+unpacked: [1, 2, 'aa', ['bb', b'dd']]
+rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
+rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
 \end{DoxyVerb}
- Work in progress .... 
+ There is also the option of using pypacker on the key itself. Because the key is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit one; collisions are possible, however unlikely; To compensate, make sure you compare the key proper with the returned key.\hypertarget{md_README_autotoc_md9}{}\doxysubsection{TODO}\label{md_README_autotoc_md9}
+\begin{DoxyVerb}Speed up by implementing this as a 'C' module
+\end{DoxyVerb}
+ \hypertarget{md_README_autotoc_md10}{}\doxysection{EOF}\label{md_README_autotoc_md10}

@@ -1,0 +1,24 @@
+\hypertarget{index_autotoc_md11}{}\doxysection{Twincore}\label{index_autotoc_md11}
+Database with two files. One for data, one for index;
+
+The reason for this name is that two files are created. The first contains the data, the second contains the offsets (indexes) and hashes.
+
+The second file can be re-\/built easily from the first the the reindex option.
+
+Structure of the data\+: \begin{DoxyVerb}32 byte header, starating with FILESIG;
+
+4 bytes    4 bytes          4 bytes         Variable
+------------------------------------------------------------
+RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+    .
+    .
+    .
+
+RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+\end{DoxyVerb}
+ Deleted records are marked with RECSIG mutated from RECB to RECX
+
+New data is appended to the end, no duplicate filtering is done. Retrieval is searched from reverse, the latest record with this key is retrieved first. 
