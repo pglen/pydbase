@@ -15,7 +15,7 @@ The lock file times out in 0.3 seconds and breaks the lock. (in case of frozen p
 
 Example db creation:
 
-    core = twincore.DbTwinCore(deffile)
+    core = twincore.TwinCore(deffile)
 
 Setting verbosity and debug level:
 
@@ -119,12 +119,11 @@ skip doing; That is why pydbase is an order of magnitude faster ...
 ### Saving more complex data
 
   The database saves a key / value pair. However, the key can be mutated to contain
-mata data, like adding a string in front of it. (like: CUST_  for customer details)
-Also can be made unique by adding a UUID to it.
+meta data. (for example adding a string in front of it.) [like: CUST_  for customer details]
+Also the key can be made unique by adding a UUID to it.
 
-  The data can consist of any text / binary. The library pypacker can pack any data
+  The data can consist of any text / binary. The library pypacker.py can pack any data
 into a string; A copy of pypacker is included here.
-
 
 ## pypacker.py
 
