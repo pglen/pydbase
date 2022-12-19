@@ -380,20 +380,27 @@ class TwinCore(TwinCoreBase):
         self.waitlock()
 
         curr = self.getbuffint(CURROFFS) - HEADSIZE
-        print("curr", curr)
+        #print("curr", curr)
+
         aa =  HEADSIZE
         while 1:
             if aa >= curr:
                 break
-            bb = aa
-            beg = self.getbuffstr(bb, INTSIZE)
-            lenx = self.getbuffint(bb + 8)
-            sep =  self.getbuffstr(bb + 12 + lenx, INTSIZE)
-            len2 =  self.getbuffint(bb + 20 + lenx)
-            print(aa, "sig", beg, "len", lenx, "sep", sep, "len2", len2)
+            sig = self.getbuffstr(aa, INTSIZE)
+
+
+            lenx = self.getbuffint(aa + 8)
+            sep =  self.getbuffstr(aa + 12 + lenx, INTSIZE)
+            len2 =  self.getbuffint(aa + 20 + lenx)
+            print(aa, "sig", sig, "len", lenx, "sep", sep, "len2", len2)
             aa += lenx + len2 + 24
+            #ret += 1
+
+            # Build index (TODO
+
 
         self.dellock()
+        return ret
 
     def  vacuum(self):
 

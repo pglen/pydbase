@@ -55,15 +55,16 @@ Some basic ops:
 
     Deleted records are marked with RECSIG mutated from RECB to RECX
 
-    New data is appended to the end, no duplicate filtering is done.
-    Retrieval is searched from reverse, the latest record with this key
-    is retrieved first.
-
-    Vacuum will remove the deleted records; Make sure your database has no
+      Vacuum will remove the deleted records; Make sure your database has no
     pending ops; or non atomic opts;
 
         (like: find keys - delete keys in two ops)
 
+      New data is appended to the end, no duplicate filtering is done.
+    Retrieval is searched from reverse, the latest record with this key
+    is retrieved first. Most of the times this behavior is what people
+    want; also the record history is kept this way, also a desirable
+    behavior.
 
 ## The test executable script:
 
@@ -138,9 +139,13 @@ Example from running testpacker.py:
     rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
     rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
 
+ There is also the option of using pypacker on the key itself. Because the key
+is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit
+one; collisions are possible, however unlikely; To compensate, make sure you compare the
+key proper with the returned key.
+
 ### TODO
 
-    Speed up by implementing this a 'C' module
+    Speed up by implementing this as a 'C' module
 
-Work in progress ....
-
+# EOF
