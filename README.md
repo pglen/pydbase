@@ -167,6 +167,6 @@ the index is lost (like copying the data only)
 
   Note about the 'garbage' directory ... older stuff I tried; some are really useful; For
 instance take a look at the simplifier: an array of indexes to save offsets and lengths;
-The simplifier makes one range out of overlapping or close to each other ranges. (mind dist=4)
+The simplifier makes one range out of overlapping or close to each other ranges. (min. dist=4)
 
 # EOF
