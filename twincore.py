@@ -395,7 +395,6 @@ class TwinCore(TwinCoreBase):
 
         self.dellock()
 
-
     def  vacuum(self):
 
         ''' Remove all deleted data

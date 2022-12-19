@@ -17,7 +17,7 @@ Example db creation:
 
     core = twincore.DbTwinCore(deffile)
 
-Setting verbosity and debug verbosity:
+Setting verbosity and debug level:
 
     twincore.core_quiet = quiet
     twincore.core_verbose = verbose
@@ -34,7 +34,7 @@ Some basic ops:
 
 ### Structure of the data:
 
-    32 byte header, starating with FILESIG
+    32 byte header, starting with FILESIG
 
     4 bytes    4 bytes          4 bytes         Variable
     ------------------------------------------------------------
@@ -48,23 +48,34 @@ Some basic ops:
     RECSIG     Hash_of_key      Len_of_key      DATA_for_key
     RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
 
+    where:
+    RECSIG="RECB" (record begin here)
+    RECSEP="RECS" (record separated here)
+    RECDEL="RECX" (record deleted)
+
     Deleted records are marked with RECSIG mutated from RECB to RECX
 
     New data is appended to the end, no duplicate filtering is done.
     Retrieval is searched from reverse, the latest record with this key
     is retrieved first.
 
-## The test executable
+    Vacuum will remove the deleted records; Make sure your database has no
+    pending ops; or non atomic opts;
+
+        (like: find keys - delete keys in two ops)
+
+
+## The test executable script:
 
 The file pydbase.py exercises most of the twincore functionality. It also
 provides examples of how to drive it.
 
-Here is the help screen on how to drive it.
+Here is the help screen of pydebase.py:
 
-          Usage: pydebase.py [options]
+        Usage: pydebase.py [options]
           Options: -h         help (this screen)
                    -V         print version        ||  -q      quiet on
-                   -d         debug level (unused) ||  -v      verbosity on
+                   -d         debug level (0-10)   ||  -v      verbosity on
                    -r         write random data    ||  -w      write record(s)
                    -z         dump backwards(s)    ||  -i      show deleted record(s)
                    -f  file   input or output file (default: 'first.pydb')
@@ -80,8 +91,9 @@ Here is the help screen on how to drive it.
                    -o  offs   get data from offset
                    -e  offs   delete at offset
                    -u  rec    delete at position
+                   -U         Vacuum DB
+                   -R         recover DB
         The default action is to dump records to screen in reverse order.
-
 
 ### Comparison to other databases:
 
