@@ -53,18 +53,20 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
 import  struct, io
 
-DIRTY_MAX   = 0xffffffff
-HEADSIZE    = 32
-CURROFFS    = 16
-FIRSTHASH   = HEADSIZE
-FIRSTDATA   = HEADSIZE
+DIRTY_MAX       = 0xffffffff    # INT_MAC in 'C' py has BIG integer
+HEADSIZE        = 32
+CURROFFS        = 16
+FIRSTHASH       = HEADSIZE
+FIRSTDATA       = HEADSIZE
+LOCK_TIMEOUT    = 3             # this is in 0.1 sec units
 
-# Accessed from main file as well
+# Accessed from main main file as well
 
 core_verbose    = 0
 core_quiet      = 0
 core_pgdebug    = 0
 core_showdel    = 0
+core_lcktimeout = LOCK_TIMEOUT
 
 def trunc(strx, num = 8):
     ''' truncate for printing nicely '''
@@ -160,8 +162,8 @@ class TwinCoreBase():
                 cnt += 1
                 time.sleep(0.1)
                 # Taking too long; break in
-                if cnt > 3:
-                    print("Warn: waitlock breaking lock", self.lckname)
+                if cnt > core_lcktimeout:
+                    print("Warning: Breaking lock ... ", self.lckname)
                     self.dellock()
                     break
             else:
@@ -175,7 +177,7 @@ class TwinCoreBase():
             pass
 
     # Deliver a 32 bit hash of whatever
-    def __hash32(self, strx):
+    def hash32(self, strx):
 
         #print("hashing", strx)
         lenx = len(strx);  hashx = int(0)
@@ -313,7 +315,7 @@ class TwinCore(TwinCoreBase):
         blen = self.getbuffint(rec+8)
         data = self.getbuffstr(rec + 12, blen)
 
-        #print("hash", hash, "check", self.__hash32(data))
+        #print("hash", hash, "check", self.hash32(data))
         #print("%5d pos %5d" % (cnt, rec), "hash %8x" % hash, "ok", ok, "len=", blen, end=" ")
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
@@ -326,7 +328,7 @@ class TwinCore(TwinCoreBase):
         blen2 = self.getbuffint(rec2+4)
         data2 = self.getbuffstr(rec2+8, blen2)
 
-        #print("hash2", hash2, "check2", self.__hash32(data2))
+        #print("hash2", hash2, "check2", self.hash32(data2))
 
         arr = [data, data2]
         return arr
@@ -552,8 +554,8 @@ class TwinCore(TwinCoreBase):
                     if core_pgdebug > 1:
                         print("vac", rec, arr)
                     if len(arr) > 1:
-                        hhh2 = self.__hash32(arr[0])
-                        hhh3 = self.__hash32(arr[1])
+                        hhh2 = self.hash32(arr[0])
+                        hhh3 = self.hash32(arr[1])
                         vacdb.__save_data(hhh2, arr[0], hhh3, arr[1])
                         ret += 1
                     else:
@@ -675,7 +677,7 @@ class TwinCore(TwinCoreBase):
 
     def  retrieve(self, hashx, limx = 1):
 
-        hhhh = self.__hash32(hashx.encode("cp437"))   #;print("hashx", hashx, hhhh)
+        hhhh = self.hash32(hashx.encode("cp437"))   #;print("hashx", hashx, hhhh)
         chash = self.getidxint(CURROFFS)            #;print("chash", chash)
         arr = []
 
@@ -705,7 +707,7 @@ class TwinCore(TwinCoreBase):
 
     def  find_key(self, hashx, limx = 0xffffffff):
 
-        hhhh = self.__hash32(hashx.encode("cp437"))
+        hhhh = self.hash32(hashx.encode("cp437"))
         #print("hashx", hashx, hhhh)
         chash = self.getidxint(CURROFFS)
         #print("chash", chash)
@@ -767,8 +769,8 @@ class TwinCore(TwinCoreBase):
         if core_pgdebug > 1:
             print("args", arg2e, "arg3", arg3e)
 
-        hhh2 = self.__hash32(arg2e)
-        hhh3 = self.__hash32(arg3e)
+        hhh2 = self.hash32(arg2e)
+        hhh3 = self.hash32(arg3e)
 
         if core_pgdebug > 1:
             print("hhh2", hhh2, "hhh3", hhh3)

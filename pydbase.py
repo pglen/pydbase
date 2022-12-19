@@ -18,34 +18,28 @@ _ = gettext.gettext
 
 import twincore, pypacker
 
+
+# ------------------------------------------------------------------------
+
 pgdebug = 0
 verbose = 0
 version = "1.0"
 ncount  = 1
 scount  = 0
 lcount  = 0xffffffff
-quiet   = 0
 maxx    = 10
-writex  = 0
-randx   = 0
-skipx   = 0
-offsx   = 0
-delx    = 0
-delrx   = 0
-delrx2  = 0
-backx   = 0
-sdelx   = 0
-vacx    = 0
-recx    = 0
 
-retrx   = ""
-getit   = ""
-keyx    = ""
-datax   = ""
+quiet   = 0; writex  = 0
+randx   = 0; skipx   = 0
+offsx   = 0; delx    = 0
+delrx   = 0; delrx2  = 0
+backx   = 0; sdelx   = 0
+vacx    = 0; recx    = 0
+
+retrx   = ""; getit   = ""
+keyx    = ""; datax   = ""
 findx   = ""
-
 deffile = "data/pydbase.pydb"
-
 allstr =    " " + \
             string.ascii_lowercase +  string.ascii_uppercase +  \
                 string.digits
@@ -95,6 +89,7 @@ if __name__ == "__main__":
 
     opts = []; args = []
 
+    # Old fashioned parsing
     try:
         opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:"
         opts_normal = "chiVrwzvqUR?"
@@ -113,93 +108,70 @@ if __name__ == "__main__":
 
         if aa[0] == "-h" or aa[0] == "-?":
             help(); exit(1)
-
         if aa[0] == "-V":
             print("Version", version);  exit(1)
-
         if aa[0] == "-v":
             #print("Verbose")
             verbose += 1
-
         if aa[0] == "-z":
             #print("backx")
             backx = True
-
         if aa[0] == "-u":
             #print("delrx")
             delrx2 = 1
             delrx = int(aa[1])
-
         if aa[0] == "-w":
             writex = True
-
         if aa[0] == "-i":
             sdelx = True
-
         if aa[0] == "-q":
             #print("Quiet")
             quiet = True
-
         if aa[0] == "-n":
             ncount = int(aa[1])
             #print("ncount", ncount)
-
         if aa[0] == "-t":
             retrx = aa[1]
             #print("retrx", retrx)
-
         if aa[0] == "-l":
             lcount = int(aa[1])
             #print("lcount", lcount)
-
         if aa[0] == "-x":
             maxx = int(aa[1])
             #print("maxx", maxx)
-
         if aa[0] == "-s":
             scount = int(aa[1])
             #print("scount", scount)
-
         if aa[0] == "-f":
             deffile = aa[1]
             #print("deffile", deffile)
-
         if aa[0] == "-g":
             getit = aa[1]
             #print("getit", getit)
-
         if aa[0] == "-k":
             keyx = aa[1]
             #print("keyx", keyx)
-
         if aa[0] == "-a":
             datax = aa[1]
             #print("datax", datax)
-
         if aa[0] == "-r":
             randx = True
             #print("randx", randx)
-
         if aa[0] == "-U":
             vacx = True
             #print("vacx", vacx)
-
         if aa[0] == "-R":
             recx = True
             #print("vacx", vacx)
-
         if aa[0] == "-p":
             skipx = aa[1]
             #print("skipx", skipx)
-
         if aa[0] == "-y":
             findx = aa[1]
             #print("skipx", skipx)
-
         if aa[0] == "-o":
             offsx = aa[1]
             #print("skipx", skipx)
-
         if aa[0] == "-e":
             delx = aa[1]
             #print("skipx", skipx)

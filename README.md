@@ -105,17 +105,17 @@ Please see the sqlite_test.sql for details of data output;
 The test can be repeated with running the 'time.sh' script file.
 Please note the the time.sh clears all files tests/* for a fair test.
 
-        sqlite time test, 500 records ...
-        real	0m1.537s
-        user	0m0.025s
-        sys	0m0.050s
-        pydbase time test, 500 records ...
-        real	0m0.149s
-        user	0m0.143s
-        sys	0m0.004s
+        sqlite time test, writing 500 records ...
+        real	0m1.249s
+        user	0m0.008s
+        sys	0m0.071s
+        pydbase time test, writing 500 records ...
+        real	0m0.043s
+        user	0m0.034s
+        sys	0m0.008s
 
   Please mind the fact that the sqlite engine has to do a lot of parsing which we
-skip doing; That is why pydbase is an order of magnitude faster ...
+skip doing; That is why pydbase is more than an order of magnitude faster ...
 
 ### Saving more complex data
 
@@ -139,7 +139,7 @@ Example from running testpacker.py:
     rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
     rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
 
- There is also the option of using pypacker on the key itself. Because the key
+  There is also the option of using pypacker on the key itself. Because the key
 is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit
 one; collisions are possible, however unlikely; To compensate, make sure you compare the
 key proper with the returned key.
@@ -149,17 +149,18 @@ key proper with the returned key.
   The DB can rebuild its index and purge all deleted records. In the test utility
 the options are:
 
-        ./pydbase.py -U     for vacuum
+        ./pydbase.py -U     for vacuum (add -v for verbosity)
 
   The database is re-built, the deleted entries are purged, the damaged data (if any)
-  is saved into a file, created with the ame name as the data base, with the '.perr' extension.
+  is saved into a separate file, created with the same name as the data base,
+  with the '.perr' extension.
 
         ./pydbase.py -R     for re-index
 
-  The data index is recreated; to be an identical index of the current file. This is useful if
+  The index is recreated; to be an identical index of the current file. This is useful if
 the index is lost (like copying the data only)
 
-  If there is a data file without the index, the re-indexing is called automatically.
+  If there is a data file without the index, the re-indexing is called automatically. (TODO)
 
 ### TODO
 
