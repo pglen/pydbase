@@ -1,12 +1,11 @@
 # pydbase
 
-## High speed database
+## High speed database with key / data
 
 ### Fast data save / retrieve
 
   The motivation was to create a no frills way of saving / retrieving data fast.
   the command line tester can drive most aspects of this API;
-
 
 ## API
 
@@ -60,7 +59,7 @@ Some basic ops:
 The file pydbase.py exercises most of the twincore functionality. It also
 provides examples of how to drive it.
 
-Here is the help screen to drive it.
+Here is the help screen on how to drive it.
 
           Usage: pydebase.py [options]
           Options: -h         help (this screen)
@@ -84,7 +83,7 @@ Here is the help screen to drive it.
         The default action is to dump records to screen in reverse order.
 
 
-Comparison to other databases:
+### Comparison to other databases:
 
  This comparison is to show the time it takes to write 500 records.
 In the tests the record size is about the same (Hello /vs/ "111 222")
@@ -104,6 +103,29 @@ Please note the the time.sh clears all files tests/* for a fair test.
 
   Please mind the fact that the sqlite engine has to do a lot of parsing which we
 skip doing; That is why pydbase is an order of magnitude faster ...
+
+### Saving more complex data
+
+  The database saves a key / value pair. However, the key can be mutated to contain
+mata data, like adding a string in front of it. (like: CUST_  for customer details)
+Also can be made unique by adding a UUID to it.
+
+  The data can consist of any text / binary. The library pypacker can pack any data
+into a string; A copy of pypacker is included here.
+
+
+## pypacker.py
+
+ This module can pack arbitrary python data into a string; which can be used to store
+anything in the pydbase data section.
+
+Example from running testpacker.py:
+
+    org: (1, 2, 'aa', ['bb', b'dd'])
+    packed: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
+    unpacked: [1, 2, 'aa', ['bb', b'dd']]
+    rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
+    rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
 
 ### TODO
 

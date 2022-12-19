@@ -16,7 +16,7 @@ gettext.bindtextdomain('thisapp', './locale/')
 gettext.textdomain('thisapp')
 _ = gettext.gettext
 
-import twincore
+import twincore, pypacker
 
 pgdebug = 0
 verbose = 0
@@ -35,6 +35,8 @@ delrx   = 0
 delrx2  = 0
 backx   = 0
 sdelx   = 0
+vacx    = 0
+recx    = 0
 
 retrx   = ""
 getit   = ""
@@ -64,7 +66,7 @@ def help():
     print("Usage: pydebase.py [options]")
     print("  Options: -h         help (this screen)")
     print("           -V         print version        ||  -q      quiet on")
-    print("           -d         debug level (unused) ||  -v      verbosity on")
+    print("           -d         debug level (0-10)   ||  -v      verbosity on")
     print("           -r         write random data    ||  -w      write record(s)")
     print("           -z         dump backwards(s)    ||  -i      show deleted record(s)")
     print("           -f  file   input or output file (default: 'first.pydb')")
@@ -80,6 +82,8 @@ def help():
     print("           -o  offs   get data from offset")
     print("           -e  offs   delete at offset")
     print("           -u  rec    delete at position")
+    print("           -U         Vacuum DB")
+    print("           -R         recover DB")
     print("The default action is to dump records to screen in reverse order.")
 
 # ------------------------------------------------------------------------
@@ -89,7 +93,9 @@ if __name__ == "__main__":
     opts = []; args = []
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "d:h?f:vx:ct:iVo:rwzn:ql:s:g:k:a:y:e:u:")
+        opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:"
+        opts_normal = "chiVrwzvqUR?"
+        opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
         sys.exit(1)
@@ -171,6 +177,14 @@ if __name__ == "__main__":
             randx = True
             #print("randx", randx)
 
+        if aa[0] == "-U":
+            vacx = True
+            #print("vacx", vacx)
+
+        if aa[0] == "-R":
+            recx = True
+            #print("vacx", vacx)
+
         if aa[0] == "-p":
             skipx = aa[1]
             #print("skipx", skipx)
@@ -189,11 +203,14 @@ if __name__ == "__main__":
 
     #print("args", args)
 
-    core = twincore.DbTwinCore(deffile)
+    core = twincore.TwinCore(deffile)
     twincore.core_quiet = quiet
     twincore.core_verbose = verbose
     twincore.core_pgdebug = pgdebug
     twincore.core_showdel = sdelx
+    twincore.core_pgdebug = pgdebug
+
+    #print(dir(core))
 
     # Correct maxx
     if maxx == 0 : maxx = 1
@@ -250,6 +267,13 @@ if __name__ == "__main__":
     elif delrx2:
         ddd = core.del_rec(int(delrx))
         print(ddd)
+
+    elif recx:
+        ddd = core.recover()
+        print("recovered:", ddd, "record(s)")
+    elif vacx:
+        ddd = core.vacuum()
+        print("vacuumed:", ddd, "record(s)")
     else:
         if backx:
             core.dump_data(lcount, skipx)
