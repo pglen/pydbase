@@ -398,7 +398,7 @@ class TwinCore(TwinCoreBase):
         cnt = skip; cnt2 = 0
         curr = self.getbuffint(CURROFFS)        #;print("curr", curr)
         chash = self.getidxint(CURROFFS)        #;print("chash", chash)
-        cnt = 0; cnt2 = 0
+        # Direction sensitivity
         if dirx:
             rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
         else:
