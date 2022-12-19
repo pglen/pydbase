@@ -144,6 +144,23 @@ is identified by its hash, there is no speed penalty; Note that the hash is a 32
 one; collisions are possible, however unlikely; To compensate, make sure you compare the
 key proper with the returned key.
 
+## Maintenance
+
+  The DB can rebuild its index and purge all deleted records. In the test utility
+the options are:
+
+        ./pydbase.py -U     for vacuum
+
+  The database is re-built, the deleted entries are purged, the damaged data (if any)
+  is saved into a file, created with the ame name as the data base, with the '.perr' extension.
+
+        ./pydbase.py -R     for re-index
+
+  The data index is recreated; to be an identical index of the current file. This is useful if
+the index is lost (like copying the data only)
+
+  If there is a data file without the index, the re-indexing is called automatically.
+
 ### TODO
 
     Speed up by implementing this as a 'C' module

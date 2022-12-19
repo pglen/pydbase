@@ -85,15 +85,15 @@ class TwinCoreBase():
     INTSIZE     = 4
 
     def __init__(self):
-        #print("initializing core base")
-        pass
+
+        #print("Initializing core base")
+
+        # Provide placeholders
         self.fp = None
         self.ifp = None
         self.cnt = 0
-        self.fname = ""
-        self.idxname = ""
-        self.lckname = ""
-        self.lasterr = "No error."
+        self.fname = "" ;        self.idxname = ""
+        self.lckname = "";       self.lasterr = ""
 
     def __del__(self):
         pass
@@ -261,7 +261,7 @@ class TwinCore(TwinCoreBase):
         self.fname = fname
         self.idxname = os.path.splitext(self.fname)[0] + ".pidx"
         self.lckname = os.path.splitext(self.fname)[0] + ".lock"
-        self.lasterr = ""
+        self.lasterr = "No Error"
 
         #if core_verbose:
         #    print("fname", fname, "idxname", self.idxname, "lockname", self.lckname)
@@ -287,6 +287,10 @@ class TwinCore(TwinCoreBase):
             print("Invalid data signature")
             self.dellock()
             raise  RuntimeError("Invalid database signature.")
+
+        # See if valid index
+
+
 
         #print("buffsize", buffsize, "indexsize", indexsize)
         self.dellock()
