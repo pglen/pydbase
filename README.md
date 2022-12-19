@@ -75,11 +75,12 @@ Here is the help screen of pydebase.py:
 
         Usage: pydebase.py [options]
           Options: -h         help (this screen)
-                   -V         print version        ||  -q      quiet on
-                   -d         debug level (0-10)   ||  -v      verbosity on
-                   -r         write random data    ||  -w      write record(s)
-                   -z         dump backwards(s)    ||  -i      show deleted record(s)
-                   -f  file   input or output file (default: 'first.pydb')
+                   -V         print version        ||  -q   quiet on
+                   -d         debug level (0-10)   ||  -v   increment verbosity level
+                   -r         write random data    ||  -w   write record(s)
+                   -z         dump backwards(s)    ||  -i   show deleted record(s)
+                   -U         Vacuum DB            ||  -R   re-index / recover DB
+                   -f  file   input or output file (default: 'pydbase.pydb')
                    -n  num    number of records to write
                    -g  num    get number of records
                    -p  num    skip number of records on get
@@ -92,8 +93,6 @@ Here is the help screen of pydebase.py:
                    -o  offs   get data from offset
                    -e  offs   delete at offset
                    -u  rec    delete at position
-                   -U         Vacuum DB
-                   -R         reindex recover DB
         The default action is to dump records to screen in reverse order.
 
 ### Comparison to other databases:
