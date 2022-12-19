@@ -160,6 +160,42 @@ class TwinCoreBase():
                 raise
         return fp
 
+    def create_data(self, fp):
+
+        fp.write(bytearray(HEADSIZE))
+
+        fp.seek(0)
+        fp.write(TwinCore.FILESIG)
+        fp.write(struct.pack("B", 0x03))
+        fp.write(struct.pack("I", 0xaabbccdd))
+        fp.write(struct.pack("B", 0xaa))
+        fp.write(struct.pack("B", 0xbb))
+        fp.write(struct.pack("B", 0xcc))
+        fp.write(struct.pack("B", 0xdd))
+        fp.write(struct.pack("B", 0xff))
+
+        fp.seek(CURROFFS, io.SEEK_SET)
+        cc = struct.pack("I", HEADSIZE)
+        fp.write(cc)
+
+
+    def create_idx(self, ifp):
+
+        ifp.write(bytearray(HEADSIZE))
+
+        ifp.seek(0)
+        ifp.write(TwinCore.IDXSIG)
+        ifp.write(struct.pack("I", 0xaabbccdd))
+        ifp.write(struct.pack("B", 0xaa))
+        ifp.write(struct.pack("B", 0xbb))
+        ifp.write(struct.pack("B", 0xcc))
+        ifp.write(struct.pack("B", 0xdd))
+        ifp.write(struct.pack("B", 0xff))
+
+        pp = struct.pack("I", HEADSIZE)
+        ifp.seek(CURROFFS, io.SEEK_SET)
+        ifp.write(pp)
+
  # ------------------------------------------------------------------------
 # Data file and index file; protected by locks
 # The TWIN refers to separate files for data / index
@@ -184,7 +220,6 @@ class TwinCore(TwinCoreBase):
         self.fname = fname
         self.idxname = os.path.splitext(self.fname)[0] + ".pidx"
         self.lckname = os.path.splitext(self.fname)[0] + ".lock"
-
         self.lasterr = ""
 
         #if core_verbose:
@@ -193,48 +228,26 @@ class TwinCore(TwinCoreBase):
         self.waitlock()
 
         self.fp = self.softcreate(self.fname)
-        self.ifp = self.softcreate(self.idxname)
-
         buffsize = self.getsize(self.fp)
 
         # Initial file creation
         if buffsize < HEADSIZE:
             #print("initial padding")
-            self.fp.write(bytearray(HEADSIZE))
-
-            self.fp.seek(0)
-            self.fp.write(TwinCore.FILESIG)
-            self.fp.write(struct.pack("B", 0x03))
-            self.fp.write(struct.pack("I", 0xaabbccdd))
-            self.fp.write(struct.pack("B", 0xaa))
-            self.fp.write(struct.pack("B", 0xbb))
-            self.fp.write(struct.pack("B", 0xcc))
-            self.fp.write(struct.pack("B", 0xdd))
-            self.fp.write(struct.pack("B", 0xff))
-
-            self.putbuffint(CURROFFS, HEADSIZE)
+            self.create_data(self.fp):
 
         indexsize = self.getsize(self.ifp)
-        # Initial file creation
+        # Initial index creation
+        self.ifp = self.softcreate(self.idxname)
         if indexsize < HEADSIZE:
             #print("initial padding")
-            self.ifp.write(bytearray(HEADSIZE))
+            self.create_idx(self.ifp):
 
-            self.ifp.seek(0)
-            self.ifp.write(TwinCore.IDXSIG)
-            self.ifp.write(struct.pack("I", 0xaabbccdd))
-            self.ifp.write(struct.pack("B", 0xaa))
-            self.ifp.write(struct.pack("B", 0xbb))
-            self.ifp.write(struct.pack("B", 0xcc))
-            self.ifp.write(struct.pack("B", 0xdd))
-            self.ifp.write(struct.pack("B", 0xff))
-
-            self.putidxint(CURROFFS, HEADSIZE)
-
+        # Check
         if  self.getbuffstr(0, 4) != TwinCore.FILESIG:
             print("Invalid data signature")
             self.dellock()
             raise  RuntimeError("Invalid database signature.")
+
         #print("buffsize", buffsize, "indexsize", indexsize)
         self.dellock()
 
@@ -369,11 +382,9 @@ class TwinCore(TwinCoreBase):
                         break
 
 
-    def  recover(self):
+    def  reindex(self):
 
-        ''' Recover index
-            Make sure the db in not in session.
-        '''
+        ''' Recover index Make sure the DB in not in session.  '''
 
         ret = 0
 
@@ -382,19 +393,22 @@ class TwinCore(TwinCoreBase):
         curr = self.getbuffint(CURROFFS) - HEADSIZE
         #print("curr", curr)
 
+        reidx = os.path.splitext(vacname)[0]  + "_tmp_" + .pidx"
+        tempifp = self.softcreate(reidx)
+        self.create_idx(tempifp):
+
         aa =  HEADSIZE
         while 1:
             if aa >= curr:
                 break
             sig = self.getbuffstr(aa, INTSIZE)
 
-
             lenx = self.getbuffint(aa + 8)
             sep =  self.getbuffstr(aa + 12 + lenx, INTSIZE)
             len2 =  self.getbuffint(aa + 20 + lenx)
             print(aa, "sig", sig, "len", lenx, "sep", sep, "len2", len2)
             aa += lenx + len2 + 24
-            #ret += 1
+            ret += 1
 
             # Build index (TODO
 

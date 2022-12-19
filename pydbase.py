@@ -269,8 +269,8 @@ if __name__ == "__main__":
         print(ddd)
 
     elif recx:
-        ddd = core.recover()
-        print("recovered:", ddd, "record(s)")
+        ddd = core.reindex()
+        print("reindexed:", ddd, "record(s)")
     elif vacx:
         ddd = core.vacuum()
         print("vacuumed:", ddd, "record(s)")
