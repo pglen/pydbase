@@ -54,10 +54,10 @@ ifeq ("$(AUTOCHECK)","")
 AUTOCHECK=autocheck
 endif
 
+DDD = $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
+
 pgit:
-	@#USERNAME ?=
-	DDD != $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
-	echo $(DDD)
+	echo "$(DDD)"
 
 git:
 	git add .
