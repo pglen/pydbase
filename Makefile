@@ -55,9 +55,9 @@ AUTOCHECK=autocheck
 endif
 
 pgit:
-	USERNAME ?= $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
-	echo "$(USERNAME)"
-
+	@#USERNAME ?=
+	DDD != $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
+	echo $(DDD)
 
 git:
 	git add .
