@@ -55,14 +55,13 @@ AUTOCHECK=autocheck
 endif
 
 DDD = $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
-
 #echo "Committing as $(DDD)"
 
 pgit:
 	git add .
 	git commit -m "$(DDD)"
-	@#git push
-	@#git push local
+	#git push
+	#git push local
 
 git:
 	git add .
