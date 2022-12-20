@@ -54,6 +54,11 @@ ifeq ("$(AUTOCHECK)","")
 AUTOCHECK=autocheck
 endif
 
+pgit:
+	USERNAME ?= $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
+	echo "$(USERNAME)"
+
+
 git:
 	git add .
 	git commit -m "$(AUTOCHECK)"
