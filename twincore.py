@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''!
-    \mainpage
+    @mainpage
 
     # Twincore
 
@@ -776,9 +776,9 @@ class TwinCore(TwinCoreBase):
             print("hhh2", hhh2, "hhh3", hhh3)
 
         self.waitlock()
-        self.__save_data(hhh2, arg2e, hhh3, arg3e)
+        ret = self.__save_data(hhh2, arg2e, hhh3, arg3e)
         self.dellock()
-
+        return ret
 
     def __save_data(self, hhh2, arg2e, hhh3, arg3e):
 
@@ -812,6 +812,8 @@ class TwinCore(TwinCoreBase):
         self.putidxint(hashpos + self.INTSIZE, hhh2)
         self.putidxint(CURROFFS, self.ifp.tell())
 
-__all__ = ["TwinCore", "core_verbose", "core_quiet", "core_pgdebug"]
+        return curr
+
+__all__ = ["TwinCore", "core_verbose", "core_quiet", "core_pgdebug", "core_lcktimeout"]
 
 # EOF

@@ -18,7 +18,6 @@ _ = gettext.gettext
 
 import twincore, pypacker
 
-
 # ------------------------------------------------------------------------
 
 pgdebug = 0
@@ -194,24 +193,29 @@ if __name__ == "__main__":
     #print("DBsize", dbsize)
 
     if keyx and datax:
+        curr = 0
         if verbose:
             print("adding", keyx, datax)
         for aa in range(ncount):
-            core.save_data(keyx, datax)
-
+            curr = core.save_data(keyx, datax)
+        print("curr", curr)
     elif keyx:
+        curr = 0
         if verbose:
             print("adding", keyx)
         for aa in range(ncount):
-            core.save_data(keyx, "dddd dddd")
+            curr = core.save_data(keyx, "dddd dddd")
+        print("curr", curr)
 
     elif writex:
+        curr = 0;
         if randx:
             for aa in range(ncount):
-                core.save_data(randstr(random.randint(2, 10)), randstr(random.randint(10, 20)))
+                curr = core.save_data(randstr(random.randint(2, 10)), randstr(random.randint(10, 20)))
         else:
             for aa in range(ncount):
-                core.save_data("111 222", "333 444")
+                curr = core.save_data("111 222", "333 444")
+        print("curr", curr)
 
     elif findx:
         if lcount == 0: lcount = 1
