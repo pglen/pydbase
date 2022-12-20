@@ -60,7 +60,7 @@ DDD = $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
 pgit:
 	git add .
 	git commit -m "$(DDD)"
-	#git push
+	git push
 	#git push local
 
 git:
