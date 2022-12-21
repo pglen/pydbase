@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['writex_231',['writex',['../namespacepydbase.html#a71e3867a0f4af151e8ad2ac1f41a84d4',1,'pydbase']]]
+  ['writex_263',['writex',['../namespacepydbase.html#a7fe22ce039734ceee14abc8e462a97c9',1,'pydbase']]]
 ];

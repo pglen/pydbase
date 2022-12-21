@@ -84,8 +84,15 @@ RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
 RECSIG     Hash_of_key      Len_of_key      DATA_for_key
 RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
 </pre><p> Deleted records are marked with RECSIG mutated from RECB to RECX</p>
-<p>New data is appended to the end, no duplicate filtering is done. Retrieval is searched from reverse, the latest record with this key is retrieved first. </p>
-</div></div><!-- PageDoc -->
+<p>New data is appended to the end, no duplicate filtering is done. Retrieval is searched from reverse, the latest record with this key is retrieved first.</p>
+<p>Verbosity: (use the '-v' option multiple times) </p><pre class="fragment">0 =  no output
+1 =  normal, some items printed, short record ;
+2 =  more detail; full record (-vv)
+3 =  more detail + damaged records (-vvv)
+</pre><p> Debug: (use the '-d' option with number) </p><pre class="fragment">0 =  no output
+1 =  normal, some items
+2 =  more details
+</pre> </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -15,9 +15,7 @@ def \mbox{\hyperlink{namespacetwincore_a5416355346eb4d094c06065a35c52e52}{trunc}
 \doxysubsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
-int \mbox{\hyperlink{namespacetwincore_a3cf83a9b6e1cbafc942aa8cd3285f1ad}{DIRTY\+\_\+\+MAX}} = 0xffffffff
-\item 
-int \mbox{\hyperlink{namespacetwincore_af8117395df45314c3206514aefa3aba7}{INTSIZE}} = 4
+int \mbox{\hyperlink{namespacetwincore_a802660cbe8560228c977b4d96cda62cb}{INT\+\_\+\+MAX}} = 0xffffffff
 \item 
 int \mbox{\hyperlink{namespacetwincore_a398023cc80fea83a00ab59a305dde3f3}{HEADSIZE}} = 32
 \item 
@@ -27,6 +25,8 @@ int \mbox{\hyperlink{namespacetwincore_a2a55d382f26c49aac96a7f3a569f0ed8}{FIRSTH
 \item 
 int \mbox{\hyperlink{namespacetwincore_a1260b9010ebb9904ecf6e303238abb92}{FIRSTDATA}} = \mbox{\hyperlink{namespacetwincore_a398023cc80fea83a00ab59a305dde3f3}{HEADSIZE}}
 \item 
+int \mbox{\hyperlink{namespacetwincore_a0b7be9a5d8f71dbcdd0ec6f4a7f0c952}{LOCK\+\_\+\+TIMEOUT}} = 3
+\item 
 int \mbox{\hyperlink{namespacetwincore_a04b1204de1eaeafb51c0f900f19e18da}{core\+\_\+verbose}} = 0
 \item 
 int \mbox{\hyperlink{namespacetwincore_a00c95c8a5f3c059adcabeda82f2c7ef6}{core\+\_\+quiet}} = 0
@@ -34,6 +34,8 @@ int \mbox{\hyperlink{namespacetwincore_a00c95c8a5f3c059adcabeda82f2c7ef6}{core\+
 int \mbox{\hyperlink{namespacetwincore_ab9ad36fc665b1ebcd04d3ca46c8a2b47}{core\+\_\+pgdebug}} = 0
 \item 
 int \mbox{\hyperlink{namespacetwincore_a33b58ab9283246e14e668e55f49c0973}{core\+\_\+showdel}} = 0
+\item 
+int \mbox{\hyperlink{namespacetwincore_a713d517a0e001a528160a6b213a1f640}{core\+\_\+lcktimeout}} = \mbox{\hyperlink{namespacetwincore_a0b7be9a5d8f71dbcdd0ec6f4a7f0c952}{LOCK\+\_\+\+TIMEOUT}}
 \end{DoxyCompactItemize}
 
 
@@ -48,6 +50,12 @@ int \mbox{\hyperlink{namespacetwincore_a33b58ab9283246e14e668e55f49c0973}{core\+
  
 
 \doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{namespacetwincore_a713d517a0e001a528160a6b213a1f640}\label{namespacetwincore_a713d517a0e001a528160a6b213a1f640}} 
+\index{twincore@{twincore}!core\_lcktimeout@{core\_lcktimeout}}
+\index{core\_lcktimeout@{core\_lcktimeout}!twincore@{twincore}}
+\doxysubsubsection{\texorpdfstring{core\_lcktimeout}{core\_lcktimeout}}
+{\footnotesize\ttfamily int twincore.\+core\+\_\+lcktimeout = \mbox{\hyperlink{namespacetwincore_a0b7be9a5d8f71dbcdd0ec6f4a7f0c952}{LOCK\+\_\+\+TIMEOUT}}}
+
 \mbox{\Hypertarget{namespacetwincore_ab9ad36fc665b1ebcd04d3ca46c8a2b47}\label{namespacetwincore_ab9ad36fc665b1ebcd04d3ca46c8a2b47}} 
 \index{twincore@{twincore}!core\_pgdebug@{core\_pgdebug}}
 \index{core\_pgdebug@{core\_pgdebug}!twincore@{twincore}}
@@ -78,12 +86,6 @@ int \mbox{\hyperlink{namespacetwincore_a33b58ab9283246e14e668e55f49c0973}{core\+
 \doxysubsubsection{\texorpdfstring{CURROFFS}{CURROFFS}}
 {\footnotesize\ttfamily int twincore.\+CURROFFS = 16}
 
-\mbox{\Hypertarget{namespacetwincore_a3cf83a9b6e1cbafc942aa8cd3285f1ad}\label{namespacetwincore_a3cf83a9b6e1cbafc942aa8cd3285f1ad}} 
-\index{twincore@{twincore}!DIRTY\_MAX@{DIRTY\_MAX}}
-\index{DIRTY\_MAX@{DIRTY\_MAX}!twincore@{twincore}}
-\doxysubsubsection{\texorpdfstring{DIRTY\_MAX}{DIRTY\_MAX}}
-{\footnotesize\ttfamily int twincore.\+DIRTY\+\_\+\+MAX = 0xffffffff}
-
 \mbox{\Hypertarget{namespacetwincore_a1260b9010ebb9904ecf6e303238abb92}\label{namespacetwincore_a1260b9010ebb9904ecf6e303238abb92}} 
 \index{twincore@{twincore}!FIRSTDATA@{FIRSTDATA}}
 \index{FIRSTDATA@{FIRSTDATA}!twincore@{twincore}}
@@ -102,9 +104,15 @@ int \mbox{\hyperlink{namespacetwincore_a33b58ab9283246e14e668e55f49c0973}{core\+
 \doxysubsubsection{\texorpdfstring{HEADSIZE}{HEADSIZE}}
 {\footnotesize\ttfamily int twincore.\+HEADSIZE = 32}
 
-\mbox{\Hypertarget{namespacetwincore_af8117395df45314c3206514aefa3aba7}\label{namespacetwincore_af8117395df45314c3206514aefa3aba7}} 
-\index{twincore@{twincore}!INTSIZE@{INTSIZE}}
-\index{INTSIZE@{INTSIZE}!twincore@{twincore}}
-\doxysubsubsection{\texorpdfstring{INTSIZE}{INTSIZE}}
-{\footnotesize\ttfamily int twincore.\+INTSIZE = 4}
+\mbox{\Hypertarget{namespacetwincore_a802660cbe8560228c977b4d96cda62cb}\label{namespacetwincore_a802660cbe8560228c977b4d96cda62cb}} 
+\index{twincore@{twincore}!INT\_MAX@{INT\_MAX}}
+\index{INT\_MAX@{INT\_MAX}!twincore@{twincore}}
+\doxysubsubsection{\texorpdfstring{INT\_MAX}{INT\_MAX}}
+{\footnotesize\ttfamily int twincore.\+INT\+\_\+\+MAX = 0xffffffff}
+
+\mbox{\Hypertarget{namespacetwincore_a0b7be9a5d8f71dbcdd0ec6f4a7f0c952}\label{namespacetwincore_a0b7be9a5d8f71dbcdd0ec6f4a7f0c952}} 
+\index{twincore@{twincore}!LOCK\_TIMEOUT@{LOCK\_TIMEOUT}}
+\index{LOCK\_TIMEOUT@{LOCK\_TIMEOUT}!twincore@{twincore}}
+\doxysubsubsection{\texorpdfstring{LOCK\_TIMEOUT}{LOCK\_TIMEOUT}}
+{\footnotesize\ttfamily int twincore.\+LOCK\+\_\+\+TIMEOUT = 3}
 
