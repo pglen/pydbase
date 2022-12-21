@@ -13,16 +13,18 @@ The module 'twincore' uses two data files and a lock file. The file names are ge
 from the base name of the data file. .pidx for the index, .lock for the lock file.
 The lock file times out in 0.3 seconds and breaks the lock. (in case of frozen process)
 
-Example db creation:
-
-    core = twincore.TwinCore(deffile)
-
 Setting verbosity and debug level:
 
     twincore.core_quiet = quiet
     twincore.core_verbose = verbose
     twincore.core_pgdebug = pgdebug
     twincore.core_showdel = sdelx
+
+    (setting before data creation will display mesages from the construtor)
+
+Example db creation:
+
+    core = twincore.TwinCore(deffile)
 
 Some basic ops:
 
@@ -151,7 +153,7 @@ the options are:
         ./pydbase.py -U     for vacuum (add -v for verbosity)
 
   The database is re-built, the deleted entries are purged, the damaged data (if any)
-  is saved into a separate file, created with the same name as the data base,
+  is saved into a separate file, created with the same base name as the data base,
   with the '.perr' extension.
 
         ./pydbase.py -R     for re-index
@@ -162,12 +164,13 @@ the index is lost (like copying the data only)
   If there is a data file without the index, the re-indexing is called automatically.
   In case of deleted data file, pydbase will recognize the dangling index and nuke it.
 
+  Note about the 'garbage' directory ... older stuff I tried; some are really useful; For
+instance take a look at the simplifier: an array of indexes to save offsets and lengths;
+The simplifier makes one range out of overlapping or close to each other ranges. (min. dist=4)
+
 ### TODO
 
     Speed up by implementing this as a 'C' module
 
-  Note about the 'garbage' directory ... older stuff I tried; some are really useful; For
-instance take a look at the simplifier: an array of indexes to save offsets and lengths;
-The simplifier makes one range out of overlapping or close to each other ranges. (min. dist=4)
 
 ; EOF
