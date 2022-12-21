@@ -201,14 +201,14 @@ if __name__ == "__main__":
             print("adding", keyx, datax)
         for aa in range(ncount):
             curr = core.save_data(keyx, datax)
-        print("curr", curr)
+        #print("curr", curr)
     elif keyx:
         curr = 0
         if verbose:
             print("adding", keyx)
         for aa in range(ncount):
             curr = core.save_data(keyx, "dddd dddd")
-        print("curr", curr)
+        #print("curr", curr)
 
     elif writex:
         curr = 0;
@@ -218,7 +218,7 @@ if __name__ == "__main__":
         else:
             for aa in range(ncount):
                 curr = core.save_data("111 222", "333 444")
-        print("curr", curr)
+        #print("curr", curr)
 
     elif findx:
         if lcount == 0: lcount = 1

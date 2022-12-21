@@ -277,15 +277,13 @@ class TwinCore(TwinCoreBase):
             #print("initial padding")
             self.create_data(self.fp)
             try:
-                # There was no file, delete index
+                # There was no file, delete index, if any
                 os.remove(self.idxname)
-
-                #print("initial padding")
-                self.ifp = self.softcreate(self.idxname)
-                self.create_idx(self.ifp)
             except:
                 pass
-
+            #print("initial padding")
+            self.ifp = self.softcreate(self.idxname)
+            self.create_idx(self.ifp)
         else:
             # Initial index creation
             self.ifp = self.softcreate(self.idxname)
@@ -304,7 +302,6 @@ class TwinCore(TwinCoreBase):
             print("Invalid data signature")
             self.dellock()
             raise  RuntimeError("Invalid database signature.")
-
 
         #print("buffsize", buffsize, "indexsize", indexsize)
         self.dellock()

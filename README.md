@@ -104,16 +104,16 @@ In the tests the record size is about the same (Hello /vs/ "111 222")
 Please see the sqlite_test.sql for details of data output;
 
 The test can be repeated with running the 'time.sh' script file.
-Please note the the time.sh clears all files tests/* for a fair test.
+Please note the the time.sh clears all files test_data/* for a fair test.
 
-        sqlite time test, writing 500 records ...
-        real	0m1.249s
-        user	0m0.008s
-        sys	0m0.071s
-        pydbase time test, writing 500 records ...
-        real	0m0.043s
-        user	0m0.034s
-        sys	0m0.008s
+    sqlite time test, writing 500 records ...
+    real	0m1.606s
+    user	0m0.004s
+    sys	0m0.073s
+    pydbase time test, writing 500 records ...
+    real	0m0.034s
+    user	0m0.030s
+    sys	0m0.004s
 
   Please mind the fact that the sqlite engine has to do a lot of parsing which we
 skip doing; That is why pydbase is more than an order of magnitude faster ...
