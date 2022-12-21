@@ -156,10 +156,11 @@ the options are:
 
         ./pydbase.py -R     for re-index
 
-  The index is recreated; to be an identical index of the current file. This is useful if
+  The index is recreated; as of the current file contents. This is useful if
 the index is lost (like copying the data only)
 
-  If there is a data file without the index, the re-indexing is called automatically. (TODO)
+  If there is a data file without the index, the re-indexing is called automatically.
+  In case of deleted data file, pydbase will recognize the dangling index and nuke it.
 
 ### TODO
 
