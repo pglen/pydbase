@@ -1,20 +1,56 @@
 
 import pytest, twincore, pypacker, os
 
+#pytest_plugins = "pytester"
+
 core = None
 
-def setup_function(function):
-    #assert tmp_path == ""
-    #assert core != 0
-    pass
-
-def test_create():
+def setup_module(module):
+    """ setup any state specific to the execution of the given module."""
     global core
-    os.remove("data/tests.pydb")
-    os.remove("data/tests.pidx")
+    try:
+        # Fresh start
+        os.remove("data/tests.pydb")
+        os.remove("data/tests.pidx")
+    except:
+        pass
 
     core = twincore.TwinCore("data/tests.pydb")
     assert core != 0
+
+def teardown_module(module):
+    """ teardown any state that was previously setup with a setup_module
+    method.
+    """
+    pass
+
+def setup_function(function):
+    #assert 0
+    pass
+
+def teardown_function(function):
+    #assert tmp_path == ""
+    #assert 0, "test here, function %s" % function.__name__
+    pass
+
+# ------------------------------------------------------------------------
+# Start
+
+def test_create(tmp_path):
+    global core
+    try:
+        # Fresh start
+        os.remove("data/tests.pydb")
+        os.remove("data/tests.pidx")
+    except:
+        pass
+
+    #print(pytest.Pytester.path)
+    #assert 0
+    #print(tmp_path)
+    #assert 0
+    #core = twincore.TwinCore("data/tests.pydb")
+    #assert core != 0
 
 def test_write():
     print("write", core)

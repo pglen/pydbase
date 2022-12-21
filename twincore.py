@@ -53,7 +53,7 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
 import  struct, io
 
-DIRTY_MAX       = 0xffffffff    # INT_MAC in 'C' py has BIG integer
+INT_MAX         = 0xffffffff    # INT_MAX in 'C' py has BIG integer
 HEADSIZE        = 32
 CURROFFS        = 16
 FIRSTHASH       = HEADSIZE
@@ -265,8 +265,8 @@ class TwinCore(TwinCoreBase):
         self.lckname = os.path.splitext(self.fname)[0] + ".lock"
         self.lasterr = "No Error"
 
-        #if core_verbose:
-        #    print("fname", fname, "idxname", self.idxname, "lockname", self.lckname)
+        if core_verbose > 3:
+            print("fname", fname, "idxname", self.idxname, "lockname", self.lckname)
 
         self.waitlock()
 
@@ -276,13 +276,28 @@ class TwinCore(TwinCoreBase):
         if buffsize < HEADSIZE:
             #print("initial padding")
             self.create_data(self.fp)
+            try:
+                # There was no file, delete index
+                os.remove(self.idxname)
 
-        # Initial index creation
-        self.ifp = self.softcreate(self.idxname)
-        indexsize = self.getsize(self.ifp)
-        if indexsize < HEADSIZE:
-            #print("initial padding")
-            self.create_idx(self.ifp)
+                #print("initial padding")
+                self.ifp = self.softcreate(self.idxname)
+                self.create_idx(self.ifp)
+            except:
+                pass
+
+        else:
+            # Initial index creation
+            self.ifp = self.softcreate(self.idxname)
+            indexsize = self.getsize(self.ifp)
+
+            # See if valid index
+            if indexsize < HEADSIZE:
+                self.create_idx(self.ifp)
+                # It was an existing data, new index needed
+                if core_verbose > 0:
+                    print("Reindexing")
+                self.__reindex()
 
         # Check
         if  self.getbuffstr(0, 4) != TwinCore.FILESIG:
@@ -290,16 +305,17 @@ class TwinCore(TwinCoreBase):
             self.dellock()
             raise  RuntimeError("Invalid database signature.")
 
-        # See if valid index
-
-
 
         #print("buffsize", buffsize, "indexsize", indexsize)
         self.dellock()
 
     def getdbsize(self):
-        chash = self.getidxint(CURROFFS) - HEADSIZE
-        return int(chash / (2 * self.INTSIZE))
+        try:
+            chash = self.getidxint(CURROFFS) - HEADSIZE
+            ret = int(chash / (2 * self.INTSIZE))
+        except:
+            ret = 0
+        return  ret
 
     # --------------------------------------------------------------------
     def rec2arr(self, rec):
@@ -427,14 +443,18 @@ class TwinCore(TwinCoreBase):
 
         self.__dump_data(lim, skip)
 
+    def  reindex(self):
+        self.waitlock()
+        self.__reindex()
+        self.dellock()
+
     # --------------------------------------------------------------------
 
-    def  reindex(self):
+    def  __reindex(self):
 
         ''' Recover index. Make sure the DB in not in session.  '''
 
         ret = 0
-        self.waitlock()
 
         curr = self.getbuffint(CURROFFS) - HEADSIZE
         #print("curr", curr)
@@ -453,7 +473,7 @@ class TwinCore(TwinCoreBase):
             lenx = self.getbuffint(aa + 8)
             sep =  self.getbuffstr(aa + 12 + lenx, self.INTSIZE)
             len2 =  self.getbuffint(aa + 20 + lenx)
-            if core_verbose:
+            if core_verbose > 2:
                 print(aa, "sig", sig, "hhh2", hhh2, "len", lenx, "sep", sep, "len2", len2)
 
             # Update / Append index
@@ -474,13 +494,15 @@ class TwinCore(TwinCoreBase):
         tempifp.flush();    tempifp.close()
 
         # Now move files
-        os.remove(self.idxname)
+        try:
+            os.remove(self.idxname)
+        except:
+            pass
+
         #print("rename", reidx, "->", self.idxname)
         os.rename(reidx, self.idxname)
 
         self.ifp = self.softcreate(self.idxname)
-
-        self.dellock()
         return ret
 
 
@@ -572,7 +594,10 @@ class TwinCore(TwinCoreBase):
             self.fp.close(); self.ifp.close()
 
             # Now move files
-            os.remove(self.fname);  os.remove(self.idxname)
+            try:
+                os.remove(self.fname);  os.remove(self.idxname)
+            except:
+                pass
 
             if core_pgdebug > 1:
                 print("rename", vacname, "->", self.fname)
@@ -589,8 +614,11 @@ class TwinCore(TwinCoreBase):
             # Just remove non vacuumed files
             if core_pgdebug > 1:
                 print("deleted", vacname, vacidx)
-            os.remove(vacname)
-            os.remove(vacidx)
+            try:
+                os.remove(vacname)
+                os.remove(vacidx)
+            except:
+                pass
 
         #print("ended vacuum")
         return ret

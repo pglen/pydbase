@@ -25,8 +25,8 @@ verbose = 0
 version = "1.0"
 ncount  = 1
 scount  = 0
-lcount  = 0xffffffff
 maxx    = 10
+lcount  = twincore.INT_MAX
 
 quiet   = 0; writex  = 0
 randx   = 0; skipx   = 0
@@ -177,12 +177,15 @@ if __name__ == "__main__":
 
     #print("args", args)
 
-    core = twincore.TwinCore(deffile)
+    # Set some flags
     twincore.core_quiet = quiet
     twincore.core_verbose = verbose
     twincore.core_pgdebug = pgdebug
     twincore.core_showdel = sdelx
     twincore.core_pgdebug = pgdebug
+
+    # Create our database
+    core = twincore.TwinCore(deffile)
 
     #print(dir(core))
 
