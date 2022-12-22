@@ -57,7 +57,6 @@ def randstr(lenx):
         strx += str(rr)
     return strx
 
-
 def help():
     print("Usage: pydebase.py [options] [arg_key arg_data]")
     print("  Options: -h         help (this screen)")
@@ -92,7 +91,7 @@ if __name__ == "__main__":
 
     # Old fashioned parsing
     try:
-        opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:"
+        opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:"
         opts_normal = "chiVrwzvqURI?"
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
@@ -238,12 +237,17 @@ if __name__ == "__main__":
         ddd = core.find_key(findx, lcount)
         print("ddd", ddd)
     elif getit:
-        if maxx > dbsize:
-            maxx = dbsize
+        getx = int(getit)
+        skipx = int(skipx)
+        if getx + skipx > dbsize:
+            getx = dbsize - skipx
+            print("Clipping to dbsize of", dbsize)
         if verbose:
-            print("Getting %d records" % maxx);
-        ddd = core.get_rec(int(getit))
-        print(ddd)
+            print("Getting %d records" % getx);
+        for aa in range(skipx, getx + skipx):
+            ddd = core.get_rec(aa)
+            print(ddd)
+
     elif retrx != "":
         if ncount == 0: ncount = 1
         ddd = core.retrieve(retrx, ncount)

@@ -318,7 +318,6 @@ class TwinCore(TwinCoreBase):
     # --------------------------------------------------------------------
     def rec2arr(self, rec):
 
-        print("rec2arr")
         arr = []
         sig = self.getbuffstr(rec, self.INTSIZE)
         if sig != TwinCore.RECSIG:
@@ -331,13 +330,12 @@ class TwinCore(TwinCoreBase):
         data = self.getbuffstr(rec + 12, blen)
 
         if core_integrity:
-            print("hash", hash, "check", self.hash32(data))
             ccc = self.hash32(data)
             if core_verbose > 1:
-                print("rec", rec, "hash", hash, "check", ccc)
+                print("rec", rec, "hash", hex(hash), "check", hex(ccc))
             if hash != ccc:
                 if core_verbose > 0:
-                    print("Error on hash at rec", rec, "hash", hash, "check", ccc)
+                    print("Error on hash at rec", rec, "hash", hex(hash), "check", hex(ccc))
                 return []
 
         #print("%5d pos %5d" % (cnt, rec), "hash %8x" % hash, "ok", ok, "len=", blen, end=" ")
@@ -353,13 +351,12 @@ class TwinCore(TwinCoreBase):
         data2 = self.getbuffstr(rec2+8, blen2)
 
         if core_integrity:
-            print("hash2", hash2, "check2", self.hash32(data2))
             ccc2 = self.hash32(data2)
             if core_verbose > 1:
-                print("rec", rec, "hash2", hash2, "check2", ccc2)
+                print("rec", rec, "hash2", hex(hash2), "check2", hex(ccc2))
             if hash2 != ccc2:
                 if core_verbose > 0:
-                    print("Error on hash at rec", rec, "hash2", hash2, "check2", ccc2)
+                    print("Error on hash at rec", rec, "hash2", hex(hash2), "check2", hex(ccc2))
                 return []
 
         arr = [data, data2]
@@ -397,10 +394,10 @@ class TwinCore(TwinCoreBase):
         if core_integrity:
             ccc = self.hash32(data)
             if core_verbose > 1:
-                print("rec", rec, "hash", hash, "check", ccc)
+                print("rec", rec, "hash", hex(hash), "check", hex(ccc))
             if hash != ccc:
                 if core_verbose > 0:
-                    print("Error on hash at rec", rec, "hash", hash, "check", ccc)
+                    print("Error on hash at rec", rec, "hash", hex(hash), "check", hex(ccc))
                 return []
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
@@ -420,10 +417,10 @@ class TwinCore(TwinCoreBase):
         if core_integrity:
             ccc2 = self.hash32(data2)
             if core_verbose > 1:
-                print("rec", rec, "hash2", hash, "check2", ccc)
+                print("rec", rec, "hash2", hex(hash), "check2", hex(ccc))
             if hash2 != ccc2:
                 if core_verbose > 0:
-                    print("Error on hash at rec", rec, "hash2", hash, "check2", ccc)
+                    print("Error on hash at rec", rec, "hash2", hex(hash), "check2", hex(ccc))
                 return []
         if core_verbose:
             print("%-5d pos %5d" % (cnt, rec), "%8x" % hash, "len", blen, trunc(data),
@@ -474,8 +471,9 @@ class TwinCore(TwinCoreBase):
 
     def  reindex(self):
         self.waitlock()
-        self.__reindex()
+        ret = self.__reindex()
         self.dellock()
+        return ret
 
     # --------------------------------------------------------------------
 
@@ -494,8 +492,9 @@ class TwinCore(TwinCoreBase):
 
         aa =  HEADSIZE
         while 1:
-            if aa >= curr:
+            if aa >= curr + HEADSIZE:
                 break
+
             sig = self.getbuffstr(aa, self.INTSIZE)
 
             hhh2 = self.getbuffint(aa + 4)
@@ -504,6 +503,10 @@ class TwinCore(TwinCoreBase):
             len2 =  self.getbuffint(aa + 20 + lenx)
             if core_verbose > 2:
                 print(aa, "sig", sig, "hhh2", hhh2, "len", lenx, "sep", sep, "len2", len2)
+            elif core_verbose > 1:
+                data =  self.getbuffstr(aa + 12, lenx)
+                data2 =  self.getbuffstr(aa + 24 + lenx, len2)
+                print(aa, "sig", sig, "data", data, "data2", data2)
 
             # Update / Append index
             hashpos = self._getint(tempifp, CURROFFS)
@@ -534,6 +537,25 @@ class TwinCore(TwinCoreBase):
         self.ifp = self.softcreate(self.idxname)
         return ret
 
+    def __save_error(self, rec, vacerrfp):
+
+        vacerrfp.write(b"Err at %8d\n" % rec)
+
+        try:
+            ddd = self.getbuffstr(rec, 100)
+        except:
+            pass
+
+        # Find next valid record, print up to that
+        found = 0
+        for aa in range(len(ddd)):
+            if ddd[aa:aa+4] == TwinCore.RECSIG:
+                found = True
+                #print("found:", ddd[:aa+4])
+                vacerrfp.write(ddd[:aa])
+                break
+        if not found:
+            vacerrfp.write(ddd)
 
     # ----------------------------------------------------------------
 
@@ -557,7 +579,7 @@ class TwinCore(TwinCoreBase):
         self.waitlock()
 
         try:
-            # make sure thay are empty
+            # Make sure they are empty
             os.remove(vacname)
             os.remove(vacidx)
         except:
@@ -570,11 +592,12 @@ class TwinCore(TwinCoreBase):
             vacdb = TwinCore(vacname)
             vacdb.waitlock()
             #print("vacdb vacidx", vacdb.idxname)
+            skip = 0
             curr = self.getbuffint(CURROFFS)               #;print("curr", curr)
             chash = self.getidxint(CURROFFS)               #;print("chash", chash)
-            #for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
-            for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
-
+            #rrr = range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+            for aa in rrr:
                 rec = self.getidxint(aa)
                 sig = self.getbuffstr(rec, self.INTSIZE)
                 if sig == TwinCore.RECDEL:
@@ -584,25 +607,9 @@ class TwinCore(TwinCoreBase):
                 elif sig != TwinCore.RECSIG:
                     if core_verbose:
                         print("Detected error at %d" % rec)
-                    vacerrfp.write(b"Err at %8d\n" % rec)
-
-                    try:
-                        ddd = self.getbuffstr(rec, 100)
-                    except:
-                        pass
-
-                    # Find next valid record
-                    found = 0
-                    for aa in range(len(ddd)):
-                        if ddd[aa:aa+4] == TwinCore.RECSIG:
-                            found = True
-                            #print("found:", ddd[:aa+4])
-                            vacerrfp.write(ddd[:aa])
-                            break
-
-                    if not found:
-                        vacerrfp.write(ddd)
+                    self.__save_error(rec, vacerrfp)
                 else:
+                    global core_integrity
                     tmpi = core_integrity
                     core_integrity = True
                     arr = self.get_rec_offs(rec)
@@ -617,6 +624,8 @@ class TwinCore(TwinCoreBase):
                         vacdb.__save_data(hhh2, arr[0], hhh3, arr[1])
                         ret += 1
                     else:
+                        # This could be from empty bacause of hash error
+                        self.__save_error(rec, vacerrfp)
                         if core_pgdebug > 0:
                             print("Error on vac: %d" % rec)
 

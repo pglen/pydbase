@@ -45,13 +45,6 @@ def test_create(tmp_path):
     except:
         pass
 
-    #print(pytest.Pytester.path)
-    #assert 0
-    #print(tmp_path)
-    #assert 0
-    #core = twincore.TwinCore("data/tests.pydb")
-    #assert core != 0
-
 def test_write():
     print("write", core)
     ret = core.save_data("1111", "2222")
@@ -62,18 +55,19 @@ def test_write():
     assert ret != 0
 
 def test_get():
-    print("get", core)
     ret = core.get_rec(2)
     assert ret != 0
+    assert ret == [b'111', b'222']
 
 def test_read():
-    print("read", core)
     ret = core.retrieve("111")
     assert ret == [[b'111', b'222']]
 
+    ret = core.retrieve("1111")
+    assert ret == [[b'1111', b'2222']]
+
 def test_create_file(tmp_path):
-    #assert tmp_path == ""
-    print("tmp_path", tmp_path)
+    #print("tmp_path", tmp_path)
     #assert core == 0
     pass
 

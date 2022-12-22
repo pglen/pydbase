@@ -410,6 +410,7 @@ class packbin():
                 for aa in formstr:
                     print("got format:", aa)
 
+        #packed_str = bytes(front)
         packed_str = front
 
         # Add the form string itself
