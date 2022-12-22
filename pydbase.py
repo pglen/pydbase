@@ -34,6 +34,7 @@ offsx   = 0; delx    = 0
 delrx   = 0; delrx2  = 0
 backx   = 0; sdelx   = 0
 vacx    = 0; recx    = 0
+integx  = 0; checkx  = 0
 
 retrx   = ""; getit   = ""
 keyx    = ""; datax   = ""
@@ -58,13 +59,14 @@ def randstr(lenx):
 
 
 def help():
-    print("Usage: pydebase.py [options]")
+    print("Usage: pydebase.py [options] [arg_key arg_data]")
     print("  Options: -h         help (this screen)")
     print("           -V         print version        ||  -q   quiet on")
     print("           -d         debug level (0-10)   ||  -v   increment verbosity level")
     print("           -r         write random data    ||  -w   write record(s)")
     print("           -z         dump backwards(s)    ||  -i   show deleted record(s)")
     print("           -U         Vacuum DB            ||  -R   reindex / recover DB")
+    print("           -I         DB Integrity check   ||  -c   set check integrity flag")
     print("           -f  file   input or output file (default: 'pydbase.pydb')")
     print("           -n  num    number of records to write")
     print("           -g  num    get number of records")
@@ -91,7 +93,7 @@ if __name__ == "__main__":
     # Old fashioned parsing
     try:
         opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:"
-        opts_normal = "chiVrwzvqUR?"
+        opts_normal = "chiVrwzvqURI?"
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
@@ -174,18 +176,31 @@ if __name__ == "__main__":
         if aa[0] == "-e":
             delx = aa[1]
             #print("skipx", skipx)
+        if aa[0] == "-c":
+            checkx = True
+            #print("checkx", checkx)
+        if aa[0] == "-I":
+            integx = True
+            #print("integx", integx)
 
     #print("args", args)
 
     # Set some flags
-    twincore.core_quiet = quiet
-    twincore.core_verbose = verbose
-    twincore.core_pgdebug = pgdebug
-    twincore.core_showdel = sdelx
-    twincore.core_pgdebug = pgdebug
+    twincore.core_quiet     = quiet
+    twincore.core_verbose   = verbose
+    twincore.core_pgdebug   = pgdebug
+    twincore.core_showdel   = sdelx
+    twincore.core_integrity = checkx
+    twincore.core_pgdebug   = pgdebug
 
     # Create our database
     core = twincore.TwinCore(deffile)
+
+    # See if we have arguments, save it
+    if len(args) == 2:
+        #print("args", args)
+        curr = core.save_data(args[0], args[1])
+        sys.exit(0)
 
     #print(dir(core))
 
@@ -209,7 +224,6 @@ if __name__ == "__main__":
         for aa in range(ncount):
             curr = core.save_data(keyx, "dddd dddd")
         #print("curr", curr)
-
     elif writex:
         curr = 0;
         if randx:
@@ -219,12 +233,10 @@ if __name__ == "__main__":
             for aa in range(ncount):
                 curr = core.save_data("111 222", "333 444")
         #print("curr", curr)
-
     elif findx:
         if lcount == 0: lcount = 1
         ddd = core.find_key(findx, lcount)
         print("ddd", ddd)
-
     elif getit:
         if maxx > dbsize:
             maxx = dbsize
@@ -232,30 +244,28 @@ if __name__ == "__main__":
             print("Getting %d records" % maxx);
         ddd = core.get_rec(int(getit))
         print(ddd)
-
     elif retrx != "":
         if ncount == 0: ncount = 1
         ddd = core.retrieve(retrx, ncount)
         print(ddd)
-
     elif offsx:
         ddd = core.get_rec_offs(int(offsx))
         print(ddd)
-
     elif delx:
         ddd = core.del_rec_offs(int(delx))
         print(ddd)
-
     elif delrx2:
         ddd = core.del_rec(int(delrx))
         print(ddd)
-
     elif recx:
         ddd = core.reindex()
         print("reindexed:", ddd, "record(s)")
     elif vacx:
         ddd = core.vacuum()
         print("vacuumed:", ddd, "record(s)")
+    elif integx:
+        ddd = core.integrity()
+        print("integrity check found:", ddd, "record(s)")
     else:
         if backx:
             core.dump_data(lcount, skipx)
