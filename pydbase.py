@@ -23,8 +23,9 @@ import twincore, pypacker
 pgdebug = 0
 verbose = 0
 version = "1.0"
+keyonly = 0
 ncount  = 1
-scount  = 0
+skipcount  = 0
 maxx    = 10
 lcount  = twincore.INT_MAX
 
@@ -66,6 +67,7 @@ def help():
     print("           -z         dump backwards(s)    ||  -i   show deleted record(s)")
     print("           -U         Vacuum DB            ||  -R   reindex / recover DB")
     print("           -I         DB Integrity check   ||  -c   set check integrity flag")
+    print("           -s         Skip count           ||  -K   list keys only")
     print("           -f  file   input or output file (default: 'pydbase.pydb')")
     print("           -n  num    number of records to write")
     print("           -g  num    get number of records")
@@ -92,7 +94,7 @@ if __name__ == "__main__":
     # Old fashioned parsing
     try:
         opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:"
-        opts_normal = "chiVrwzvqURI?"
+        opts_normal = "chiVrwzvqURIK?"
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
@@ -140,8 +142,8 @@ if __name__ == "__main__":
             maxx = int(aa[1])
             #print("maxx", maxx)
         if aa[0] == "-s":
-            scount = int(aa[1])
-            #print("scount", scount)
+            skipcount = int(aa[1])
+            #print("skipcount", skipcount)
         if aa[0] == "-f":
             deffile = aa[1]
             #print("deffile", deffile)
@@ -159,22 +161,24 @@ if __name__ == "__main__":
             #print("randx", randx)
         if aa[0] == "-U":
             vacx = True
+        if aa[0] == "-K":
+            keyonly = True
             #print("vacx", vacx)
         if aa[0] == "-R":
             recx = True
             #print("vacx", vacx)
         if aa[0] == "-p":
-            skipx = aa[1]
+            skipx = int(aa[1])
             #print("skipx", skipx)
         if aa[0] == "-y":
             findx = aa[1]
-            #print("skipx", skipx)
+            #print("findx", findx)
         if aa[0] == "-o":
             offsx = aa[1]
-            #print("skipx", skipx)
+            #print("offsx", offsx)
         if aa[0] == "-e":
             delx = aa[1]
-            #print("skipx", skipx)
+            #print("delx", delx)
         if aa[0] == "-c":
             checkx = True
             #print("checkx", checkx)
@@ -186,7 +190,6 @@ if __name__ == "__main__":
 
     # Set some flags
     twincore.core_quiet     = quiet
-    twincore.core_verbose   = verbose
     twincore.core_pgdebug   = pgdebug
     twincore.core_showdel   = sdelx
     twincore.core_integrity = checkx
@@ -194,6 +197,7 @@ if __name__ == "__main__":
 
     # Create our database
     core = twincore.TwinCore(deffile)
+    core.core_verbose   = verbose
 
     # See if we have arguments, save it
     if len(args) == 2:
@@ -236,17 +240,32 @@ if __name__ == "__main__":
         if lcount == 0: lcount = 1
         ddd = core.find_key(findx, lcount)
         print("ddd", ddd)
+
+    elif keyonly:
+        cnt = 0
+        if lcount + skipx > dbsize:
+            lcount = dbsize - skipx
+        for aa in range(skipx, lcount):
+            ddd = core.get_rec(aa)
+            print(aa, ddd[0])
+            cnt += 1
+
     elif getit:
         getx = int(getit)
-        skipx = int(skipx)
+        #skipx = dbsize - skipx
         if getx + skipx > dbsize:
             getx = dbsize - skipx
+        if skipx < 0:
+            skipx = 0
             print("Clipping to dbsize of", dbsize)
         if verbose:
             print("Getting %d records" % getx);
+            if skipx:
+                print("With skipping %d records" % skipx);
+
         for aa in range(skipx, getx + skipx):
             ddd = core.get_rec(aa)
-            print(ddd)
+            print(aa, ddd)
 
     elif retrx != "":
         if ncount == 0: ncount = 1

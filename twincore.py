@@ -62,7 +62,6 @@ LOCK_TIMEOUT    = 3             # this is in 0.1 sec units
 
 # Accessed from main main file as well
 
-core_verbose    = 0
 core_quiet      = 0
 core_pgdebug    = 0
 core_integrity  = 0
@@ -73,8 +72,8 @@ def trunc(strx, num = 8):
     ''' truncate for printing nicely '''
 
     # no truncation on high verbose
-    if core_verbose > 1:
-        return strx
+    #if self.core_verbose > 1:
+    #    return strx
 
     if len(strx) > num:
         strx = strx[:num] + b".."
@@ -260,13 +259,16 @@ class TwinCore(TwinCoreBase):
         super(TwinCoreBase, self).__init__()
         #print("initializing core with", fname)
 
+        self.core_verbose  = 0
+
         self.cnt = 0
         self.fname = fname
         self.idxname = os.path.splitext(self.fname)[0] + ".pidx"
         self.lckname = os.path.splitext(self.fname)[0] + ".lock"
         self.lasterr = "No Error"
 
-        if core_verbose > 3:
+        # This will never show ... but it was informative at one point
+        if self.core_verbose > 3:
             print("fname", fname, "idxname", self.idxname, "lockname", self.lckname)
 
         self.waitlock()
@@ -294,7 +296,7 @@ class TwinCore(TwinCoreBase):
             if indexsize < HEADSIZE:
                 self.create_idx(self.ifp)
                 # It was an existing data, new index needed
-                if core_verbose > 0:
+                if self.core_verbose > 0:
                     print("Reindexing")
                 self.__reindex()
 
@@ -331,10 +333,10 @@ class TwinCore(TwinCoreBase):
 
         if core_integrity:
             ccc = self.hash32(data)
-            if core_verbose > 1:
+            if self.core_verbose > 1:
                 print("rec", rec, "hash", hex(hash), "check", hex(ccc))
             if hash != ccc:
-                if core_verbose > 0:
+                if self.core_verbose > 0:
                     print("Error on hash at rec", rec, "hash", hex(hash), "check", hex(ccc))
                 return []
 
@@ -352,10 +354,10 @@ class TwinCore(TwinCoreBase):
 
         if core_integrity:
             ccc2 = self.hash32(data2)
-            if core_verbose > 1:
+            if self.core_verbose > 1:
                 print("rec", rec, "hash2", hex(hash2), "check2", hex(ccc2))
             if hash2 != ccc2:
-                if core_verbose > 0:
+                if self.core_verbose > 0:
                     print("Error on hash at rec", rec, "hash2", hex(hash2), "check2", hex(ccc2))
                 return []
 
@@ -379,7 +381,7 @@ class TwinCore(TwinCoreBase):
             return cnt2
 
         if sig != TwinCore.RECSIG:
-            if core_verbose > 2:
+            if self.core_verbose > 2:
                 print(" Damaged data '%s' at" % sig, rec)
             return cnt2
 
@@ -393,10 +395,10 @@ class TwinCore(TwinCoreBase):
         data = self.getbuffstr(rec+12, blen)
         if core_integrity:
             ccc = self.hash32(data)
-            if core_verbose > 1:
+            if self.core_verbose > 1:
                 print("rec", rec, "hash", hex(hash), "check", hex(ccc))
             if hash != ccc:
-                if core_verbose > 0:
+                if self.core_verbose > 0:
                     print("Error on hash at rec", rec, "hash", hex(hash), "check", hex(ccc))
                 return []
 
@@ -416,13 +418,13 @@ class TwinCore(TwinCoreBase):
         data2 = self.getbuffstr(rec2+8, blen2)
         if core_integrity:
             ccc2 = self.hash32(data2)
-            if core_verbose > 1:
+            if self.core_verbose > 1:
                 print("rec", rec, "hash2", hex(hash), "check2", hex(ccc))
             if hash2 != ccc2:
-                if core_verbose > 0:
+                if self.core_verbose > 0:
                     print("Error on hash at rec", rec, "hash2", hex(hash), "check2", hex(ccc))
                 return []
-        if core_verbose:
+        if self.core_verbose:
             print("%-5d pos %5d" % (cnt, rec), "%8x" % hash, "len", blen, trunc(data),
                                                         "%8x" % hash2,"len", blen2, trunc(data2))
         else:
@@ -501,9 +503,9 @@ class TwinCore(TwinCoreBase):
             lenx = self.getbuffint(aa + 8)
             sep =  self.getbuffstr(aa + 12 + lenx, self.INTSIZE)
             len2 =  self.getbuffint(aa + 20 + lenx)
-            if core_verbose > 2:
+            if self.core_verbose > 2:
                 print(aa, "sig", sig, "hhh2", hhh2, "len", lenx, "sep", sep, "len2", len2)
-            elif core_verbose > 1:
+            elif self.core_verbose > 1:
                 data =  self.getbuffstr(aa + 12, lenx)
                 data2 =  self.getbuffstr(aa + 24 + lenx, len2)
                 print(aa, "sig", sig, "data", data, "data2", data2)
@@ -605,7 +607,7 @@ class TwinCore(TwinCoreBase):
                     if core_pgdebug > 1:
                         print("deleted", rec)
                 elif sig != TwinCore.RECSIG:
-                    if core_verbose:
+                    if self.core_verbose:
                         print("Detected error at %d" % rec)
                     self.__save_error(rec, vacerrfp)
                 else:
@@ -712,7 +714,7 @@ class TwinCore(TwinCoreBase):
     def  del_rec(self, recnum):
         rsize = self.getdbsize()
         if recnum >= rsize:
-            if core_verbose:
+            if self.core_verbose:
                 print("Past end of data.");
             return False
         chash = self.getidxint(CURROFFS)
@@ -721,7 +723,7 @@ class TwinCore(TwinCoreBase):
         #print("offs", offs)
         old = self.getbuffstr(offs, self.INTSIZE)
         if old == TwinCore.RECDEL:
-            if core_verbose:
+            if self.core_verbose:
                 print("Record at %d already deleted." % offs);
             return False
 
@@ -755,7 +757,7 @@ class TwinCore(TwinCoreBase):
 
     def  retrieve(self, hashx, limx = 1):
 
-        hhhh = self.hash32(hashx.encode("cp437"))   #;print("hashx", hashx, hhhh)
+        hhhh = self.hash32(hashx.encode("cp437", errors='replace'))   #;print("hashx", hashx, hhhh)
         chash = self.getidxint(CURROFFS)            #;print("chash", chash)
         arr = []
 
@@ -780,12 +782,43 @@ class TwinCore(TwinCoreBase):
 
         return arr
 
+    # Find by string matching substring
+    def  findrec(self, strx, limx = 1):
+
+        chash = self.getidxint(CURROFFS)            #;print("chash", chash)
+        arr = []
+        strx2 = strx.encode("cp437", errors='replace');
+
+        self.waitlock()
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == TwinCore.RECDEL:
+                if core_showdel:
+                    print(" Deleted record '%s' at" % sig, rec)
+            elif sig != TwinCore.RECSIG:
+                print(" Damaged data '%s' at" % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.core_verbose:
+                    print("find buffer", data, strx)
+                if strx2 in data:
+                    arr.append(self.get_rec_offs(rec))
+                    if len(arr) >= limx:
+                        break
+        self.dellock()
+
+        return arr
+
     # --------------------------------------------------------------------
-    # Search from the back end, so latest comes first
+    # Search from the end, so latest comes first
 
     def  find_key(self, hashx, limx = 0xffffffff):
 
-        hhhh = self.hash32(hashx.encode("cp437"))
+        hhhh = self.hash32(hashx.encode("cp437", errors='replace'))
         #print("hashx", hashx, hhhh)
         chash = self.getidxint(CURROFFS)
         #print("chash", chash)
@@ -842,7 +875,8 @@ class TwinCore(TwinCoreBase):
     def  save_data(self, arg2, arg3):
 
         # Prepare all args
-        arg2e = arg2.encode("cp437");        arg3e = arg3.encode("cp437")
+        arg2e = arg2.encode("cp437", errors='replace');
+        arg3e = arg3.encode("cp437", errors='replace')
 
         if core_pgdebug > 1:
             print("args", arg2e, "arg3", arg3e)
@@ -892,6 +926,6 @@ class TwinCore(TwinCoreBase):
 
         return curr
 
-__all__ = ["TwinCore", "core_verbose", "core_quiet", "core_pgdebug", "core_lcktimeout"]
+__all__ = ["TwinCore", "self.core_verbose", "core_quiet", "core_pgdebug", "core_lcktimeout"]
 
 # EOF
