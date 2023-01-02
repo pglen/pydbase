@@ -167,7 +167,9 @@ class TwinCoreBase():
                     self.dellock()
                     break
             else:
-                self.softcreate(self.lckname)
+                fp = self.softcreate(self.lckname)
+                # Sun 01.Jan.2023 close it !!!! it is a lock
+                fp.close()
                 break
 
     def dellock(self):
@@ -322,10 +324,13 @@ class TwinCore(TwinCoreBase):
 
         arr = []
         sig = self.getbuffstr(rec, self.INTSIZE)
+
+        if sig == TwinCore.RECDEL:
+            return arr
+
         if sig != TwinCore.RECSIG:
-            if sig != TwinCore.RECDEL:
-                print(" Damaged data '%s' at" % sig, rec)
-                return arr
+            print(" Damaged data '%s' at" % sig, rec)
+            return arr
 
         hash = self.getbuffint(rec+4)
         blen = self.getbuffint(rec+8)
@@ -370,6 +375,7 @@ class TwinCore(TwinCoreBase):
     def  dump_rec(self, rec, cnt):
 
         ''' Print record to the screen '''
+
         cnt2 = 0
         sig = self.getbuffstr(rec, self.INTSIZE)
 
@@ -413,7 +419,7 @@ class TwinCore(TwinCoreBase):
 
         if blen2 < 0:
             print("Invalid data length %d at %d" % (blen2, rec))
-            return cnt
+            return cnt2
 
         data2 = self.getbuffstr(rec2+8, blen2)
         if core_integrity:
@@ -429,6 +435,7 @@ class TwinCore(TwinCoreBase):
                                                         "%8x" % hash2,"len", blen2, trunc(data2))
         else:
             print("%-5d pos %5d" % (cnt, rec), "Data:", trunc(data, 18), "Data2:", trunc(data2, 18))
+
         cnt2 += 1
         return cnt2
 
@@ -687,6 +694,7 @@ class TwinCore(TwinCoreBase):
         chash = self.getidxint(CURROFFS)
         #print("chash", chash)
         offs = self.getidxint(HEADSIZE + recnum * self.INTSIZE * 2)
+
         #print("offs", offs)
         return self.rec2arr(offs)
 
@@ -845,7 +853,10 @@ class TwinCore(TwinCoreBase):
 
         return arr
 
-    def  del_data(self, hash, skip):
+
+    def  del_data(self, hash, skip = 0):
+
+        ''' Delete data by hash '''
 
         cnt = skip
         hhhh = int(hash, 16)                #;print("hash", hash, hhhh)
@@ -865,18 +876,63 @@ class TwinCore(TwinCoreBase):
             #print("data '%s' at" % sig, rec, "blen", blen)
 
             hhh = self.getbuffint(rec+4)
+            if hash == hhh:
+                if self.core_verbose > 0:
+                    print("Would delete", hhh)
+
+            self.putbuffstr(rec, TwinCore.RECDEL)
+
             cnt += 1
 
         return arr
+
+
+    def  del_recs(self, strx, skip = 0, maxrec = INT_MAX):
+
+        ''' Delete records by key string; needs bin str, converted autoamically on entry  '''
+
+        if type(strx) == str:
+            strx = strx.encode("cp437")
+
+        cnt = 0;
+        chash = self.getidxint(CURROFFS)    #;print("chash", chash)
+        for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == TwinCore.RECDEL:
+                if core_showdel:
+                    print(" Deleted record '%s' at" % sig, rec)
+            elif sig != TwinCore.RECSIG:
+                print(" Damaged data '%s' at" % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.core_verbose:
+                    print("del_recs", data, strx)
+
+                if strx in data:
+                    if self.core_verbose > 0:
+                        print("Deleting", aa, data)
+                    self.putbuffstr(rec, TwinCore.RECDEL)
+                    cnt += 1
+                    if cnt >= maxrec:
+                        break
+        return cnt
 
     # --------------------------------------------------------------------
     # Save data to database file
 
     def  save_data(self, arg2, arg3):
 
-        # Prepare all args
-        arg2e = arg2.encode("cp437", errors='replace');
-        arg3e = arg3.encode("cp437", errors='replace')
+        # Prepare all args, if cannot encode, use original
+        try:
+            arg2e = arg2.encode("cp437", errors='replace');
+        except:
+            arg2e = arg2
+        try:
+            arg3e = arg3.encode("cp437", errors='replace')
+        except:
+            arg3e = arg3
 
         if core_pgdebug > 1:
             print("args", arg2e, "arg3", arg3e)

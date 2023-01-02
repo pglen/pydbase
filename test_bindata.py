@@ -2,37 +2,24 @@
 import os, pytest, string, random
 import twincore, pypacker
 
+from mytest import *
+
 core = None
 
-allstr =    " " + \
-            string.ascii_lowercase +  string.ascii_uppercase +  \
-                string.digits
-
 # ------------------------------------------------------------------------
-
-# Return a random string based upon length
-
-def randbin(lenx):
-
-    strx = ""
-    for aa in range(lenx):
-        ridx = random.randint(0, 255)
-        strx += chr(ridx)
-    return strx.encode("cp437", errors="ignore")
-
 
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
     global core
     try:
         # Fresh start
-        os.remove("data/test_bytedata.pydb")
-        os.remove("data/test_bytedata.pidx")
+        os.remove("test_data/test_bytedata.pydb")
+        os.remove("test_data/test_bytedata.pidx")
     except:
         #print(sys.exc_info())
         pass
 
-    core = twincore.TwinCore("data/test_bytedata.pydb")
+    core = twincore.TwinCore("test_data/test_bytedata.pydb")
     assert core != 0
 
     # Create a database of 5000 random records

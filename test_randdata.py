@@ -2,38 +2,14 @@
 import os, pytest, string, random
 import twincore, pypacker
 
+from mytest import *
+
 core = None
-
-allstr =    " " + \
-            string.ascii_lowercase +  string.ascii_uppercase +  \
-                string.digits
-
-# ------------------------------------------------------------------------
-
-# Return a random string based upon length
-
-def randstr(lenx):
-
-    strx = ""
-    for aa in range(lenx):
-        ridx = random.randint(0, len(allstr)-1)
-        rr = allstr[ridx]
-        strx += str(rr)
-    return strx
-
 
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
     global core
-    try:
-        # Fresh start
-        os.remove("data/test_randdata.pydb")
-        os.remove("data/test_randdata.pidx")
-    except:
-        #print(sys.exc_info())
-        pass
-
-    core = twincore.TwinCore("data/test_randdata.pydb")
+    core = create_db()
     assert core != 0
 
     # Create a database of 5000 random records
@@ -42,6 +18,12 @@ def setup_module(module):
         val = randstr(random.randint(24, 96))
         ret = core.save_data(str(key), str(val))
         assert ret != 0
+
+def teardown_module(module):
+    """ teardown any state that was previously setup with a setup_module
+    method.
+    """
+    uncreate_db()
 
 def test_randdata(capsys):
 

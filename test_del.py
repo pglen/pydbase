@@ -9,13 +9,13 @@ def setup_module(module):
     global core
     try:
         # Fresh start
-        os.remove("test_data/tests_vacuum.pydb")
-        os.remove("test_data/tests_vacuum.pidx")
+        os.remove("test_data/tests_delete.pydb")
+        os.remove("test_data/tests_delete.pidx")
     except:
         #print(sys.exc_info())
         pass
 
-    core = twincore.TwinCore("test_data/tests_vacuum.pydb")
+    core = twincore.TwinCore("test_data/tests_delete.pydb")
     assert core != 0
 
     ret = core.save_data("1111", "2222")
@@ -25,22 +25,15 @@ def setup_module(module):
     ret = core.save_data("111", "222")
     assert ret != 0
 
-    #ret = core.save_data("1", "2")
-    #assert ret != 0
-    #ret = core.save_data("11", "22")
-    #assert ret != 0
-    #ret = core.save_data("111", "222")
-    #assert ret != 0
+def test_del(capsys):
 
-def test_vacuum(capsys):
+    core.del_recs(b"11111")
+    core.del_recs("111")
 
-    core.vacuum()
     core.dump_data(twincore.INT_MAX)
     captured = capsys.readouterr()
 
-    out =   "0     pos    32 Data: b'1111' Data2: b'2222'\n"    \
-            "1     pos    64 Data: b'11111' Data2: b'22222'\n"  \
-            "2     pos    98 Data: b'111' Data2: b'222'\n"
+    out =   "0     pos    32 Data: b'1111' Data2: b'2222'\n"
 
     assert captured.out == out
 

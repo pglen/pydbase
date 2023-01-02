@@ -2,20 +2,14 @@
 import os, pytest
 import twincore, pypacker
 
+from mytest import *
+
 core = None
 
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
     global core
-    try:
-        # Fresh start
-        os.remove("data/test_reindex.pydb")
-        os.remove("data/test_reindex.pidx")
-    except:
-        #print(sys.exc_info())
-        pass
-
-    core = twincore.TwinCore("data/test_reindex.pydb")
+    core = create_db()
     assert core != 0
 
     # Create a database of 1000 records
@@ -25,9 +19,15 @@ def setup_module(module):
         assert ret != 0
         kkk += 1; vvv += 1
 
+def teardown_module(module):
+    """ teardown any state that was previously setup with a setup_module
+    method.
+    """
+    uncreate_db()
+
 def test_reindex(capsys):
 
-    #core.reindex()
+    core.reindex()
     #core.dump_data(twincore.INT_MAX)
     dbsize = core.getdbsize()
     #print("dbsize", dbsize)

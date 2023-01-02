@@ -1,19 +1,19 @@
 
+import os
 import pytest, twincore, pypacker
+
+from mytest import *
 
 core = None
 
+#assert 0
+
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
-    global core
-    try:
-        # Fresh start
-        os.remove("data/tests.pydb")
-        os.remove("data/tests.pidx")
-    except:
-        pass
 
-    core = twincore.TwinCore("data/tests.pydb")
+    global core
+
+    core = create_db()
     assert core != 0
 
     #print("write", core)
@@ -28,7 +28,7 @@ def test_dump(capsys):
 
     core.dump_data(twincore.INT_MAX)
     captured = capsys.readouterr()
-    #print(captured)
+    print(captured)
 
     out =   "0     pos    32 Data: b'1111' Data2: b'2222'\n"    \
             "1     pos    64 Data: b'11111' Data2: b'22222'\n"  \

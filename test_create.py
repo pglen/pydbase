@@ -1,28 +1,21 @@
 
 import pytest, twincore, pypacker, os
 
-#pytest_plugins = "pytester"
+from mytest import *
 
 core = None
 
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
     global core
-    try:
-        # Fresh start
-        os.remove("data/tests.pydb")
-        os.remove("data/tests.pidx")
-    except:
-        pass
-
-    core = twincore.TwinCore("data/tests.pydb")
+    core = create_db()
     assert core != 0
 
 def teardown_module(module):
     """ teardown any state that was previously setup with a setup_module
     method.
     """
-    pass
+    uncreate_db()
 
 def setup_function(function):
     #assert 0
