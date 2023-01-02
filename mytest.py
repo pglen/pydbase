@@ -23,7 +23,6 @@ def create_db():
         print(sys.exc_info())
     return core
 
-
 def uncreate_db():
     try:
         # Fresh start

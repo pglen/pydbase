@@ -241,11 +241,17 @@ class TwinCoreBase():
         ifp.seek(CURROFFS, io.SEEK_SET)
         ifp.write(pp)
 
- # ------------------------------------------------------------------------
-# Data file and index file; protected by locks
-# The TWIN refers to separate files for data / index
+
+# ------------------------------------------------------------------------
 
 class TwinCore(TwinCoreBase):
+
+    '''
+
+     Data file and index file; protected by locks
+     The TWIN refers to separate files for data / index
+
+    '''
 
     # These are all four bytes, one can read it like integers
 
@@ -438,6 +444,64 @@ class TwinCore(TwinCoreBase):
 
         cnt2 += 1
         return cnt2
+
+    def  check_rec(self, rec):
+
+        ''' Print record to the screen '''
+        ret = 0
+        sig = self.getbuffstr(rec, self.INTSIZE)
+
+        if sig == TwinCore.RECDEL:
+            ret = 1
+            # Do not check deleted
+            return ret
+
+        if sig != TwinCore.RECSIG:
+            if self.core_verbose > 2:
+                print(" Damaged data '%s' at" % sig, rec)
+            return ret
+
+        hash = self.getbuffint(rec+4)
+        blen = self.getbuffint(rec+8)
+
+        if blen < 0:
+            if self.core_verbose > 1:
+                print("Invalid key length %d at %d" % (blen, rec))
+            return ret
+
+        data = self.getbuffstr(rec+12, blen)
+        ccc = self.hash32(data)
+        if hash != ccc:
+            if self.core_verbose > 0:
+                print("Error on hash at rec", rec, "hash", hex(hash), "check", hex(ccc))
+            return ret
+
+        endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
+        if endd != TwinCore.RECSEP:
+            if self.core_verbose > 1:
+                print(" Damaged sep data '%s' at" % endd, rec)
+            return ret
+
+        rec2 = rec + 16 + blen;
+        hash2 = self.getbuffint(rec2)
+        blen2 = self.getbuffint(rec2+4)
+
+        if blen2 < 0:
+            print("Invalid data length %d at %d" % (blen2, rec))
+            return ret
+
+        data2 = self.getbuffstr(rec2+8, blen2)
+        ccc2 = self.hash32(data2)
+        if hash2 != ccc2:
+            if self.core_verbose > 0:
+                print("Error on hash at rec", rec, "hash2", hex(hash), "check2", hex(ccc))
+            return ret
+
+        if self.core_verbose > 1:
+            print("Record at %d OK." % rec)
+
+        ret += 1
+        return ret
 
     # --------------------------------------------------------------------
     # Internal; no locking
@@ -756,10 +820,20 @@ class TwinCore(TwinCoreBase):
         self.putbuffstr(recoffs, TwinCore.RECDEL)
         return True
 
-    def integrity(self):
-        pass
-        ret = 0
-        return ret
+    # Check integrity
+
+    def integrity(self, skip = 0):
+
+        ret = 0; cnt2 = 0
+        chash = self.getidxint(CURROFFS)        #;print("chash", chash)
+        # Direction sensitivity
+        rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+        for aa in rrr:
+            rec = self.getidxint(aa)
+            #print(aa, rec)
+            cnt2 += 1
+            ret  += self.check_rec(rec)
+        return ret == cnt2
 
     # Retrive in reverse, limit it
 
@@ -813,7 +887,7 @@ class TwinCore(TwinCoreBase):
                 data = self.getbuffstr(rec + 12, blen)
                 if self.core_verbose:
                     print("find buffer", data, strx)
-                if strx2 in data:
+                if strx2 == data:
                     arr.append(self.get_rec_offs(rec))
                     if len(arr) >= limx:
                         break
@@ -910,7 +984,7 @@ class TwinCore(TwinCoreBase):
                 if self.core_verbose:
                     print("del_recs", data, strx)
 
-                if strx in data:
+                if strx == data:
                     if self.core_verbose > 0:
                         print("Deleting", aa, data)
                     self.putbuffstr(rec, TwinCore.RECDEL)
