@@ -1,12 +1,10 @@
+# Test for pydbase
 
-import os
-import pytest, twincore, pypacker
-
+import os, pytest
+import twincore, pypacker
 from mytest import *
 
 core = None
-
-#assert 0
 
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
@@ -16,7 +14,6 @@ def setup_module(module):
     core = create_db()
     assert core != 0
 
-    #print("write", core)
     ret = core.save_data("1111", "2222")
     assert ret != 0
     ret = core.save_data("11111", "22222")
