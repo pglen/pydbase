@@ -145,6 +145,20 @@ is identified by its hash, there is no speed penalty; Note that the hash is a 32
 one; collisions are possible, however unlikely; To compensate, make sure you compare the
 key proper with the returned key.
 
+## PyTest
+
+ The pytest passes with no errors; The following test are
+created / executed:
+
+        test_bindata.py .                     [  7%]
+        test_create.py .....                  [ 46%]
+        test_del.py .                         [ 53%]
+        test_dump.py .                        [ 61%]
+        test_packer.py ..                     [ 76%]
+        test_randdata.py .                    [ 84%]
+        test_reindex.py .                     [ 92%]
+        test_vacuum.py .                      [100%]
+
 ## Maintenance
 
   The DB can rebuild its index and purge all deleted records. In the test utility

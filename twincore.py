@@ -854,7 +854,7 @@ class TwinCore(TwinCoreBase):
         return arr
 
 
-    def  del_data(self, hash, skip = 0):
+    def  del_data(self, hash, skip = 1):
 
         ''' Delete data by hash '''
 

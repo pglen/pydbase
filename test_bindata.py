@@ -11,6 +11,7 @@ core = None
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
     global core
+
     try:
         # Fresh start
         os.remove("test_data/test_bytedata.pydb")
