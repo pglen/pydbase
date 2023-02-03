@@ -291,7 +291,9 @@ class TwinCore(TwinCoreBase):
             self.create_data(self.fp)
             try:
                 # There was no file, delete index, if any
-                os.remove(self.idxname)
+                os.rename(self.idxname, self.idxname + ".dangle")
+                #os.remove(self.idxname)
+
             except:
                 pass
             #print("initial padding")

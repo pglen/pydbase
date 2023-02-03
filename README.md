@@ -68,7 +68,7 @@ Some basic ops:
     want; also the record history is kept this way, also a desirable
     behavior.
 
-## The test executable script:
+## The db exersizer executable script:
 
 The file pydbase.py exercises most of the twincore functionality. It also
 provides examples of how to drive it.
@@ -147,8 +147,9 @@ key proper with the returned key.
 
 ## PyTest
 
- The pytest passes with no errors; The following test are
-created / executed:
+ The pytest passes with no errors; Run it from the tests/ directory.
+
+ The following (and more) test are created / executed:
 
         test_bindata.py .                     [  7%]
         test_create.py .....                  [ 46%]
@@ -175,16 +176,40 @@ the options are:
   The index is recreated; as of the current file contents. This is useful if
 the index is lost (like copying the data only)
 
-  If there is a data file without the index, the re-indexing is called automatically.
-  In case of deleted data file, pydbase will recognize the dangling index and nuke it.
+ The command line utility's help response:
 
-  Note about the 'garbage' directory ... older stuff I tried; some are really useful; For
-instance take a look at the simplifier: an array of indexes to save offsets and lengths;
-The simplifier makes one range out of overlapping or close to each other ranges. (min. dist=4)
+Usage: pydebase.py [options] [arg_key arg_data]
+ Options: -h         help (this screen)
+          -V         print version        -|-  -q   quiet on
+          -d         debug level (0-10)   -|-  -v   increment verbosity level
+          -r         write random data    -|-  -w   write fixed record(s)
+          -z         dump backwards(s)    -|-  -i   show deleted record(s)
+          -U         Vacuum DB            -|-  -R   reindex / recover DB
+          -I         DB Integrity check   -|-  -c   set check integrity flag
+          -s         Skip count           -|-  -K   list keys only
+          -y  key    find by key          -|-  -t  key    retrieve by key
+          -o  offs   get data from offset -|-  -e  offs   delete at offset
+          -u  rec    delete at position   -|-  -g  num    get number of recs.
+          -k  key    key to save          -|-  -a  str    data to save
+          -n  num    number of records to write
+          -p  num    skip number of records on get
+          -l  lim    limit number of records on get
+          -x  max    limit max number of records to get
+          -f  file   input or output file (default: 'data/pydbase.pydb')
+The default action is to dump records to screen in reverse order.
+On the command line, use quotes for multi word arguments.
+
+  If there is a data file without the index, the re-indexing is called automatically.
+  In case of deleted data file, pydbase will recognize the dangling index and nuke it
+  byr renaming it to orgfilename.pidx.dangle ;
+
+  Note about the 'garbage' and 'old_tries' directory ... older stuff I tried;
+ some are really useful; For instance take a look at the simplifier: an array of
+indexes to save offsets and lengths; The simplifier makes one range out of overlapping
+or close to each other ranges. (min. dist=4)
 
 ### TODO
 
     Speed up by implementing this as a 'C' module
-
 
 ; EOF

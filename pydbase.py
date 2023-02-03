@@ -53,28 +53,25 @@ def randstr(lenx):
 
 def help():
     print("Usage: pydebase.py [options] [arg_key arg_data]")
-    print("  Options: -h         help (this screen)")
-    print("           -V         print version        ||  -q   quiet on")
-    print("           -d         debug level (0-10)   ||  -v   increment verbosity level")
-    print("           -r         write random data    ||  -w   write record(s)")
-    print("           -z         dump backwards(s)    ||  -i   show deleted record(s)")
-    print("           -U         Vacuum DB            ||  -R   reindex / recover DB")
-    print("           -I         DB Integrity check   ||  -c   set check integrity flag")
-    print("           -s         Skip count           ||  -K   list keys only")
-    print("           -f  file   input or output file (default: 'pydbase.pydb')")
-    print("           -n  num    number of records to write")
-    print("           -g  num    get number of records")
-    print("           -p  num    skip number of records on get")
-    print("           -l  lim    limit number of records on get")
-    print("           -x  max    limit max number of records to get")
-    print("           -k  key    key to save (quotes for multi words)")
-    print("           -a  str    data to save (quotes for multi words)")
-    print("           -y  key    find by key")
-    print("           -t  key    retrieve by key")
-    print("           -o  offs   get data from offset")
-    print("           -e  offs   delete at offset")
-    print("           -u  rec    delete at position")
+    print(" Options: -h         help (this screen)")
+    print("          -V         print version        -|-  -q   quiet on")
+    print("          -d         debug level (0-10)   -|-  -v   increment verbosity level")
+    print("          -r         write random data    -|-  -w   write fixed record(s)")
+    print("          -z         dump backwards(s)    -|-  -i   show deleted record(s)")
+    print("          -U         Vacuum DB            -|-  -R   reindex / recover DB")
+    print("          -I         DB Integrity check   -|-  -c   set check integrity flag")
+    print("          -s         Skip count           -|-  -K   list keys only")
+    print("          -y  key    find by key          -|-  -t  key    retrieve by key")
+    print("          -o  offs   get data from offset -|-  -e  offs   delete at offset")
+    print("          -u  rec    delete at position   -|-  -g  num    get number of recs.")
+    print("          -k  key    key to save          -|-  -a  str    data to save ")
+    print("          -n  num    number of records to write")
+    print("          -p  num    skip number of records on get")
+    print("          -l  lim    limit number of records on get")
+    print("          -x  max    limit max number of records to get")
+    print("          -f  file   input or output file (default: 'data/pydbase.pydb')")
     print("The default action is to dump records to screen in reverse order.")
+    print("On the command line, use quotes for multi word arguments.")
 
 # ------------------------------------------------------------------------
 
@@ -96,9 +93,9 @@ def mainfunc():
     opts = []; args = []
 
     # Old fashioned parsing
+    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:"
+    opts_normal = "chiVrwzvqURIK?"
     try:
-        opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:"
-        opts_normal = "chiVrwzvqURIK?"
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
@@ -203,7 +200,7 @@ def mainfunc():
     core = twincore.TwinCore(deffile)
     core.core_verbose   = verbose
 
-    # See if we have arguments, save it
+    # See if we have arguments, save it as data
     if len(args) == 2:
         #print("args", args)
         curr = core.save_data(args[0], args[1])
