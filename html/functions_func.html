@@ -68,7 +68,9 @@ $(function() {
 : <a class="el" href="classtwincore_1_1TwinCoreBase.html#a4abe46dc9f515555ccc18ec902b8644f">twincore.TwinCoreBase</a>
 </li>
 <li>__init__()
-: <a class="el" href="classpypacker_1_1packbin.html#adadd8d8cd4d3c2d02cec5f78bfb7ea6b">pypacker.packbin</a>
+: <a class="el" href="classdbcore_1_1DbCore.html#ad0d012ecbeec4d02f6a00c7c6426a5d2">dbcore.DbCore</a>
+, <a class="el" href="classmemcore_1_1DbCore.html#ab06c211f7a3d50f0f3dd67d4d8b3c5e2">memcore.DbCore</a>
+, <a class="el" href="classpypacker_1_1packbin.html#adadd8d8cd4d3c2d02cec5f78bfb7ea6b">pypacker.packbin</a>
 , <a class="el" href="classtwincore_1_1TwinCore.html#a253266fb833f30e84345c88dc728eb7e">twincore.TwinCore</a>
 , <a class="el" href="classtwincore_1_1TwinCoreBase.html#a5651804e97c292da51b1479166949fd5">twincore.TwinCoreBase</a>
 </li>
@@ -83,6 +85,9 @@ $(function() {
 
 
 <h3><a id="index_c"></a>- c -</h3><ul>
+<li>check_rec()
+: <a class="el" href="classtwincore_1_1TwinCore.html#a9d1764b074e9a99c17af96f00849bb7e">twincore.TwinCore</a>
+</li>
 <li>create_data()
 : <a class="el" href="classtwincore_1_1TwinCoreBase.html#ab6c993d1469f9cb32d267921e3ab8b7f">twincore.TwinCoreBase</a>
 </li>
@@ -97,7 +102,7 @@ $(function() {
 : <a class="el" href="classpypacker_1_1packbin.html#a40c4c60d44369c966947f599add12347">pypacker.packbin</a>
 </li>
 <li>del_data()
-: <a class="el" href="classtwincore_1_1TwinCore.html#aa49f2910f98caa1e21a905fc5312e8b5">twincore.TwinCore</a>
+: <a class="el" href="classtwincore_1_1TwinCore.html#a173a2d1c98c196866e8ff5f675500a3b">twincore.TwinCore</a>
 </li>
 <li>del_rec()
 : <a class="el" href="classtwincore_1_1TwinCore.html#ae6d2f01f134dc3cda5e8042685709134">twincore.TwinCore</a>
@@ -105,14 +110,19 @@ $(function() {
 <li>del_rec_offs()
 : <a class="el" href="classtwincore_1_1TwinCore.html#a353b89e2d834a280fda82d1ed3ee3bd6">twincore.TwinCore</a>
 </li>
+<li>del_recs()
+: <a class="el" href="classtwincore_1_1TwinCore.html#ae1c28f8a2049c05ba6f9b0986f929a49">twincore.TwinCore</a>
+</li>
 <li>dellock()
 : <a class="el" href="classtwincore_1_1TwinCoreBase.html#a3b8274f41a34673b8601287aa020e0b9">twincore.TwinCoreBase</a>
 </li>
 <li>dump_data()
-: <a class="el" href="classtwincore_1_1TwinCore.html#a799c61c7c1a7ad5efd49ff551781215c">twincore.TwinCore</a>
+: <a class="el" href="classmemcore_1_1DbCore.html#a00ea0baa71ed00df892d0f90900fd29b">memcore.DbCore</a>
+, <a class="el" href="classtwincore_1_1TwinCore.html#a799c61c7c1a7ad5efd49ff551781215c">twincore.TwinCore</a>
 </li>
 <li>dump_rec()
-: <a class="el" href="classtwincore_1_1TwinCore.html#afc40a0c48a1f7d9e392ab1fd7bc69a4e">twincore.TwinCore</a>
+: <a class="el" href="classmemcore_1_1DbCore.html#adf8a2fc80e8620998c529a8ef7b26667">memcore.DbCore</a>
+, <a class="el" href="classtwincore_1_1TwinCore.html#afc40a0c48a1f7d9e392ab1fd7bc69a4e">twincore.TwinCore</a>
 </li>
 </ul>
 
@@ -128,8 +138,14 @@ $(function() {
 <li>find_key()
 : <a class="el" href="classtwincore_1_1TwinCore.html#a15f0c74d82bdb9758d0b1542c9b77f09">twincore.TwinCore</a>
 </li>
+<li>findrec()
+: <a class="el" href="classtwincore_1_1TwinCore.html#a17d6506c012b82b109108a4e651959c6">twincore.TwinCore</a>
+</li>
 <li>flush()
 : <a class="el" href="classtwincore_1_1TwinCore.html#a4ab1fe18fc88228d40cbab845afcb222">twincore.TwinCore</a>
+</li>
+<li>flushx()
+: <a class="el" href="classmemcore_1_1DbCore.html#a1af367c39ec8fa884b90322f930f0331">memcore.DbCore</a>
 </li>
 </ul>
 
@@ -142,26 +158,50 @@ $(function() {
 : <a class="el" href="classtwincore_1_1TwinCore.html#afe65b4da89ffae114ecc85e434d4dd5d">twincore.TwinCore</a>
 </li>
 <li>getbuffint()
-: <a class="el" href="classtwincore_1_1TwinCoreBase.html#a0fdf61d7d11491bcf0d88f2e0b2aa45f">twincore.TwinCoreBase</a>
+: <a class="el" href="classmemcore_1_1DbCore.html#a36228716b105ab0389df2cead5c80e6f">memcore.DbCore</a>
+, <a class="el" href="classtwincore_1_1TwinCoreBase.html#a0fdf61d7d11491bcf0d88f2e0b2aa45f">twincore.TwinCoreBase</a>
+</li>
+<li>getbuffshort()
+: <a class="el" href="classmemcore_1_1DbCore.html#a3d3ef4484eeb8668e64d12959d69cf6d">memcore.DbCore</a>
 </li>
 <li>getbuffstr()
-: <a class="el" href="classtwincore_1_1TwinCoreBase.html#a80d3262e70c86ac704f5a56cd41000ee">twincore.TwinCoreBase</a>
+: <a class="el" href="classmemcore_1_1DbCore.html#a86d506a4e4ed6c595adc14d83936bccc">memcore.DbCore</a>
+, <a class="el" href="classtwincore_1_1TwinCoreBase.html#a80d3262e70c86ac704f5a56cd41000ee">twincore.TwinCoreBase</a>
 </li>
 <li>getdbsize()
 : <a class="el" href="classtwincore_1_1TwinCore.html#ac687c8c4fcfbd0e51012c58500ab870d">twincore.TwinCore</a>
 </li>
+<li>gethash_offs()
+: <a class="el" href="classmemcore_1_1DbCore.html#ad00df8b52efa4ab7e85a67dbb64329a2">memcore.DbCore</a>
+</li>
 <li>getidxint()
 : <a class="el" href="classtwincore_1_1TwinCoreBase.html#a66509d1174b9416bdaea70f1ffec557c">twincore.TwinCoreBase</a>
 </li>
+<li>getint()
+: <a class="el" href="classdbcore_1_1DbCore.html#a17d8cfe7c5c4b5bb1f0ab7b8078aa8b4">dbcore.DbCore</a>
+, <a class="el" href="classmemcore_1_1DbCore.html#a516ac6f5873e79f6fdeae99f9df10ac8">memcore.DbCore</a>
+</li>
 <li>getsize()
-: <a class="el" href="classtwincore_1_1TwinCoreBase.html#ad45f0d509a0f42b0ab7048fec7257296">twincore.TwinCoreBase</a>
+: <a class="el" href="classmemcore_1_1DbCore.html#aeffefe752ab5d22050a7ccb033a10455">memcore.DbCore</a>
+, <a class="el" href="classtwincore_1_1TwinCoreBase.html#ad45f0d509a0f42b0ab7048fec7257296">twincore.TwinCoreBase</a>
 </li>
 </ul>
 
 
 <h3><a id="index_h"></a>- h -</h3><ul>
 <li>hash32()
-: <a class="el" href="classtwincore_1_1TwinCoreBase.html#a80e3bc2b021c4a6b915cdc11320463c1">twincore.TwinCoreBase</a>
+: <a class="el" href="classmemcore_1_1DbCore.html#a282affbda0cda2fcd5a11d1a61b0ba63">memcore.DbCore</a>
+, <a class="el" href="classtwincore_1_1TwinCoreBase.html#a80e3bc2b021c4a6b915cdc11320463c1">twincore.TwinCoreBase</a>
+</li>
+<li>hwrite()
+: <a class="el" href="classmemcore_1_1DbCore.html#aab9cc6f91f3f5c1dfa70222bbd8991dd">memcore.DbCore</a>
+</li>
+</ul>
+
+
+<h3><a id="index_i"></a>- i -</h3><ul>
+<li>integrity()
+: <a class="el" href="classtwincore_1_1TwinCore.html#aa965d210bfad6d47b64998358ef418ac">twincore.TwinCore</a>
 </li>
 </ul>
 
@@ -173,8 +213,15 @@ $(function() {
 <li>putbuffstr()
 : <a class="el" href="classtwincore_1_1TwinCoreBase.html#af823bc46f7ca499e70c613d295198f31">twincore.TwinCoreBase</a>
 </li>
+<li>puthash_offs()
+: <a class="el" href="classmemcore_1_1DbCore.html#a902e48c46ee115c8aa196dc35dec60bc">memcore.DbCore</a>
+</li>
 <li>putidxint()
 : <a class="el" href="classtwincore_1_1TwinCoreBase.html#aeda2eb85c2ef1065e9f5401f1557f8fb">twincore.TwinCoreBase</a>
+</li>
+<li>putint()
+: <a class="el" href="classdbcore_1_1DbCore.html#ae7cf2f38f5d3697fb56405db8bc06ff0">dbcore.DbCore</a>
+, <a class="el" href="classmemcore_1_1DbCore.html#aa432578f4846ae957704f9bbd5a73ed4">memcore.DbCore</a>
 </li>
 </ul>
 
@@ -197,7 +244,9 @@ $(function() {
 
 <h3><a id="index_s"></a>- s -</h3><ul>
 <li>save_data()
-: <a class="el" href="classtwincore_1_1TwinCore.html#a225800d17009b371a32aeb2643ecfb21">twincore.TwinCore</a>
+: <a class="el" href="classdbcore_1_1DbCore.html#a2ad921ab8c1f5c949ffe0e3be6a45e9b">dbcore.DbCore</a>
+, <a class="el" href="classmemcore_1_1DbCore.html#ac6025b92612d3b15f6699e808b0fa7f7">memcore.DbCore</a>
+, <a class="el" href="classtwincore_1_1TwinCore.html#a225800d17009b371a32aeb2643ecfb21">twincore.TwinCore</a>
 </li>
 <li>softcreate()
 : <a class="el" href="classtwincore_1_1TwinCoreBase.html#a56fd21beaf3736e7ba68313dcf6b4605">twincore.TwinCoreBase</a>
@@ -215,6 +264,13 @@ $(function() {
 <h3><a id="index_w"></a>- w -</h3><ul>
 <li>waitlock()
 : <a class="el" href="classtwincore_1_1TwinCoreBase.html#ad32a5bcc61a74ed3c202360103e607b2">twincore.TwinCoreBase</a>
+</li>
+</ul>
+
+
+<h3><a id="index_x"></a>- x -</h3><ul>
+<li>xwrite()
+: <a class="el" href="classmemcore_1_1DbCore.html#aebff683a92a2264a58ef61cb3b31c5e6">memcore.DbCore</a>
 </li>
 </ul>
 </div><!-- contents -->

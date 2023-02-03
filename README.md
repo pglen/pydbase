@@ -1,6 +1,6 @@
-# pydbase 
+# pydbase
 
-## High speed database with key / data 
+## High speed database with key / data
 
 ### Fast data save / retrieve
 
@@ -9,7 +9,7 @@
 
 ## API
 
-The module 'twincore' uses two data files and a lock file. The file names are generated
+  The module 'twincore' uses two data files and a lock file. The file names are generated
 from the base name of the data file. .pidx for the index, .lock for the lock file.
 The lock file times out in 0.3 seconds and breaks the lock. (in case of frozen process)
 

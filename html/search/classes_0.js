@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['invalidtype_131',['InvalidType',['../classpypacker_1_1InvalidType.html',1,'pypacker']]]
+  ['dbcore_195',['DbCore',['../classdbcore_1_1DbCore.html',1,'dbcore.DbCore'],['../classmemcore_1_1DbCore.html',1,'memcore.DbCore']]]
 ];

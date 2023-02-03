@@ -21,9 +21,11 @@ int \mbox{\hyperlink{namespacepydbase_ab2f2fde0bfd09dc70099421eb1738d3a}{pydbase
 \item 
 string \mbox{\hyperlink{namespacepydbase_adf9e67b16ac5d97a609cfd4b70d0b41a}{pydbase.\+version}} = \char`\"{}1.\+0\char`\"{}
 \item 
+int \mbox{\hyperlink{namespacepydbase_a1cb74d43257777cd1110242d6441b76a}{pydbase.\+keyonly}} = 0
+\item 
 int \mbox{\hyperlink{namespacepydbase_a0213a1735f8b8f21785f1f53d450dc00}{pydbase.\+ncount}} = 1
 \item 
-int \mbox{\hyperlink{namespacepydbase_a80fdae7a14b006397746aaf04d677ca4}{pydbase.\+scount}} = 0
+int \mbox{\hyperlink{namespacepydbase_a551c54e41049c88d938e458e36ab7fc6}{pydbase.\+skipcount}} = 0
 \item 
 int \mbox{\hyperlink{namespacepydbase_ad7c9ce0d49d28149554de0688dacb374}{pydbase.\+maxx}} = 10
 \item 
@@ -41,6 +43,8 @@ int \mbox{\hyperlink{namespacepydbase_a6083fa6baf35ce75790c73ebc56c3364}{pydbase
 \item 
 int \mbox{\hyperlink{namespacepydbase_a3f1884a6bab38f76af6790ef0c2095c2}{pydbase.\+vacx}} = 0
 \item 
+int \mbox{\hyperlink{namespacepydbase_a023c80d305acb6c872ed8076334c5c71}{pydbase.\+integx}} = 0
+\item 
 string \mbox{\hyperlink{namespacepydbase_a377c1227f2d9616aa8a679f99a866ce2}{pydbase.\+retrx}} = \char`\"{}\char`\"{}
 \item 
 string \mbox{\hyperlink{namespacepydbase_a2ea0ccd41e99e927b12071ceeb535483}{pydbase.\+keyx}} = \char`\"{}\char`\"{}
@@ -53,9 +57,9 @@ string \mbox{\hyperlink{namespacepydbase_a32a6fec8b675e76efa0eef6fc1aefc94}{pydb
 \item 
 list \mbox{\hyperlink{namespacepydbase_ae1213c6edfd76969761f61dd87c6b781}{pydbase.\+opts}} = \mbox{[}$\,$\mbox{]}
 \item 
-string \mbox{\hyperlink{namespacepydbase_a2c59085f2d9227b907da269aadcbbd05}{pydbase.\+opts\+\_\+args}} = \char`\"{}a\+:d\+:e\+:f\+:g\+:k\+:l\+:n\+:o\+:s\+:t\+:u\+:x\+:y\+:\char`\"{}
+string \mbox{\hyperlink{namespacepydbase_a2c59085f2d9227b907da269aadcbbd05}{pydbase.\+opts\+\_\+args}} = \char`\"{}a\+:d\+:e\+:f\+:g\+:k\+:l\+:n\+:o\+:s\+:t\+:u\+:x\+:y\+:p\+:\char`\"{}
 \item 
-string \mbox{\hyperlink{namespacepydbase_a41496b6f387064cfdf44a112a4ad5694}{pydbase.\+opts\+\_\+normal}} = \char`\"{}chi\+Vrwzvq\+UR?\char`\"{}
+string \mbox{\hyperlink{namespacepydbase_a41496b6f387064cfdf44a112a4ad5694}{pydbase.\+opts\+\_\+normal}} = \char`\"{}chi\+Vrwzvq\+URIK?\char`\"{}
 \item 
 \mbox{\hyperlink{namespacepydbase_aaea086a648298defa0aacf2624aafd83}{pydbase.\+args}}
 \item 
@@ -71,23 +75,31 @@ bool \mbox{\hyperlink{namespacepydbase_a7a473e42c7486bb3554b6b4dc465c055}{pydbas
 \item 
 bool \mbox{\hyperlink{namespacepydbase_aa0899209ce5507d2aeb76423977670c1}{pydbase.\+recx}} = True
 \item 
-\mbox{\hyperlink{namespacepydbase_a6a960b24b1f528f2e8b3c385f71f4c32}{pydbase.\+skipx}} = aa\mbox{[}1\mbox{]}
+\mbox{\hyperlink{namespacepydbase_a63bd3567ac852f1d3361015f9796de52}{pydbase.\+skipx}} = int(aa\mbox{[}1\mbox{]})
 \item 
 \mbox{\hyperlink{namespacepydbase_a29aaafaf2441aeba6fe243917ca87e19}{pydbase.\+delx}} = aa\mbox{[}1\mbox{]}
 \item 
-\mbox{\hyperlink{namespacepydbase_a479c4420710a2f04e3bb6982c91f96c9}{pydbase.\+core\+\_\+quiet}}
+bool \mbox{\hyperlink{namespacepydbase_aca631ebbfa97ac9ea7d11c3425fd7f0c}{pydbase.\+checkx}} = True
 \item 
-\mbox{\hyperlink{namespacepydbase_a6df7bb381352bb7d4908987a1a7fc23e}{pydbase.\+core\+\_\+verbose}}
+\mbox{\hyperlink{namespacepydbase_a479c4420710a2f04e3bb6982c91f96c9}{pydbase.\+core\+\_\+quiet}}
 \item 
 \mbox{\hyperlink{namespacepydbase_a4f4fe437c905014b61d3e39f6d41ffba}{pydbase.\+core\+\_\+pgdebug}}
 \item 
 \mbox{\hyperlink{namespacepydbase_a7520b857893c923130832dcb9cd217ca}{pydbase.\+core\+\_\+showdel}}
 \item 
+\mbox{\hyperlink{namespacepydbase_a562a414a235faf9b4122c6b7982f7491}{pydbase.\+core\+\_\+integrity}}
+\item 
 \mbox{\hyperlink{namespacepydbase_a06ad7977ba6d0ab25b42db54189aa9ea}{pydbase.\+core}} = \mbox{\hyperlink{classtwincore_1_1TwinCore}{twincore.\+Twin\+Core}}(deffile)
+\item 
+\mbox{\hyperlink{namespacepydbase_a6df7bb381352bb7d4908987a1a7fc23e}{pydbase.\+core\+\_\+verbose}}
+\item 
+\mbox{\hyperlink{namespacepydbase_a1fe64747a99b23ad0ff61f36868772cc}{pydbase.\+curr}} = core.\+save\+\_\+data(args\mbox{[}0\mbox{]}, args\mbox{[}1\mbox{]})
 \item 
 \mbox{\hyperlink{namespacepydbase_a4cb1c7607e28faee6076089a1ebf0874}{pydbase.\+dbsize}} = core.\+getdbsize()
 \item 
-int \mbox{\hyperlink{namespacepydbase_a1fe64747a99b23ad0ff61f36868772cc}{pydbase.\+curr}} = 0
-\item 
 \mbox{\hyperlink{namespacepydbase_a6114552eb4defe8a6f6e3e212c47c08d}{pydbase.\+ddd}} = core.\+find\+\_\+key(findx, lcount)
+\item 
+int \mbox{\hyperlink{namespacepydbase_aea4ee8ee7a5510836e5841df51ea2098}{pydbase.\+cnt}} = 0
+\item 
+\mbox{\hyperlink{namespacepydbase_aa2f28eb15150250bb7b108a23e30d8b3}{pydbase.\+getx}} = int(getit)
 \end{DoxyCompactItemize}

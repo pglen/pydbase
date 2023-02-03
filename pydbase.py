@@ -4,13 +4,6 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading, warnings
 import string
 
-#import gi
-#gi.require_version("Gtk", "3.0")
-#from gi.repository import Gtk
-#from gi.repository import Gdk
-#from gi.repository import GObject
-#from gi.repository import GLib
-
 import gettext
 gettext.bindtextdomain('thisapp', './locale/')
 gettext.textdomain('thisapp')
@@ -85,9 +78,20 @@ def help():
 
 # ------------------------------------------------------------------------
 
-if __name__ == "__main__":
+def mainfunc():
+
 
     ''' Exersize all funtions of the twincore library '''
+
+    global           \
+    quiet,   writex,    randx,   skipx , \
+    offsx,   delx  ,    delrx,   delrx2, \
+    backx,   sdelx ,    vacx ,   recx  , \
+    integx,  checkx,   \
+    pgdebug, verbose, version,  keyonly, \
+    ncount,  skipcount,  maxx,  lcount,    \
+    retrx,    getit,   keyx, datax,   \
+    findx,   deffile
 
     opts = []; args = []
 
@@ -288,11 +292,14 @@ if __name__ == "__main__":
         print("vacuumed:", ddd, "record(s)")
     elif integx:
         ddd = core.integrity()
-        print("integrity check found:", ddd, "record(s)")
+        print("integrity check found:", int(ddd), "record(s)")
     else:
         if backx:
             core.dump_data(lcount, skipx)
         else:
             core.revdump_data(lcount, skipx)
+
+if __name__ == "__main__":
+    mainfunc()
 
 # EOF

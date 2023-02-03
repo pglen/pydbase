@@ -145,14 +145,14 @@ The test executable script:</h1>
 </pre> <h2><a class="anchor" id="autotoc_md6"></a>
 Comparison to other databases:</h2>
 <p>This comparison is to show the time it takes to write 500 records. In the tests the record size is about the same (Hello /vs/ "111 222") Please see the sqlite_test.sql for details of data output;</p>
-<p>The test can be repeated with running the 'time.sh' script file. Please note the the time.sh clears all files tests/* for a fair test. </p><pre class="fragment">    sqlite time test, writing 500 records ...
-    real    0m1.249s
-    user    0m0.008s
-    sys 0m0.071s
-    pydbase time test, writing 500 records ...
-    real    0m0.043s
-    user    0m0.034s
-    sys 0m0.008s
+<p>The test can be repeated with running the 'time.sh' script file. Please note the the time.sh clears all files test_data/* for a fair test. </p><pre class="fragment">sqlite time test, writing 500 records ...
+real    0m1.606s
+user    0m0.004s
+sys 0m0.073s
+pydbase time test, writing 500 records ...
+real    0m0.034s
+user    0m0.030s
+sys 0m0.004s
 </pre><p> Please mind the fact that the sqlite engine has to do a lot of parsing which we skip doing; That is why pydbase is more than an order of magnitude faster ...</p>
 <h2><a class="anchor" id="autotoc_md7"></a>
 Saving more complex data</h2>
@@ -168,13 +168,23 @@ rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
 rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
 </pre><p> There is also the option of using pypacker on the key itself. Because the key is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit one; collisions are possible, however unlikely; To compensate, make sure you compare the key proper with the returned key.</p>
 <h1><a class="anchor" id="autotoc_md9"></a>
+PyTest</h1>
+<p>The pytest passes with no errors; The following test are created / executed: </p><pre class="fragment">    test_bindata.py .                     [  7%]
+    test_create.py .....                  [ 46%]
+    test_del.py .                         [ 53%]
+    test_dump.py .                        [ 61%]
+    test_packer.py ..                     [ 76%]
+    test_randdata.py .                    [ 84%]
+    test_reindex.py .                     [ 92%]
+    test_vacuum.py .                      [100%]
+</pre> <h1><a class="anchor" id="autotoc_md10"></a>
 Maintenance</h1>
 <p>The DB can rebuild its index and purge all deleted records. In the test utility the options are: </p><pre class="fragment">    ./pydbase.py -U     for vacuum (add -v for verbosity)
 </pre><p> The database is re-built, the deleted entries are purged, the damaged data (if any) is saved into a separate file, created with the same base name as the data base, with the '.perr' extension. </p><pre class="fragment">  ./pydbase.py -R     for re-index
 </pre><p> The index is recreated; as of the current file contents. This is useful if the index is lost (like copying the data only)</p>
 <p>If there is a data file without the index, the re-indexing is called automatically. In case of deleted data file, pydbase will recognize the dangling index and nuke it.</p>
 <p>Note about the 'garbage' directory ... older stuff I tried; some are really useful; For instance take a look at the simplifier: an array of indexes to save offsets and lengths; The simplifier makes one range out of overlapping or close to each other ranges. (min. dist=4)</p>
-<h2><a class="anchor" id="autotoc_md10"></a>
+<h2><a class="anchor" id="autotoc_md11"></a>
 TODO</h2>
 <pre class="fragment">Speed up by implementing this as a 'C' module
 </pre><p>; EOF </p>

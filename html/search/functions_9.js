@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['randstr_175',['randstr',['../namespacepydbase.html#afa67cbfa75fbeb16af0539146d11c2b5',1,'pydbase']]],
-  ['rec2arr_176',['rec2arr',['../classtwincore_1_1TwinCore.html#a223b5e7e1aac7a763a24636131384d52',1,'twincore::TwinCore']]],
-  ['reindex_177',['reindex',['../classtwincore_1_1TwinCore.html#ad8f025e3bcd85a84114c239b5d18e930',1,'twincore::TwinCore']]],
-  ['retrieve_178',['retrieve',['../classtwincore_1_1TwinCore.html#acffa26aeec93b292d0bbfe74fe7d81ef',1,'twincore::TwinCore']]],
-  ['revdump_5fdata_179',['revdump_data',['../classtwincore_1_1TwinCore.html#aad203ee037668e96c561e4f5f0a721f8',1,'twincore::TwinCore']]]
+  ['putbuffint_269',['putbuffint',['../classtwincore_1_1TwinCoreBase.html#a3210c72299b0210cda1d13ae4f472472',1,'twincore::TwinCoreBase']]],
+  ['putbuffstr_270',['putbuffstr',['../classtwincore_1_1TwinCoreBase.html#af823bc46f7ca499e70c613d295198f31',1,'twincore::TwinCoreBase']]],
+  ['puthash_5foffs_271',['puthash_offs',['../classmemcore_1_1DbCore.html#a902e48c46ee115c8aa196dc35dec60bc',1,'memcore::DbCore']]],
+  ['putidxint_272',['putidxint',['../classtwincore_1_1TwinCoreBase.html#aeda2eb85c2ef1065e9f5401f1557f8fb',1,'twincore::TwinCoreBase']]],
+  ['putint_273',['putint',['../classdbcore_1_1DbCore.html#ae7cf2f38f5d3697fb56405db8bc06ff0',1,'dbcore.DbCore.putint()'],['../classmemcore_1_1DbCore.html#aa432578f4846ae957704f9bbd5a73ed4',1,'memcore.DbCore.putint()']]]
 ];

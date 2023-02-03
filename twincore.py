@@ -10,7 +10,7 @@
     The reason for this name is that two files are created. The first contains
     the data, the second contains the offsets (indexes) and hashes.
 
-    The second file can be re-built easily from the first the the reindex option.
+    The second file can be re-built easily from the first using the reindex option.
 
     Structure of the data:
 
@@ -99,7 +99,8 @@ class TwinCoreBase():
 
     def __del__(self):
         pass
-        #print("called __del__", self.fname)
+        #if self.core_verbose > 1:
+        #    print("called __del__", self.fname)
 
     def getsize(self, buffio):
         pos = buffio.tell()
@@ -176,7 +177,8 @@ class TwinCoreBase():
         try:
             os.unlink(self.lckname)
         except:
-            pass
+            if self.core_verbose > 0:
+                print("dellock failed", sys.exc_info())
 
     # Deliver a 32 bit hash of whatever
     def hash32(self, strx):
@@ -335,7 +337,7 @@ class TwinCore(TwinCoreBase):
             return arr
 
         if sig != TwinCore.RECSIG:
-            print(" Damaged data '%s' at" % sig, rec)
+            print(" Damaged data (sig) '%s' at" % sig, rec)
             return arr
 
         hash = self.getbuffint(rec+4)
@@ -355,7 +357,7 @@ class TwinCore(TwinCoreBase):
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
         if endd != TwinCore.RECSEP:
-            print(" Damaged end data '%s' at" % endd, rec)
+            print(" Damaged data (sep) '%s' at" % endd, rec)
             return arr
 
         rec2 = rec + 16 + blen;
@@ -394,7 +396,7 @@ class TwinCore(TwinCoreBase):
 
         if sig != TwinCore.RECSIG:
             if self.core_verbose > 2:
-                print(" Damaged data '%s' at" % sig, rec)
+                print(" Damaged data (sig) '%s' at" % sig, rec)
             return cnt2
 
         hash = self.getbuffint(rec+4)
@@ -416,7 +418,7 @@ class TwinCore(TwinCoreBase):
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
         if endd != TwinCore.RECSEP:
-            print(" Damaged sep data '%s' at" % endd, rec)
+            print(" Damaged data (sep) '%s' at" % endd, rec)
             return cnt2
 
         rec2 = rec + 16 + blen;
@@ -458,7 +460,7 @@ class TwinCore(TwinCoreBase):
 
         if sig != TwinCore.RECSIG:
             if self.core_verbose > 2:
-                print(" Damaged data '%s' at" % sig, rec)
+                print(" Damaged data (sig) '%s' at" % sig, rec)
             return ret
 
         hash = self.getbuffint(rec+4)
@@ -479,7 +481,7 @@ class TwinCore(TwinCoreBase):
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
         if endd != TwinCore.RECSEP:
             if self.core_verbose > 1:
-                print(" Damaged sep data '%s' at" % endd, rec)
+                print(" Damaged data (sep) '%s' at" % endd, rec)
             return ret
 
         rec2 = rec + 16 + blen;

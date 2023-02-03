@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['waitlock_194',['waitlock',['../classtwincore_1_1TwinCoreBase.html#ad32a5bcc61a74ed3c202360103e607b2',1,'twincore::TwinCoreBase']]]
+  ['uncreate_5fdb_302',['uncreate_db',['../namespacemytest.html#a20e722dfbb10c26ac7251246a7a8b052',1,'mytest']]]
 ];

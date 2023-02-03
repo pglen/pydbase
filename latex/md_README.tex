@@ -79,14 +79,14 @@ Here is the help screen of pydebase.\+py\+: \begin{DoxyVerb}    Usage: pydebase.
  \hypertarget{md_README_autotoc_md6}{}\doxysubsection{Comparison to other databases\+:}\label{md_README_autotoc_md6}
 This comparison is to show the time it takes to write 500 records. In the tests the record size is about the same (Hello /vs/ \char`\"{}111 222\char`\"{}) Please see the sqlite\+\_\+test.\+sql for details of data output;
 
-The test can be repeated with running the \textquotesingle{}time.\+sh\textquotesingle{} script file. Please note the the time.\+sh clears all files tests/$\ast$ for a fair test. \begin{DoxyVerb}    sqlite time test, writing 500 records ...
-    real    0m1.249s
-    user    0m0.008s
-    sys 0m0.071s
-    pydbase time test, writing 500 records ...
-    real    0m0.043s
-    user    0m0.034s
-    sys 0m0.008s
+The test can be repeated with running the \textquotesingle{}time.\+sh\textquotesingle{} script file. Please note the the time.\+sh clears all files test\+\_\+data/$\ast$ for a fair test. \begin{DoxyVerb}sqlite time test, writing 500 records ...
+real    0m1.606s
+user    0m0.004s
+sys 0m0.073s
+pydbase time test, writing 500 records ...
+real    0m0.034s
+user    0m0.030s
+sys 0m0.004s
 \end{DoxyVerb}
  Please mind the fact that the sqlite engine has to do a lot of parsing which we skip doing; That is why pydbase is more than an order of magnitude faster ...\hypertarget{md_README_autotoc_md7}{}\doxysubsection{Saving more complex data}\label{md_README_autotoc_md7}
 The database saves a key / value pair. However, the key can be mutated to contain meta data. (for example adding a string in front of it.) \mbox{[}like\+: CUST\+\_\+ for customer details\mbox{]} Also the key can be made unique by adding a UUID to it.
@@ -100,7 +100,17 @@ unpacked: [1, 2, 'aa', ['bb', b'dd']]
 rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
 rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
 \end{DoxyVerb}
- There is also the option of using pypacker on the key itself. Because the key is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit one; collisions are possible, however unlikely; To compensate, make sure you compare the key proper with the returned key.\hypertarget{md_README_autotoc_md9}{}\doxysection{Maintenance}\label{md_README_autotoc_md9}
+ There is also the option of using pypacker on the key itself. Because the key is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit one; collisions are possible, however unlikely; To compensate, make sure you compare the key proper with the returned key.\hypertarget{md_README_autotoc_md9}{}\doxysection{Py\+Test}\label{md_README_autotoc_md9}
+The pytest passes with no errors; The following test are created / executed\+: \begin{DoxyVerb}    test_bindata.py .                     [  7%]
+    test_create.py .....                  [ 46%]
+    test_del.py .                         [ 53%]
+    test_dump.py .                        [ 61%]
+    test_packer.py ..                     [ 76%]
+    test_randdata.py .                    [ 84%]
+    test_reindex.py .                     [ 92%]
+    test_vacuum.py .                      [100%]
+\end{DoxyVerb}
+ \hypertarget{md_README_autotoc_md10}{}\doxysection{Maintenance}\label{md_README_autotoc_md10}
 The DB can rebuild its index and purge all deleted records. In the test utility the options are\+: \begin{DoxyVerb}    ./pydbase.py -U     for vacuum (add -v for verbosity)
 \end{DoxyVerb}
  The database is re-\/built, the deleted entries are purged, the damaged data (if any) is saved into a separate file, created with the same base name as the data base, with the \textquotesingle{}.perr\textquotesingle{} extension. \begin{DoxyVerb}  ./pydbase.py -R     for re-index
@@ -109,7 +119,7 @@ The DB can rebuild its index and purge all deleted records. In the test utility 
 
 If there is a data file without the index, the re-\/indexing is called automatically. In case of deleted data file, pydbase will recognize the dangling index and nuke it.
 
-Note about the \textquotesingle{}garbage\textquotesingle{} directory ... older stuff I tried; some are really useful; For instance take a look at the simplifier\+: an array of indexes to save offsets and lengths; The simplifier makes one range out of overlapping or close to each other ranges. (min. dist=4)\hypertarget{md_README_autotoc_md10}{}\doxysubsection{TODO}\label{md_README_autotoc_md10}
+Note about the \textquotesingle{}garbage\textquotesingle{} directory ... older stuff I tried; some are really useful; For instance take a look at the simplifier\+: an array of indexes to save offsets and lengths; The simplifier makes one range out of overlapping or close to each other ranges. (min. dist=4)\hypertarget{md_README_autotoc_md11}{}\doxysubsection{TODO}\label{md_README_autotoc_md11}
 \begin{DoxyVerb}Speed up by implementing this as a 'C' module
 \end{DoxyVerb}
 

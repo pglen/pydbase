@@ -1,14 +1,8 @@
 var searchData=
 [
-  ['packbin_71',['packbin',['../classpypacker_1_1packbin.html',1,'pypacker']]],
-  ['packed_72',['packed',['../namespacetestpacker.html#ae78819c501a0d30709576e155b9f07b1',1,'testpacker']]],
-  ['packer_73',['packer',['../namespacetestpacker.html#a82ec93616b61bcd1863530aa86e3e98e',1,'testpacker']]],
-  ['pgdebug_74',['pgdebug',['../namespacepydbase.html#a9534c57f6e9453ebabbc300a2b93ecf7',1,'pydbase.pgdebug()'],['../namespacepypacker.html#aa22f186d6349e3dcf6e4fba12977eb2f',1,'pypacker.pgdebug()']]],
-  ['putbuffint_75',['putbuffint',['../classtwincore_1_1TwinCoreBase.html#a3210c72299b0210cda1d13ae4f472472',1,'twincore::TwinCoreBase']]],
-  ['putbuffstr_76',['putbuffstr',['../classtwincore_1_1TwinCoreBase.html#af823bc46f7ca499e70c613d295198f31',1,'twincore::TwinCoreBase']]],
-  ['putidxint_77',['putidxint',['../classtwincore_1_1TwinCoreBase.html#aeda2eb85c2ef1065e9f5401f1557f8fb',1,'twincore::TwinCoreBase']]],
-  ['pydbase_78',['pydbase',['../md_README.html',1,'(Global Namespace)'],['../namespacepydbase.html',1,'pydbase']]],
-  ['pydbase_2epy_79',['pydbase.py',['../pydbase_8py.html',1,'']]],
-  ['pypacker_80',['pypacker',['../namespacepypacker.html',1,'']]],
-  ['pypacker_2epy_81',['pypacker.py',['../pypacker_8py.html',1,'']]]
+  ['offsx_104',['offsx',['../namespacepydbase.html#ab07069ca32b9c4dd99172c9c58b0c908',1,'pydbase']]],
+  ['opts_105',['opts',['../namespacepydbase.html#ae1213c6edfd76969761f61dd87c6b781',1,'pydbase']]],
+  ['opts_5fargs_106',['opts_args',['../namespacepydbase.html#a2c59085f2d9227b907da269aadcbbd05',1,'pydbase']]],
+  ['opts_5fnormal_107',['opts_normal',['../namespacepydbase.html#a41496b6f387064cfdf44a112a4ad5694',1,'pydbase']]],
+  ['org_108',['org',['../namespacetestpacker.html#a93250da162582c4d849365b1f7f3fc9d',1,'testpacker']]]
 ];
