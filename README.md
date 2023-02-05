@@ -4,14 +4,18 @@
 
 ### Fast data save / retrieve
 
-  The motivation was to create a no frills way of saving / retrieving data fast.
-  the command line tester can drive most aspects of this API;
+  The motivation was to create a no frills way of saving / retrieving data
+fast. the command line tester can drive most aspects of this API;
+
+NOT ready for production yet.
 
 ## API
 
-  The module 'twincore' uses two data files and a lock file. The file names are generated
-from the base name of the data file. .pidx for the index, .lock for the lock file.
-The lock file times out in 0.3 seconds and breaks the lock. (in case of frozen process)
+  The module 'twincore' uses two data files and a lock file. The file
+ names are generated from the base name of the data file;
+pydb for data; .pidx for the index, .lock for the lock file.
+The lock file times out in 0.3 seconds and breaks the lock.
+ (in case of frozen process)
 
 Setting verbosity and debug level:
 
@@ -68,9 +72,9 @@ Some basic ops:
     want; also the record history is kept this way, also a desirable
     behavior.
 
-## The db exersizer executable script:
+## The db exersizer executable script 'pydbase.py':
 
-The file pydbase.py exercises most of the twincore functionality. It also
+   The file pydbase.py exercises most of the twincore functionality. It also
 provides examples of how to drive it.
 
 Here is the help screen of pydebase.py:
@@ -139,6 +143,7 @@ Example from running testpacker.py:
     unpacked: [1, 2, 'aa', ['bb', b'dd']]
     rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
     rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
+    (Note: the decode returns an array of data; use data[0] to get the original)
 
   There is also the option of using pypacker on the key itself. Because the key
 is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit
@@ -179,37 +184,49 @@ the index is lost (like copying the data only)
  The command line utility's help response:
 
 Usage: pydebase.py [options] [arg_key arg_data]
- Options: -h         help (this screen)
-          -V         print version        -|-  -q   quiet on
-          -d         debug level (0-10)   -|-  -v   increment verbosity level
-          -r         write random data    -|-  -w   write fixed record(s)
-          -z         dump backwards(s)    -|-  -i   show deleted record(s)
-          -U         Vacuum DB            -|-  -R   reindex / recover DB
-          -I         DB Integrity check   -|-  -c   set check integrity flag
-          -s         Skip count           -|-  -K   list keys only
-          -y  key    find by key          -|-  -t  key    retrieve by key
-          -o  offs   get data from offset -|-  -e  offs   delete at offset
-          -u  rec    delete at position   -|-  -g  num    get number of recs.
-          -k  key    key to save          -|-  -a  str    data to save
-          -n  num    number of records to write
-          -p  num    skip number of records on get
-          -l  lim    limit number of records on get
-          -x  max    limit max number of records to get
-          -f  file   input or output file (default: 'data/pydbase.pydb')
+ Options: -h        help (this screen)
+          -V        print version        -|-  -q  quiet on
+          -d        debug level (0-10)   -|-  -v  increment verbosity
+          -r        write random data    -|-  -w  write fixed record(s)
+          -z        dump backwards(s)    -|-  -i  show deleted record(s)
+          -U        Vacuum DB            -|-  -R  reindex / recover DB
+          -I        DB Integrity check   -|-  -c  set check integrity flag
+          -s        Skip count           -|-  -K  list keys only
+          -y  key   find by key          -|-  -t  key    retrieve by key
+          -o  offs  get data from offset -|-  -e  offs   delete at offset
+          -u  rec   delete at position   -|-  -g  num    get number of recs
+          -k  key   key to save          -|-  -a  str    data to save
+          -n  num   number of records to write
+          -p  num   skip number of records on get
+          -l  lim   limit number of records on get
+          -x  max   limit max number of records to get
+          -f  file  input or output file (default: 'data/pydbase.pydb')
 The default action is to dump records to screen in reverse order.
 On the command line, use quotes for multi word arguments.
 
-  If there is a data file without the index, the re-indexing is called automatically.
-  In case of deleted data file, pydbase will recognize the dangling index and nuke it
-  byr renaming it to orgfilename.pidx.dangle ;
+  If there is a data file without the index, the re-indexing is called
+ automatically.   In case of deleted data file, pydbase will recognize
+ the dangling index and nuke it byr renaming it to
+ orgfilename.pidx.dangle ;
 
-  Note about the 'garbage' and 'old_tries' directory ... older stuff I tried;
- some are really useful; For instance take a look at the simplifier: an array of
-indexes to save offsets and lengths; The simplifier makes one range out of overlapping
-or close to each other ranges. (min. dist=4)
+  Note about the 'garbage' and 'old_tries' directory ... older stuff I
+tried; some are really useful; For instance take a look at the
+simplifier: an array of indexes to save offsets and lengths; The
+simplifier makes one range out of overlapping or close to each other
+ranges. (min. dist=4)
+
+  The database grows with every record added to it. It does not check if
+ the particular record already exists. It adds the new record version to
+the end; Retrieving starts from the end, and the data retrieved
+(for this particular key) is the last record saved. All the other records
+of this key are also there in chronological (save) order. Miracle of
+record history archived by default.
+
+  To clean the old record history, one may delete all the records with
+this same key, except the last one.
 
 ### TODO
 
-    Speed up by implementing this as a 'C' module
+    Speed this up by implementing this as a 'C' module
 
 ; EOF

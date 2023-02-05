@@ -2,7 +2,7 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading, warnings
-import string
+import  string, psutil
 
 import gettext
 gettext.bindtextdomain('thisapp', './locale/')
@@ -12,6 +12,8 @@ _ = gettext.gettext
 import twincore, pypacker
 
 # ------------------------------------------------------------------------
+
+gl_lockname = "pydbase.main.lock"
 
 pgdebug = 0
 verbose = 0
@@ -29,6 +31,7 @@ delrx   = 0; delrx2  = 0
 backx   = 0; sdelx   = 0
 vacx    = 0; recx    = 0
 integx  = 0; checkx  = 0
+sizex   = 0;
 
 retrx   = ""; getit   = ""
 keyx    = ""; datax   = ""
@@ -65,6 +68,7 @@ def help():
     print("          -o  offs   get data from offset -|-  -e  offs   delete at offset")
     print("          -u  rec    delete at position   -|-  -g  num    get number of recs.")
     print("          -k  key    key to save          -|-  -a  str    data to save ")
+    print("          -S         Print size of database")
     print("          -n  num    number of records to write")
     print("          -p  num    skip number of records on get")
     print("          -l  lim    limit number of records on get")
@@ -72,8 +76,6 @@ def help():
     print("          -f  file   input or output file (default: 'data/pydbase.pydb')")
     print("The default action is to dump records to screen in reverse order.")
     print("On the command line, use quotes for multi word arguments.")
-
-# ------------------------------------------------------------------------
 
 def mainfunc():
 
@@ -84,17 +86,17 @@ def mainfunc():
     quiet,   writex,    randx,   skipx , \
     offsx,   delx  ,    delrx,   delrx2, \
     backx,   sdelx ,    vacx ,   recx  , \
-    integx,  checkx,   \
-    pgdebug, verbose, version,  keyonly, \
-    ncount,  skipcount,  maxx,  lcount,    \
-    retrx,    getit,   keyx, datax,   \
+    integx,  checkx,    sizex, \
+    pgdebug, verbose,   version,  keyonly, \
+    ncount,  skipcount, maxx,  lcount,    \
+    retrx,    getit,    keyx, datax,   \
     findx,   deffile
 
     opts = []; args = []
 
     # Old fashioned parsing
     opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:"
-    opts_normal = "chiVrwzvqURIK?"
+    opts_normal = "chiVrwzvqURIK?S"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
@@ -182,6 +184,9 @@ def mainfunc():
             #print("delx", delx)
         if aa[0] == "-c":
             checkx = True
+            #print("checkx", checkx)
+        if aa[0] == "-S":
+            sizex = True
             #print("checkx", checkx)
         if aa[0] == "-I":
             integx = True
@@ -272,6 +277,8 @@ def mainfunc():
         if ncount == 0: ncount = 1
         ddd = core.retrieve(retrx, ncount)
         print(ddd)
+    elif sizex:
+        print("Database size:", core.getdbsize())
     elif offsx:
         ddd = core.get_rec_offs(int(offsx))
         print(ddd)
@@ -288,8 +295,8 @@ def mainfunc():
         ddd = core.vacuum()
         print("vacuumed:", ddd, "record(s)")
     elif integx:
-        ddd = core.integrity()
-        print("integrity check found:", int(ddd), "record(s)")
+        ddd = core.integrity_check()
+        print("Integrity check found good:", ddd[0], "of", ddd[1], "record(s)")
     else:
         if backx:
             core.dump_data(lcount, skipx)
@@ -297,6 +304,9 @@ def mainfunc():
             core.revdump_data(lcount, skipx)
 
 if __name__ == "__main__":
+
+    twincore.waitlock(gl_lockname)
     mainfunc()
+    twincore.dellock(gl_lockname)
 
 # EOF

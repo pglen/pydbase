@@ -10,17 +10,27 @@
 
 .PHONY:  doc doc3 clean echo
 
+
+PROG=pydbase
+
 all:
 	@echo "Type 'make help' for a list of targets"
+
+.PHONY: tests
+
+tests:
+	cd tests; pytest
+	cd ..
 
 help:
 	@echo
 	@echo "Targets:"
-	@echo "	 make install  -- Install PyEdPro (unofficial structure)"
+	@echo "	 make install  -- Install ${PROG} (unofficial structure)"
 	@echo "	 make setup    -- Run the setup.py script as install "
-	@echo "	 make pack     -- package PyEdPro "
-	@echo "	 make remove   -- remove (all) traces of pyedpro from the system"
-	@echo "	 make doc3     -- create documentation"
+	@echo "	 make pack     -- package ${PROG}  "
+	@echo "	 make remove   -- remove (all) traces of ${PROG}  from the system"
+	@echo "	 make tests    -- execute test suite ${PROG}"
+	@echo "	 make doc3     -- create ${PROG} documentation"
 	@echo
 
 # OLD install; use setup.py
