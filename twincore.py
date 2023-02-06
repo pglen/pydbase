@@ -163,11 +163,7 @@ class TwinCoreBase():
         self.cnt = 0
         self.fname = "" ;        self.idxname = ""
         self.lckname = "";
-        self.lckname2 = "";       self.lasterr = ""
-
-    def __del__(self):
-        if self.core_verbose > 1:
-            print("TwincoreBase: called __del__", self.fname, os.getpid())
+        self.lasterr = ""
 
     def getsize(self, buffio):
         sss = os.stat(buffio.fileno())
@@ -316,7 +312,13 @@ class TwinCore(TwinCoreBase):
         self.fname = fname
         self.idxname  = os.path.splitext(self.fname)[0] + ".pidx"
         self.lckname  = os.path.splitext(self.fname)[0] + ".lock"
-        self.lckname2 = os.path.splitext(self.fname)[0] + ".lock2"
+        #self.lckname2 = os.path.splitext(self.fname)[0] + ".lock2"
+
+        # This will never show ... but it was informative at one point
+        if core_pgdebug > 4:
+            print("fname:    ", fname)
+            print("idxname:  ", self.idxname)
+            print("lockname: ", self.lckname)
 
         self.lasterr = "No Error"
 
@@ -327,11 +329,18 @@ class TwinCore(TwinCoreBase):
 
         #print("pid", os.getpid())
 
-        # This will never show ... but it was informative at one point
-        if self.core_verbose > 3:
-            print("fname", fname, "idxname", self.idxname, "lockname", self.lckname)
 
         # Initial file creation
+
+        # Nuke false index
+        try:
+            if not os.path.isfile(self.fname):
+                #os.rename(self.idxname, self.idxname + ".old")
+                os.remove(self.idxname)
+
+        except:
+            pass
+
         self.fp = self.softcreate(self.fname)
         self.ifp = self.softcreate(self.idxname)
 
@@ -341,13 +350,13 @@ class TwinCore(TwinCoreBase):
         if buffsize < HEADSIZE:
             #print("initial padding")
             self.create_data(self.fp)
-            try:
-                # There was no file, delete index, if any
-                os.rename(self.idxname, self.idxname + ".dangle")
-                #os.remove(self.idxname)
+            #try:
+            #    # There was no file, delete index, if any
+            #    os.rename(self.idxname, self.idxname + ".dangle")
+            #    #os.remove(self.idxname)
+            #except:
+            #    pass
 
-            except:
-                pass
             #print("initial padding")
             self.create_idx(self.ifp)
         else:
@@ -388,7 +397,10 @@ class TwinCore(TwinCoreBase):
             print("Cannot close files", sys.exc_info())
 
     def getdbsize(self):
-        self._getdbsize(self.ifp)
+        ret = self._getdbsize(self.ifp)
+        if not ret:
+            ret = 0
+        return ret
 
     def _getdbsize(self, ifp):
 
@@ -463,13 +475,17 @@ class TwinCore(TwinCoreBase):
 
         if sig == TwinCore.RECDEL:
             if core_showdel:
-                blen = self.getbuffint(rec+8)
-                data = self.getbuffstr(rec+12, blen)
-                print(" Deleted data '%s' at" % sig, rec, "data", truncs(data))
+                klen = self.getbuffint(rec+8)
+                kdata = self.getbuffstr(rec+12, klen)
+                rec2 = rec + 16 + klen;
+                blen = self.getbuffint(rec2+4)
+                data = self.getbuffstr(rec2+8, blen)
+
+                print(" Del at", rec, "key:", kdata, "data:", truncs(data))
             return cnt2
 
         if sig != TwinCore.RECSIG:
-            if self.core_verbose > 2:
+            if self.core_verbose > 1:
                 print(" Damaged data (sig) '%s' at" % sig, rec)
             return cnt2
 
@@ -591,13 +607,11 @@ class TwinCore(TwinCoreBase):
     # --------------------------------------------------------------------
     # Internal; no locking
 
-    def  __dump_data(self, lim, skip = 0, dirx = 0):
+    def  __dump_data(self, lim = INT_MAX, skip = 0, dirx = 0):
 
         ''' Put all data to screen worker function '''
 
         cnt = skip; cnt2 = 0
-        #curr = self.getbuffint(CURROFFS)        #;print("curr", curr)
-        #chash = self.getidxint(CURROFFS)        #;print("chash", chash)
         curr =  chash = HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
 
         # Direction sensitivity
@@ -605,8 +619,6 @@ class TwinCore(TwinCoreBase):
             rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
         else:
             rrr = range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2)
-
-        #print("rrr", rrr)
 
         for aa in rrr:
             rec = self.getidxint(aa)
@@ -619,7 +631,7 @@ class TwinCore(TwinCoreBase):
                     if cnt >= lim:
                         break
 
-    def  dump_data(self, lim, skip = 0):
+    def  dump_data(self, lim = INT_MAX, skip = 0):
 
         ''' Put all data to screen '''
 
@@ -646,32 +658,44 @@ class TwinCore(TwinCoreBase):
         ret = 0
 
         #curr = self.getbuffint(CURROFFS) - HEADSIZE
-        curr =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
-
-        #print("curr", curr)
+        curr =  self._getdbsize(self.ifp) * self.INTSIZE * 2
 
         reidx = os.path.splitext(self.fname)[0]  + "_tmp_" + ".pidx"
         tempifp = self.softcreate(reidx)
         self.create_idx(tempifp)
+        dlen = self.getsize(self.fp)
+
+        if self.core_verbose > 2:
+           print("curr", curr, "dlen", dlen)
 
         aa =  HEADSIZE
         while 1:
-            if aa >= curr + HEADSIZE:
+            if aa >= dlen:
                 break
 
             sig = self.getbuffstr(aa, self.INTSIZE)
+            # Check if sig is correct
+            if sig != TwinCore.RECSIG:
+                print("Invalid sig .. resync needed")
+
+            #print("reind", aa)
 
             try:
                 hhh2 = self.getbuffint(aa + 4)
                 lenx = self.getbuffint(aa + 8)
+                if lenx < 0:
+                    print("Invalid key length")
                 sep =  self.getbuffstr(aa + 12 + lenx, self.INTSIZE)
                 len2 =  self.getbuffint(aa + 20 + lenx)
+                if len2 < 0:
+                    print("Invalid record length")
             except:
                 print("in reindex", sys.exc_info())
 
-            if self.core_verbose > 2:
-                print(aa, "sig", sig, "hhh2", hhh2, "len", lenx, "sep", sep, "len2", len2)
-            elif self.core_verbose > 1:
+            if self.core_verbose == 1:
+                print(aa, "sig", sig, "hhh2", hex(hhh2), "len", lenx, \
+                    "sep", sep, "len2", len2)
+            if self.core_verbose > 1:
                 data =  self.getbuffstr(aa + 12, lenx)
                 data2 =  self.getbuffstr(aa + 24 + lenx, len2)
                 print(aa, "sig", sig, "data", data, "data2", data2)
@@ -682,7 +706,11 @@ class TwinCore(TwinCoreBase):
 
             self._putint(tempifp, hashpos, aa)
             self._putint(tempifp, hashpos + self.INTSIZE, hhh2)
-            self._putint(tempifp, CURROFFS, tempifp.tell())
+
+            # This is a shame .. did not flush to file immidiately
+            tempifp.flush()
+
+            #self._putint(tempifp, hashpos, self.fp.tell())
 
             # This is dependent on the database structure
             aa += lenx + len2 + 24
@@ -690,7 +718,8 @@ class TwinCore(TwinCoreBase):
 
         # Make it go out of scope
         self.fp.flush()
-        self.ifp.flush();       self.ifp.close()
+        self.ifp.flush();
+        self.ifp.close()
         tempifp.flush();        tempifp.close()
 
         # Now move files
@@ -702,6 +731,7 @@ class TwinCore(TwinCoreBase):
         #print("rename", reidx, "->", self.idxname)
         os.rename(reidx, self.idxname)
 
+        # Activate new index
         self.ifp = self.softcreate(self.idxname)
         return ret
 
@@ -728,19 +758,26 @@ class TwinCore(TwinCoreBase):
     # ----------------------------------------------------------------
 
     def  vacuum(self):
-
         ''' Remove all deleted data
-        Make sure the db in not in session. '''
+            Make sure the db in not in session. '''
 
-        ret = 0
         waitlock(self.lckname)
+        ret = self._vacuum()
+        dellock(self.lckname)
+        return ret
+
+    def  _vacuum(self):
 
         vacname = os.path.splitext(self.fname)[0] + "_vac_" + ".pydb"
         vacerr  = os.path.splitext(self.fname)[0] +  ".perr"
         vacidx = os.path.splitext(vacname)[0]  + ".pidx"
-        #print("vacname", vacname)
-        #print("vacidx", vacidx)
-        #print("vacerr", vacerr)
+
+        if core_pgdebug > 4:
+            print("vacname", vacname)
+            print("vacidx", vacidx)
+            print("vacerr", vacerr)
+
+        ret = 0; vac = 0
 
         # Open for append
         vacerrfp = self.softcreate(vacerr, False)
@@ -753,19 +790,14 @@ class TwinCore(TwinCoreBase):
         except:
             pass
 
-        # This looks line an unneeded if ...
         # It is used to raise the scope so vacuumed DB closes
-
         if 1:
             vacdb = TwinCore(vacname)
             waitlock(vacdb.lckname)
 
-            #print("vacdb vacidx", vacdb.idxname)
-            skip = 0
-            curr = self.getbuffint(CURROFFS)               #;print("curr", curr)
-            chash = self.getidxint(CURROFFS)               #;print("chash", chash)
-            #rrr = range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
-            rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+            skip = 0; cnt = 0
+            chash =  self._getdbsize(self.ifp) * self.INTSIZE * 2
+            rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash + HEADSIZE, self.INTSIZE * 2)
             for aa in rrr:
                 rec = self.getidxint(aa)
                 sig = self.getbuffstr(rec, self.INTSIZE)
@@ -776,6 +808,7 @@ class TwinCore(TwinCoreBase):
                 elif sig != TwinCore.RECSIG:
                     if self.core_verbose:
                         print("Detected error at %d" % rec)
+                    ret += 1
                     self.__save_error(rec, vacerrfp)
                 else:
                     global core_integrity
@@ -785,26 +818,27 @@ class TwinCore(TwinCoreBase):
                     core_integrity = tmpi
 
                     if core_pgdebug > 1:
-                        print("vac", rec, arr)
+                        print(cnt, "vac rec", rec, arr)
 
                     if len(arr) > 1:
                         hhh2 = self.hash32(arr[0])
                         hhh3 = self.hash32(arr[1])
                         vacdb.__save_data(hhh2, arr[0], hhh3, arr[1])
-                        ret += 1
+                        vac += 1
                     else:
                         # This could be from empty bacause of hash error
                         self.__save_error(rec, vacerrfp)
                         if core_pgdebug > 0:
                             print("Error on vac: %d" % rec)
+                cnt += 1
 
             dellock(vacdb.lckname)
         dellock(self.lckname)
 
         # Any vacummed?
-        if ret > 0:
+        if vac > 0:
             # Make it go out of scope
-            self.flush()
+            self.fp.flush(); self.ifp.flush()
             self.fp.close(); self.ifp.close()
 
             # Now move files
@@ -836,7 +870,7 @@ class TwinCore(TwinCoreBase):
                 pass
 
         #print("ended vacuum")
-        return ret
+        return ret, vac
 
     def  get_rec(self, recnum):
         rsize = self._getdbsize(self.ifp)
@@ -866,7 +900,7 @@ class TwinCore(TwinCoreBase):
 
         sig = self.getbuffstr(recoffs, self.INTSIZE)
         if sig == TwinCore.RECDEL:
-            if core_showdel:
+            if self.core_verbose:
                 print("Deleted record.")
             return []
         if sig != TwinCore.RECSIG:
@@ -938,8 +972,12 @@ class TwinCore(TwinCoreBase):
 
     def  retrieve(self, hashx, limx = 1):
 
-        hhhh = self.hash32(hashx.encode("cp437", errors='replace'))   #;print("hashx", hashx, hhhh)
-        chash = self.getidxint(CURROFFS)            #;print("chash", chash)
+        hhhh = self.hash32(hashx.encode(errors='strict'))
+        #;print("hashx", hashx, hhhh)
+        #chash = self.getidxint(CURROFFS)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        #;print("chash", chash)
         arr = []
 
         waitlock(self.lckname)
@@ -949,7 +987,7 @@ class TwinCore(TwinCoreBase):
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, self.INTSIZE)
             if sig == TwinCore.RECDEL:
-                if core_showdel:
+                if self.core_verbose:
                     print(" Deleted record '%s' at" % sig, rec)
             elif sig != TwinCore.RECSIG:
                 print(" Damaged data '%s' at" % sig, rec)
@@ -966,11 +1004,13 @@ class TwinCore(TwinCoreBase):
     # Find by string matching substring
     def  findrec(self, strx, limx = 1):
 
-        chash = self.getidxint(CURROFFS)            #;print("chash", chash)
-        arr = []
-        strx2 = strx.encode("cp437", errors='replace');
-
         waitlock(self.lckname)
+
+        #chash = self.getidxint(CURROFFS)            #;print("chash", chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        arr = []
+        strx2 = strx.encode(errors='strict');
 
         #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
         for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
@@ -999,17 +1039,24 @@ class TwinCore(TwinCoreBase):
 
     def  find_key(self, hashx, limx = 0xffffffff):
 
-        hhhh = self.hash32(hashx.encode("cp437", errors='replace'))
-        #print("hashx", hashx, hhhh)
-        chash = self.getidxint(CURROFFS)
-        #print("chash", chash)
-        arr = []
-
         waitlock(self.lckname)
 
-        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
-        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+        skip = 0; arr = []; cnt = 0
+        try:
+            arg2e = hashx.encode() #"cp437", errors='strict');
+        except:
+            arg2e = hashx
+
+        hhhh = self.hash32(arg2e)
+        #print("hashx", "'" + hashx + "'", hex(hhhh), arg2e)
+
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        rrr =  range(chash - self.INTSIZE * 2,
+                HEADSIZE - self.INTSIZE * 2, -self.INTSIZE * 2)
+        for aa in rrr:
             rec = self.getidxint(aa)
+            #print(" Scanning at %d %d" % (rec, cnt))
+
             sig = self.getbuffstr(rec, self.INTSIZE)
             if sig == TwinCore.RECDEL:
                 if core_showdel:
@@ -1019,9 +1066,15 @@ class TwinCore(TwinCoreBase):
             else:
                 hhh = self.getbuffint(rec+4)
                 if hhh == hhhh:
-                    arr.append(rec)
-                    if len(arr) >= limx:
+                    if len(arr) >= limx - 1:
+                        arr.append(["More data ...",])
                         break
+                    arr.append(rec)
+                else:
+                    pass
+                    #print("no match", hex(hhh))
+
+            cnt += 1
         dellock(self.lckname)
 
         return arr
@@ -1060,16 +1113,22 @@ class TwinCore(TwinCoreBase):
         return arr
 
 
-    def  del_recs(self, strx, skip = 0, maxrec = INT_MAX):
+    def  del_rec_bykey(self, strx, skip = 0, maxrec = 1):
 
-        ''' Delete records by key string; needs bin str, converted autoamically on entry  '''
+        ''' Delete records by key string; needs bin str, converted
+        automatically on entry  '''
 
         if type(strx) == str:
             strx = strx.encode("cp437")
 
-        cnt = 0;
-        chash = self.getidxint(CURROFFS)    #;print("chash", chash)
-        for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        if self.core_verbose > 1:
+            print("Start delete ", strx, "skip", skip)
+
+        cnt = 0; cnt3 = 0
+        #chash = self.getidxint(CURROFFS)    #;print("chash", chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        for aa in range(HEADSIZE, chash, self.INTSIZE * 2):
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, self.INTSIZE)
             if sig == TwinCore.RECDEL:
@@ -1080,16 +1139,17 @@ class TwinCore(TwinCoreBase):
             else:
                 blen = self.getbuffint(rec+8)
                 data = self.getbuffstr(rec + 12, blen)
-                if self.core_verbose:
-                    print("del_recs", data, strx)
+                if self.core_verbose > 2:
+                    print("del iterate recs", cnt3, data, strx)
 
                 if strx == data:
                     if self.core_verbose > 0:
-                        print("Deleting", aa, data)
+                        print("Deleting", cnt3, aa, data)
                     self.putbuffstr(rec, TwinCore.RECDEL)
                     cnt += 1
                     if cnt >= maxrec:
                         break
+            cnt3 += 1
         return cnt
 
     # --------------------------------------------------------------------
@@ -1150,7 +1210,6 @@ class TwinCore(TwinCoreBase):
         # This allowed corruption of the data string
         # Update lenght
         #self.putbuffint(CURROFFS, self.fp.tell()) #// - dlink + DATA_LIM)
-
         #self.fp.seek(curr)
         #print("hashpos", hashpos)
 

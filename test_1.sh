@@ -5,7 +5,10 @@ rm -f data/*
 echo -n "Creating data ... "
 for aa in  {1..5}
 do
-    ./pydbase.py -w
+    ./pydbase.py -k kkk$aa -a ddd$aa
+    echo -n "$aa "
 done
-echo "OK"
-./pydbase.py $1
+
+echo " OK"
+echo "Dumping to screen:"
+./pydbase.py -m
