@@ -76,12 +76,12 @@ Some basic ops:
     want; also the record history is kept this way, also a desirable
     behavior.
 
-## The db exersizer executable script 'pydbase.py':
+## The db exerciser executable script 'pydbase.py':
 
    The file pydbase.py exercises most of the twincore functionality. It also
 provides examples of how to drive it.
 
-Here is the help screen of pydebase.py:
+ The command line utility's help response:
 
     Usage: pydebase.py [options] [arg_key arg_data]
      Options: -h         help (this screen)   -|-  -i   show deleted on dump
@@ -197,29 +197,6 @@ the options are:
 
   The index is recreated; as of the current file contents. This is useful if
 the index is lost (like copying the data only)
-
- The command line utility's help response:
-
-        Usage: pydebase.py [options] [arg_key arg_data]
-         Options: -h        help (this screen)
-                  -V        print version        -|-  -q  quiet on
-                  -d        debug level (0-10)   -|-  -v  increment verbosity
-                  -r        write random data    -|-  -w  write fixed record(s)
-                  -z        dump backwards(s)    -|-  -i  show deleted record(s)
-                  -U        Vacuum DB            -|-  -R  reindex / recover DB
-                  -I        DB Integrity check   -|-  -c  set check integrity flag
-                  -s        Skip count           -|-  -K  list keys only
-                  -y  key   find by key          -|-  -t  key    retrieve by key
-                  -o  offs  get data from offset -|-  -e  offs   delete at offset
-                  -u  rec   delete at position   -|-  -g  num    get number of recs
-                  -k  key   key to save          -|-  -a  str    data to save
-                  -n  num   number of records to write
-                  -p  num   skip number of records on get
-                  -l  lim   limit number of records on get
-                  -x  max   limit max number of records to get
-                  -f  file  input or output file (default: 'data/pydbase.pydb')
-        The default action is to dump records to screen in reverse order.
-        On the command line, use quotes for multi word arguments.
 
   If there is a data file without the index, the re-indexing is called
  automatically.   In case of deleted data file, pydbase will recognize
