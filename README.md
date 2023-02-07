@@ -114,19 +114,19 @@ Please see the sqlite_test.sql for details of data output;
 The test can be repeated with running the 'time.sh' script file.
 Please note the the time.sh clears all files test_data/* for a fair test.
 
-sqlite time test, writing 500 records ...
-real	0m1.730s
-user	0m0.110s
-sys	0m0.455s
+        sqlite time test, writing 500 records ...
+        real	0m1.730s
+        user	0m0.110s
+        sys	0m0.455s
 
-pydbase time test, writing 500 records ...
-real	0m0.120s
-user	0m0.075s
-sys	0m0.044s
+        pydbase time test, writing 500 records ...
+        real	0m0.120s
+        user	0m0.075s
+        sys	0m0.044s
 
--rw-r--r-- 1 peterglen users  4032 Feb  7 15:35 pydb_test.pidx
--rw-r--r-- 1 peterglen users 15032 Feb  7 15:35 pydb_test.pydb
--rw-r--r-- 1 peterglen users 20480 Feb  7 15:35 sqlite_test.db
+        -rw-r--r-- 1 peterglen users  4032 Feb  7 15:35 pydb_test.pidx
+        -rw-r--r-- 1 peterglen users 15032 Feb  7 15:35 pydb_test.pydb
+        -rw-r--r-- 1 peterglen users 20480 Feb  7 15:35 sqlite_test.db
 
   Please mind the fact that the sqlite engine has to do a lot of parsing which we
 skip doing; That is why pydbase is more than an order of magnitude faster ...
@@ -148,12 +148,12 @@ anything in the pydbase key / data sections.
 
 Example from running testpacker.py:
 
-    org: (1, 2, 'aa', ['bb', b'dd'])
-    packed: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
-    unpacked: [1, 2, 'aa', ['bb', b'dd']]
-    rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
-    rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
-    (Note: the decode returns an array of data; use data[0] to get the original)
+        org: (1, 2, 'aa', ['bb', b'dd'])
+        packed: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
+        unpacked: [1, 2, 'aa', ['bb', b'dd']]
+        rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
+        rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
+        (Note: the decode returns an array of data; use data[0] to get the original)
 
   There is also the option of using pypacker on the key itself. Because the key
 is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit
@@ -200,26 +200,26 @@ the index is lost (like copying the data only)
 
  The command line utility's help response:
 
-Usage: pydebase.py [options] [arg_key arg_data]
- Options: -h        help (this screen)
-          -V        print version        -|-  -q  quiet on
-          -d        debug level (0-10)   -|-  -v  increment verbosity
-          -r        write random data    -|-  -w  write fixed record(s)
-          -z        dump backwards(s)    -|-  -i  show deleted record(s)
-          -U        Vacuum DB            -|-  -R  reindex / recover DB
-          -I        DB Integrity check   -|-  -c  set check integrity flag
-          -s        Skip count           -|-  -K  list keys only
-          -y  key   find by key          -|-  -t  key    retrieve by key
-          -o  offs  get data from offset -|-  -e  offs   delete at offset
-          -u  rec   delete at position   -|-  -g  num    get number of recs
-          -k  key   key to save          -|-  -a  str    data to save
-          -n  num   number of records to write
-          -p  num   skip number of records on get
-          -l  lim   limit number of records on get
-          -x  max   limit max number of records to get
-          -f  file  input or output file (default: 'data/pydbase.pydb')
-The default action is to dump records to screen in reverse order.
-On the command line, use quotes for multi word arguments.
+        Usage: pydebase.py [options] [arg_key arg_data]
+         Options: -h        help (this screen)
+                  -V        print version        -|-  -q  quiet on
+                  -d        debug level (0-10)   -|-  -v  increment verbosity
+                  -r        write random data    -|-  -w  write fixed record(s)
+                  -z        dump backwards(s)    -|-  -i  show deleted record(s)
+                  -U        Vacuum DB            -|-  -R  reindex / recover DB
+                  -I        DB Integrity check   -|-  -c  set check integrity flag
+                  -s        Skip count           -|-  -K  list keys only
+                  -y  key   find by key          -|-  -t  key    retrieve by key
+                  -o  offs  get data from offset -|-  -e  offs   delete at offset
+                  -u  rec   delete at position   -|-  -g  num    get number of recs
+                  -k  key   key to save          -|-  -a  str    data to save
+                  -n  num   number of records to write
+                  -p  num   skip number of records on get
+                  -l  lim   limit number of records on get
+                  -x  max   limit max number of records to get
+                  -f  file  input or output file (default: 'data/pydbase.pydb')
+        The default action is to dump records to screen in reverse order.
+        On the command line, use quotes for multi word arguments.
 
   If there is a data file without the index, the re-indexing is called
  automatically.   In case of deleted data file, pydbase will recognize
