@@ -833,6 +833,16 @@ class TwinCore(TwinCoreBase):
                 cnt += 1
 
             dellock(vacdb.lckname)
+
+            # if vacerr is empty
+            try:
+                if os.stat(vacerr).st_size == 0:
+                    #print("Vac error empty")
+                    os.remove(vacerr)
+            except:
+                print("vacerr", sys.exc_info())
+
+
         dellock(self.lckname)
 
         # Any vacummed?

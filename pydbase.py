@@ -297,8 +297,9 @@ def mainfunc():
 
 if __name__ == "__main__":
 
-    twincore.waitlock(gl_lockname)
+    # Tested with process based lock (OK)
+    #twincore.waitlock(gl_lockname)
     mainfunc()
-    twincore.dellock(gl_lockname)
+    #twincore.dellock(gl_lockname)
 
 # EOF

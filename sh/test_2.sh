@@ -8,4 +8,4 @@ do
     ./pydbase.py -w -r
 done
 
-./pydbase.py $1
+./pydbase.py -m $1
