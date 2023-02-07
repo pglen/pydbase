@@ -10,6 +10,12 @@ echo -n "sqlite time test, writing 500 records ... "
 time sqlite3 $DDD/sqlite_test.db < sqlite_test.sql
 
 echo -n "pydbase time test, writing 500 records ... "
-time ./pydbase.py -w -n 100 -f $DDD/pydb_test.pydb
+time ./pydbase.py -k "Hello" -a "1" -n 500 -f $DDD/pydb_test.pydb
+
+# this ls shows you data size efficiency
+ls -l $DDD
+
+# un Comment this if you want to see / hide the data
+#rm -f $DDD/*;
 
 # EOF

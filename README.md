@@ -2,33 +2,34 @@
 
 ## High speed database with key / data
 
-### Fast data save / retrieve
-
   The motivation was to create a no frills way of saving / retrieving data
 fast. the command line tester can drive most aspects of this API;
 
-NOT ready for production yet.
+### Fast data save / retrieve
+
+Mostly ready for production. All tests pass. Please use caution, as this is new.
 
 ## API
 
   The module 'twincore' uses two data files and a lock file. The file
  names are generated from the base name of the data file;
-pydb for data; .pidx for the index, .lock for the lock file.
-The lock file times out in 0.3 seconds and breaks the lock.
- (in case of frozen process)
+name.pydb for data; name.pidx for the index, name.lock for the lock file.
+ In case of frozen process the lock file times out in xx seconds
+and breaks the lock. If the locking process (id in lockfile) does
+not exist, the lock breaks immidiately.
 
 Setting verbosity and debug level:
 
-    twincore.core_quiet = quiet
+    twincore.core_quiet   = quiet
     twincore.core_verbose = verbose
     twincore.core_pgdebug = pgdebug
     twincore.core_showdel = sdelx
 
-    (setting before data creation will display mesages from the construtor)
+ (Setting before data creation will display mesages from the construtor)
 
 Example db creation:
 
-    core = twincore.TwinCore(deffile)
+    core = twincore.TwinCore(datafile_name)
 
 Some basic ops:
 
@@ -49,7 +50,6 @@ Some basic ops:
 
         .
         .
-        .
 
     RECSIG     Hash_of_key      Len_of_key      DATA_for_key
     RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
@@ -59,7 +59,7 @@ Some basic ops:
     RECSEP="RECS" (record separated here)
     RECDEL="RECX" (record deleted)
 
-    Deleted records are marked with RECSIG mutated from RECB to RECX
+    Deleted records are marked with the RECSIG mutated from RECB to RECX
 
       Vacuum will remove the deleted records; Make sure your database has no
     pending ops; or non atomic opts;
@@ -68,7 +68,7 @@ Some basic ops:
 
       New data is appended to the end, no duplicate filtering is done.
     Retrieval is searched from reverse, the latest record with this key
-    is retrieved first. Most of the times this behavior is what people
+    is retrieved first. Most of the times this behavior is what we
     want; also the record history is kept this way, also a desirable
     behavior.
 
@@ -79,45 +79,50 @@ provides examples of how to drive it.
 
 Here is the help screen of pydebase.py:
 
-        Usage: pydebase.py [options]
-          Options: -h         help (this screen)
-                   -V         print version        ||  -q   quiet on
-                   -d         debug level (0-10)   ||  -v   increment verbosity level
-                   -r         write random data    ||  -w   write record(s)
-                   -z         dump backwards(s)    ||  -i   show deleted record(s)
-                   -U         Vacuum DB            ||  -R   re-index / recover DB
-                   -f  file   input or output file (default: 'pydbase.pydb')
-                   -n  num    number of records to write
-                   -g  num    get number of records
-                   -p  num    skip number of records on get
-                   -l  lim    limit number of records on get
-                   -x  max    limit max number of records to get
-                   -k  key    key to save (quotes for multi words)
-                   -a  str    data to save (quotes for multi words)
-                   -y  key    find by key
-                   -t  key    retrieve by key
-                   -o  offs   get data from offset
-                   -e  offs   delete at offset
-                   -u  rec    delete at position
-        The default action is to dump records to screen in reverse order.
+    Usage: pydebase.py [options] [arg_key arg_data]
+     Options: -h         help (this screen)   -|-  -i   show deleted on dump
+              -V         print version        -|-  -q   quiet on
+              -d         debug level (0-10)   -|-  -v   increment verbosity level
+              -r         randomize data       -|-  -w   write fixed record(s)
+              -z         dump backwards(s)    -|-  -i   show deleted record(s)
+              -U         Vacuum DB            -|-  -R   reindex / recover DB
+              -I         DB Integrity check   -|-  -c   set check integrity flag
+              -s         Skip to count recs   -|-  -K   list keys only
+              -y  key    find by key          -|-  -m   dump data to console
+              -o  offs   get data from offset -|-  -e  offs   delete at offset
+              -u  rec    delete at position   -|-  -g  num    get number of recs.
+              -k  key    key to save          -|-  -a  str    data to save
+              -S         print num recs       -|-  -D  key    delete by key
+              -n  num    number of records    -|-  -t  key    retrieve by key
+              -p  num    skip number of records on get
+              -l  lim    limit number of records on get
+              -x  max    limit max number of records to get
+              -f  file   input or output file (default: 'data/pydbase.pydb')
+    The default action is to dump records to screen in reverse order.
+    On the command line, use quotes for multi word arguments.
 
 ### Comparison to other databases:
 
  This comparison is to show the time it takes to write 500 records.
-In the tests the record size is about the same (Hello /vs/ "111 222")
+In the tests the record size is about the same (Hello, 1  /vs/ "Hello", 1)
 Please see the sqlite_test.sql for details of data output;
 
 The test can be repeated with running the 'time.sh' script file.
 Please note the the time.sh clears all files test_data/* for a fair test.
 
-    sqlite time test, writing 500 records ...
-    real	0m1.606s
-    user	0m0.004s
-    sys	0m0.073s
-    pydbase time test, writing 500 records ...
-    real	0m0.034s
-    user	0m0.030s
-    sys	0m0.004s
+sqlite time test, writing 500 records ...
+real	0m1.730s
+user	0m0.110s
+sys	0m0.455s
+
+pydbase time test, writing 500 records ...
+real	0m0.120s
+user	0m0.075s
+sys	0m0.044s
+
+-rw-r--r-- 1 peterglen users  4032 Feb  7 15:35 pydb_test.pidx
+-rw-r--r-- 1 peterglen users 15032 Feb  7 15:35 pydb_test.pydb
+-rw-r--r-- 1 peterglen users 20480 Feb  7 15:35 sqlite_test.db
 
   Please mind the fact that the sqlite engine has to do a lot of parsing which we
 skip doing; That is why pydbase is more than an order of magnitude faster ...
@@ -125,7 +130,8 @@ skip doing; That is why pydbase is more than an order of magnitude faster ...
 ### Saving more complex data
 
   The database saves a key / value pair. However, the key can be mutated to contain
-meta data. (for example adding a string in front of it.) [like: CUST_  for customer details]
+meta data. (for example adding a string in front of it.)
+[like: CUST_  for customer data / details]
 Also the key can be made unique by adding a UUID to it.
 
   The data can consist of any text / binary. The library pypacker.py can pack any data
@@ -134,7 +140,7 @@ into a string; A copy of pypacker is included here.
 ## pypacker.py
 
  This module can pack arbitrary python data into a string; which can be used to store
-anything in the pydbase data section.
+anything in the pydbase key / data sections.
 
 Example from running testpacker.py:
 
@@ -156,14 +162,21 @@ key proper with the returned key.
 
  The following (and more) test are created / executed:
 
-        test_bindata.py .                     [  7%]
-        test_create.py .....                  [ 46%]
-        test_del.py .                         [ 53%]
-        test_dump.py .                        [ 61%]
-        test_packer.py ..                     [ 76%]
-        test_randdata.py .                    [ 84%]
-        test_reindex.py .                     [ 92%]
-        test_vacuum.py .                      [100%]
+    collected 24 items
+
+    test_bindata.py .                                                        [  4%]
+    test_create.py .....                                                     [ 25%]
+    test_del.py .                                                            [ 29%]
+    test_dump.py .                                                           [ 33%]
+    test_find.py ..                                                          [ 41%]
+    test_findrec.py ..                                                       [ 50%]
+    test_getrec.py .                                                         [ 54%]
+    test_integrity.py .                                                      [ 58%]
+    test_multi.py .                                                          [ 62%]
+    test_packer.py ......                                                    [ 87%]
+    test_randdata.py .                                                       [ 91%]
+    test_reindex.py .                                                        [ 95%]
+    test_vacuum.py .                                                         [100%]
 
 ## Maintenance
 
@@ -206,8 +219,8 @@ On the command line, use quotes for multi word arguments.
 
   If there is a data file without the index, the re-indexing is called
  automatically.   In case of deleted data file, pydbase will recognize
- the dangling index and nuke it byr renaming it to
- orgfilename.pidx.dangle ;
+ the dangling index and nuke it by renaming it to
+ orgfilename.pidx.dangle (Tue 07.Feb.2023 just deleted it);
 
   Note about the 'garbage' and 'old_tries' directory ... older stuff I
 tried; some are really useful; For instance take a look at the
