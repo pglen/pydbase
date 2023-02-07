@@ -2,12 +2,16 @@
 
 ## High speed database with key / data
 
-  The motivation was to create a no frills way of saving / retrieving data
-fast. the command line tester can drive most aspects of this API;
+  The motivation was to create a no frills way of saving / retrieving data.
+It is fast, and the time test shows that this is an order of magnitude
+faster than most mainstream databases. This is due to the engine's simplicity.
+It avoids expensive computations in favor of quickly saving data.
 
 ### Fast data save / retrieve
 
 Mostly ready for production. All tests pass. Please use caution, as this is new.
+The command line tester can drive most aspects of this API; and it is somewhat
+complete. It is also  good way to see the API / Module in action.
 
 ## API
 
@@ -16,7 +20,7 @@ Mostly ready for production. All tests pass. Please use caution, as this is new.
 name.pydb for data; name.pidx for the index, name.lock for the lock file.
  In case of frozen process the lock file times out in xx seconds
 and breaks the lock. If the locking process (id in lockfile) does
-not exist, the lock breaks immidiately.
+not exist, the lock breaks immediately.
 
 Setting verbosity and debug level:
 
