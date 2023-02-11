@@ -25,12 +25,14 @@ tests:
 help:
 	@echo
 	@echo "Targets:"
-	@echo "	 make install  -- Install ${PROG} (unofficial structure)"
+	@echo "	 make install  -- Install ${PROG} (unofficial structure) obsolete"
 	@echo "	 make setup    -- Run the setup.py script as install "
 	@echo "	 make pack     -- package ${PROG}  "
 	@echo "	 make remove   -- remove (all) traces of ${PROG}  from the system"
 	@echo "	 make tests    -- execute test suite ${PROG}"
 	@echo "	 make doc3     -- create ${PROG} documentation"
+	@echo "	 make tests    -- execute ${PROG} test suite"
+	@echo "	 make doxy     -- create ${PROG} documentation"
 	@echo
 
 # OLD install; use setup.py
@@ -86,5 +88,7 @@ doc:
 doc3:
 	@pdoc3  --html --force -o doc3 `find . -maxdepth 2 -name  \*.py`
 
+doxy:
+	doxygen
 
 # End of Makefile

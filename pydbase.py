@@ -36,6 +36,7 @@ class _m():
     retrx   = ""; getit  = ""
     keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0
+    findrec = "";
 
     deffile = "data/pydbase.pydb"
 
@@ -60,25 +61,25 @@ def randstr(lenx):
 
 def help():
     print("Usage: pydebase.py [options] [arg_key arg_data]")
-    print(" Options: -h         help (this screen)   -|-  -i   show deleted on dump")
-    print("          -V         print version        -|-  -q   quiet on")
-    print("          -d         debug level (0-10)   -|-  -v   increment verbosity level")
-    print("          -r         randomize data       -|-  -w   write fixed record(s)")
-    print("          -z         dump backwards(s)    -|-  -i   show deleted record(s)")
-    print("          -U         Vacuum DB            -|-  -R   reindex / recover DB")
-    print("          -I         DB Integrity check   -|-  -c   set check integrity flag")
-    print("          -s         Skip to count recs   -|-  -K   list keys only")
-    print("          -y  key    find by key          -|-  -m   dump data to console")
+    print(" Options: -h         help (this screen)   -|-  -i  show deleted on dump")
+    print("          -V         print version        -|-  -q  quiet on")
+    print("          -d         debug level (0-10)   -|-  -v  increment verbosity level")
+    print("          -r         randomize data       -|-  -w  write fixed record(s)")
+    print("          -z         dump backwards(s)    -|-  -i  show deleted record(s)")
+    print("          -U         Vacuum DB            -|-  -R  reindex / recover DB")
+    print("          -I         DB Integrity check   -|-  -c  set check integrity flag")
+    print("          -s         Skip to count recs   -|-  -K  list keys only")
+    print("          -y  key    find by key          -|-  -m  dump data to console")
     print("          -o  offs   get data from offset -|-  -e  offs   delete at offset")
     print("          -u  rec    delete at position   -|-  -g  num    get number of recs.")
     print("          -k  key    key to save          -|-  -a  str    data to save ")
     print("          -S         print num recs       -|-  -D  key    delete by key ")
     print("          -n  num    number of records    -|-  -t  key    retrieve by key")
-    print("          -p  num    skip number of records on get")
+    print("          -p  num    skip number of recs  -|-  -F  subkey find by sub str")
     print("          -l  lim    limit number of records on get")
     print("          -x  max    limit max number of records to get")
     print("          -f  file   input or output file (default: 'data/pydbase.pydb')")
-    print("The default action is to dump records to screen in reverse order.")
+    print("The verbosity level influences the amount of data presented.")
     print("On the command line, use quotes for multi word arguments.")
 
 def mainfunc():
@@ -88,8 +89,8 @@ def mainfunc():
     opts = []; args = []
 
     # Old fashioned parsing
-    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:"
-    opts_normal = "mchiVrwzvqURIK?SD:"
+    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:"
+    opts_normal = "mchiVrwzvqURIK?S"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
@@ -172,6 +173,8 @@ def mainfunc():
             _m.integx = True
         if aa[0] == "-m":
             _m.dumpx = True
+        if aa[0] == "-F":
+            _m.findrec = aa[1]
 
     #print("args", len(args), args)
 
@@ -263,7 +266,10 @@ def mainfunc():
     elif _m.retrx != "":
         if _m.ncount == 0: _m.ncount = 1
         ddd = core.retrieve(_m.retrx, _m.ncount)
-        print(ddd)
+        if not ddd:
+            print("Record:", "'" + _m.retrx + "'", "is not found.")
+        else:
+            print(ddd)
     elif _m.sizex:
         print("Database size:", core.getdbsize())
     elif _m.offsx:
@@ -280,10 +286,10 @@ def mainfunc():
         print("Deleted:", ddd, "records.")
     elif _m.recx:
         ddd = core.reindex()
-        print("reindexed:", ddd, "record(s)")
+        print("Reindexed:", ddd, "record(s)")
     elif _m.vacx:
         ddd = core.vacuum()
-        print("vacuumed:", ddd[0], "saved", ddd[1], "record(s)")
+        print("Vacuumed:", ddd[0], "saved", ddd[1], "record(s)")
     elif _m.integx:
         ddd = core.integrity_check()
         print("Integrity check found good:", ddd[0], "of", ddd[1], "record(s)")
@@ -292,6 +298,11 @@ def mainfunc():
             core.dump_data(_m.lcount, _m.skipx)
         else:
             core.revdump_data(_m.lcount, _m.skipx)
+    elif _m.findrec:
+            ret = core.findrec(_m.findrec, _m.lcount, _m.skipx)
+            if _m.verbose:
+                print("Found:", end = "")
+            print(ret)
     else:
         print("Use: pydbase.py -h to see options help")
 

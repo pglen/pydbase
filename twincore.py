@@ -59,12 +59,12 @@ import  struct, io, psutil
 
 # NamedAtomicLock -- did not work here
 
-INT_MAX         = 0xffffffff    # INT_MAX in 'C' py has BIG integer
+INT_MAX         = 0xffffffff    ##< INT_MAX in 'C' py has BIG integer
 HEADSIZE        = 32
-CURROFFS        = 16            # Sat 04.Feb.2023 deleted
-FIRSTHASH       = HEADSIZE      # data starts here
+CURROFFS        = 16            ## Sat 04.Feb.2023 deleted
+FIRSTHASH       = HEADSIZE      ##< data starts here
 FIRSTDATA       = HEADSIZE
-LOCK_TIMEOUT    = 20            # this is in 0.1 sec units
+LOCK_TIMEOUT    = 20            ##< this is in 0.1 sec units
 
 # Accessed from the main file as well
 
@@ -92,8 +92,9 @@ def create(fname, raisex = True):
 
 def dellock(lockname):
 
-    # Test stale lock
-    #return
+    ''' Lock removal;
+        Test for stale lock;
+    '''
 
     try:
         if os.path.isfile(lockname):
@@ -103,6 +104,8 @@ def dellock(lockname):
             print("Del lock failed", sys.exc_info())
 
 def waitlock(lockname):
+
+    ''' Wait for lock file to become available. '''
 
     cnt = 0
     while True:
@@ -137,7 +140,7 @@ def waitlock(lockname):
 
 def truncs(strx, num = 8):
 
-    ''' Truncate string for printing nicely '''
+    ''' Truncate a string for printing nicely. Add '..' if truncated'''
 
     # no truncation on high verbose
     #if self.core_verbose > 1:
@@ -149,7 +152,7 @@ def truncs(strx, num = 8):
 
 class TwinCoreBase():
 
-    ''' This class provides basis services to twincore. '''
+    ''' This class provides basic services to twincore. '''
 
     INTSIZE     = 4
 
@@ -166,6 +169,9 @@ class TwinCoreBase():
         self.lasterr = ""
 
     def getsize(self, buffio):
+
+        ''' get the dabase file size '''
+
         sss = os.stat(buffio.fileno())
         #print("sss", sss, sss.st_size)
         return sss.st_size
@@ -175,18 +181,21 @@ class TwinCoreBase():
     #  Note: data by int is in little endian (intel) order
 
     def getidxint(self, offs):
+        ''' get an integer value from index offset '''
         #print("getidxint", offs)
         self.ifp.seek(offs, io.SEEK_SET)
         val = self.ifp.read(4)
         return struct.unpack("I", val)[0]
 
     def putidxint(self, offs, val):
+        ''' put an integer value to offset '''
         #print("putidxint", offs, val)
         pp = struct.pack("I", val)
         self.ifp.seek(offs, io.SEEK_SET)
         self.ifp.write(pp)
 
     def getbuffint(self, offs):
+        ''' get an integer value from offset '''
         self.fp.seek(offs, io.SEEK_SET)
         val = self.fp.read(4)
         return struct.unpack("I", val)[0]
@@ -216,8 +225,9 @@ class TwinCoreBase():
     #    val = ifp.read(4)
     #    return struct.unpack("I", val)[0]
 
-    # Deliver a 32 bit hash of whatever
     def hash32(self, strx):
+
+        ''' Deliver a 32 bit hash of the passed entity '''
 
         #print("hashing", strx)
         lenx = len(strx);  hashx = int(0)
@@ -231,6 +241,7 @@ class TwinCoreBase():
     def softcreate(self, fname, raisex = True):
 
         ''' Open for read / write. Create if needed. '''
+
         fp = None
         try:
             fp = open(fname, "rb+")
@@ -243,8 +254,9 @@ class TwinCoreBase():
                     raise
         return fp
 
-    # Sub for initial file
     def create_data(self, fp):
+
+        ''' Sub for initial DATA file '''
 
         fp.write(bytearray(HEADSIZE))
 
@@ -258,11 +270,9 @@ class TwinCoreBase():
         fp.write(struct.pack("B", 0xdd))
         fp.write(struct.pack("B", 0xff))
 
-        #fp.seek(CURROFFS, io.SEEK_SET)
-        #cc = struct.pack("I", HEADSIZE)
-        #fp.write(cc)
-
     def create_idx(self, ifp):
+
+        ''' Sub for initial INDEX file '''
 
         ifp.write(bytearray(HEADSIZE))
 
@@ -287,11 +297,11 @@ class TwinCore(TwinCoreBase):
     '''
 
      Data file and index file; protected by locks
-     The TWIN refers to separate files for data / index
+     The TWIN refers to separate files for data / index.
 
     '''
 
-    # These are all four bytes, one can read it like integers
+    ## These are all four bytes, one can read it like integers
 
     FILESIG     = b"PYDB"
     IDXSIG      = b"PYIX"
@@ -423,7 +433,8 @@ class TwinCore(TwinCoreBase):
             return arr
 
         if sig != TwinCore.RECSIG:
-            print(" Damaged data (sig) '%s' at" % sig, rec)
+            if self.core_verbose > 0:
+                print(" Damaged data (sig) '%s' at" % sig, rec)
             return arr
 
         hash = self.getbuffint(rec+4)
@@ -443,7 +454,8 @@ class TwinCore(TwinCoreBase):
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
         if endd != TwinCore.RECSEP:
-            print(" Damaged data (sep) '%s' at" % endd, rec)
+            if self.core_verbose > 0:
+                print(" Damaged data (sep) '%s' at" % endd, rec)
             return arr
 
         rec2 = rec + 16 + blen;
@@ -508,7 +520,8 @@ class TwinCore(TwinCoreBase):
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
         if endd != TwinCore.RECSEP:
-            print(" Damaged data (sep) '%s' at" % endd, rec)
+            if self.core_verbose > 0:
+                print(" Damaged data (sep) '%s' at" % endd, rec)
             return cnt2
 
         rec2 = rec + 16 + blen;
@@ -528,7 +541,12 @@ class TwinCore(TwinCoreBase):
                 if self.core_verbose > 0:
                     print("Error on hash at rec", rec, "hash2", hex(hash), "check2", hex(ccc))
                 return []
-        if self.core_verbose:
+        if self.core_verbose > 1:
+            print("%-5d pos %5d" % (cnt, rec), "%8x" % hash, "len", blen, data,
+                                                        "%8x" % hash2,"len", blen2, data2)
+            print()
+
+        elif self.core_verbose:
             print("%-5d pos %5d" % (cnt, rec), "%8x" % hash, "len", blen, truncs(data),
                                                         "%8x" % hash2,"len", blen2, truncs(data2))
         else:
@@ -919,6 +937,27 @@ class TwinCore(TwinCoreBase):
         #print("recoffs", recoffs)
         return self.rec2arr(recoffs)
 
+    def  get_key_offs(self, recoffs):
+
+        rsize = self.getsize(self.fp)
+        if recoffs >= rsize:
+            #print("Past end of data.");
+            raise  RuntimeError( \
+                    "Past end of File. Asking for offset %d file size is %d." \
+                                     % (recoffs, rsize) )
+            return []
+
+        sig = self.getbuffstr(recoffs, self.INTSIZE)
+        if sig == TwinCore.RECDEL:
+            if self.core_verbose:
+                print("Deleted record.")
+            return []
+        if sig != TwinCore.RECSIG:
+            print("Unlikely offset %d is not at record boundary." % recoffs, sig)
+            return []
+        #print("recoffs", recoffs)
+        return self.rec2arr(recoffs)[0]
+
     def  del_rec(self, recnum):
         rsize = self._getdbsize(self.ifp)
         if recnum >= rsize:
@@ -978,12 +1017,18 @@ class TwinCore(TwinCoreBase):
 
         return ret, cnt2
 
-    # Retrive in reverse, limit it
 
-    def  retrieve(self, hashx, limx = 1):
+    def  retrieve(self, strx, limx = 1):
 
-        hhhh = self.hash32(hashx.encode(errors='strict'))
-        #;print("hashx", hashx, hhhh)
+        ''' Retrive in reverse, limit it '''
+
+        if type(strx) == str:
+            strx = strx.encode(errors='strict')
+
+        hhhh = self.hash32(strx)
+        if core_pgdebug > 2:
+            print("strx", strx, hhhh)
+
         #chash = self.getidxint(CURROFFS)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
 
@@ -997,10 +1042,11 @@ class TwinCore(TwinCoreBase):
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, self.INTSIZE)
             if sig == TwinCore.RECDEL:
-                if self.core_verbose:
+                if self.core_verbose > 3:
                     print(" Deleted record '%s' at" % sig, rec)
             elif sig != TwinCore.RECSIG:
-                print(" Damaged data '%s' at" % sig, rec)
+                if self.core_verbose:
+                    print(" Damaged data '%s' at" % sig, rec)
             else:
                 hhh = self.getbuffint(rec+4)
                 if hhh == hhhh:
@@ -1011,8 +1057,10 @@ class TwinCore(TwinCoreBase):
 
         return arr
 
-    # Find by string matching substring
-    def  findrec(self, strx, limx = 1):
+    def  findrec(self, strx, limx = INT_MAX, skipx = 0):
+
+        ''' Find by string matching substring '''
+
 
         waitlock(self.lckname)
 
@@ -1022,6 +1070,8 @@ class TwinCore(TwinCoreBase):
         arr = []
         strx2 = strx.encode(errors='strict');
 
+        #print("findrec", strx2)
+
         #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
         for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
             rec = self.getidxint(aa)
@@ -1030,14 +1080,18 @@ class TwinCore(TwinCoreBase):
                 if core_showdel:
                     print(" Deleted record '%s' at" % sig, rec)
             elif sig != TwinCore.RECSIG:
-                print(" Damaged data '%s' at" % sig, rec)
+                if self.core_verbose > 0:
+                    print(" Damaged data '%s' at" % sig, rec)
             else:
                 blen = self.getbuffint(rec+8)
                 data = self.getbuffstr(rec + 12, blen)
-                if self.core_verbose:
-                    print("find buffer", data, strx)
-                if strx2 == data:
-                    arr.append(self.get_rec_offs(rec))
+                if self.core_verbose > 1:
+                    print("find", data)
+                #if str(strx2) in str(data):
+                if strx2 in data:
+                    arr.append(self.get_key_offs(rec))
+                    #arr.append(rec)
+
                     if len(arr) >= limx:
                         break
         dellock(self.lckname)
@@ -1047,15 +1101,15 @@ class TwinCore(TwinCoreBase):
     # --------------------------------------------------------------------
     # Search from the end, so latest comes first
 
-    def  find_key(self, hashx, limx = 0xffffffff):
+    def  find_key(self, keyx, limx = 0xffffffff):
 
         waitlock(self.lckname)
 
         skip = 0; arr = []; cnt = 0
         try:
-            arg2e = hashx.encode() #"cp437", errors='strict');
+            arg2e = keyx.encode() #"cp437", errors='strict');
         except:
-            arg2e = hashx
+            arg2e = keyx
 
         hhhh = self.hash32(arg2e)
         #print("hashx", "'" + hashx + "'", hex(hhhh), arg2e)
@@ -1072,7 +1126,8 @@ class TwinCore(TwinCoreBase):
                 if core_showdel:
                     print("Deleted record '%s' at" % sig, rec)
             elif sig != TwinCore.RECSIG:
-                print(" Damaged data '%s' at" % sig, rec)
+                if self.core_verbose > 0:
+                    print(" Damaged data '%s' at" % sig, rec)
             else:
                 hhh = self.getbuffint(rec+4)
                 if hhh == hhhh:
@@ -1123,7 +1178,7 @@ class TwinCore(TwinCoreBase):
         return arr
 
 
-    def  del_rec_bykey(self, strx, skip = 0, maxrec = 1):
+    def  del_rec_bykey(self, strx, maxrec = 1, skip = 0):
 
         ''' Delete records by key string; needs bin str, converted
         automatically on entry  '''
@@ -1145,7 +1200,8 @@ class TwinCore(TwinCoreBase):
                 if core_showdel:
                     print(" Deleted record '%s' at" % sig, rec)
             elif sig != TwinCore.RECSIG:
-                print(" Damaged data '%s' at" % sig, rec)
+                if self.core_verbose > 0:
+                    print(" Damaged data '%s' at" % sig, rec)
             else:
                 blen = self.getbuffint(rec+8)
                 data = self.getbuffstr(rec + 12, blen)

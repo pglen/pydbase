@@ -3,7 +3,7 @@ Database with two files. One for data, one for index;
 
 The reason for this name is that two files are created. The first contains the data, the second contains the offsets (indexes) and hashes.
 
-The second file can be re-\/built easily from the first the the reindex option.
+The second file can be re-\/built easily from the first using the reindex option.
 
 Structure of the data\+: \begin{DoxyVerb}32 byte header, starating with FILESIG;
 
@@ -31,5 +31,7 @@ Verbosity\+: (use the \textquotesingle{}-\/v\textquotesingle{} option multiple t
  Debug\+: (use the \textquotesingle{}-\/d\textquotesingle{} option with number) \begin{DoxyVerb}0 =  no output
 1 =  normal, some items
 2 =  more details
+\end{DoxyVerb}
+ History\+: \begin{DoxyVerb}Sat 04.Feb.2023     --  Converted from CURRDATA to ftell
 \end{DoxyVerb}
  
