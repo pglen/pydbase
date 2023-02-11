@@ -40,8 +40,8 @@ class _m():
 
     deffile = "data/pydbase.pydb"
 
-version = "0.9.1"
-vdate   =  "Mon 06.Feb.2023"
+version = "0.9.3"
+vdate   =  "Sat 11.Feb.2023"
 allstr  =    " " + \
                 string.ascii_lowercase +  string.ascii_uppercase +  \
                     string.digits
@@ -112,7 +112,9 @@ def mainfunc():
 
     for aa in opts:
         if aa[0] == "-V":
-            print("Version", version);
+            print("Script Version:", version);
+            print("Engine Version:", twincore.version);
+
             if _m.verbose > 0:
                 print("Compiled:", vdate);
             exit(1)

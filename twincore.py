@@ -57,6 +57,8 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
 import  struct, io, psutil
 
+version = "1.0"
+
 # NamedAtomicLock -- did not work here
 
 INT_MAX         = 0xffffffff    ##< INT_MAX in 'C' py has BIG integer
