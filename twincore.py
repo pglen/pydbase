@@ -120,11 +120,11 @@ def waitlock(lockname):
                     pid = int(fpx.read())
                     fpx.close()
                     #print("pid", pid, psutil.pids())
-                    if not pid in psutil.pids():
-                        #print("breaking on dead process")
-                        break
+                    #if not pid in psutil.pids():
+                    #    #print("breaking on dead process")
+                    #    break
                 except:
-                    #print("in pid test", sys.exc_info())
+                    print("Exc in pid test", sys.exc_info())
                     pass
             cnt += 1
             time.sleep(0.1)

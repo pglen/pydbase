@@ -2,7 +2,9 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading, warnings
-import  string, psutil
+import  string
+
+#psutil
 
 import gettext
 gettext.bindtextdomain('thisapp', './locale/')
