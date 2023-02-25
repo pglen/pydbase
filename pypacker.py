@@ -9,35 +9,38 @@ import struct, stat, base64, random, zlib
 #from Crypto import Random
 #from Crypto import StrongRandom
 
-__doc__ =   \
 '''
-Encode / Decode arbitrary data in a string. Preserves type and data.
-It is 8 bit clean on both python[2|3]
+    Encode / Decode arbitrary data in a string. Preserves type and data.
+    It is 8 bit clean on both python[2|3]
 
-Op Codes (type codes):
+    Op Codes (type codes):
 
-Int Number            i
-Float Number          f
-Character             c
-String                s
-Binary                b
+    Int Number            i
+    Float Number          f
+    Character             c
+    String                s
+    Binary                b
 
-List                  a         (array) gets encoded as extended
-Tuple                 t         gets encoded as extended (x)
-Dict                  d         gets encoded as extended (x)
+    List                  a         (array) gets encoded as extended
+    Tuple                 t         gets encoded as extended (x)
+    Dict                  d         gets encoded as extended (x)
 
-Extended              x         encoded as new packer string (recursive)
+    Extended              x         encoded as new packer string (recursive)
 
-Usage:
+    Usage:
 
-    pb  = packbin()
-    newdata  = pb.encode_data(formatstr, arr_of_data)
-    decdata  = pb.decode_data(newdata)
-    ?assert?(decdata == arr_of_data)
+        pb  = packbin()
+        newdata  = pb.encode_data(formatstr, arr_of_data)
+        decdata  = pb.decode_data(newdata)
+        ?assert?(decdata == arr_of_data)
 
-Empty format string will use auto detected types
+    Empty format string will use auto detected types
 
-    newdata  = pb.encode_data("", arr_of_data)
+        newdata  = pb.encode_data("", arr_of_data)
+
+ History:
+
+    Sat 18.Feb.2023 decode binary after done decomposing it
 
 '''
 
@@ -63,6 +66,8 @@ class InvalidType(Exception):
 class packbin():
 
     def __init__(self):
+
+        self.dec_binary = True
 
         # -----------------------------------------------------------------------
         # This array of functions will call the appropriate function
@@ -107,6 +112,10 @@ class packbin():
         return "%c%d '%s' " %  (tt, len(var), var)
 
     def _got_bin(self, tt, var):
+        #print("tt", tt, "var", var)
+        #print("var", type(var))
+        if type(var) == str:
+            var = bytes(var, 'utf-8')
         enco    = base64.b64encode(var)
         if sys.version_info[0] > 2:
             enco  = enco.decode("cp437")
@@ -280,9 +289,16 @@ class packbin():
         sval = str(xstr[idxx:idxx+slen])
         #print("bin:",  sval )
         deco   = base64.b64decode(sval)
+        if self.dec_binary:
+            deco2 = deco.decode('utf-8')
+        else:
+            deco2 = deco
+
+        #print("deco", type(deco), deco, deco2)
+
         idxx += slen + 2
         #print("idxx:", idxx, "var:", "{" + sval + "}", "next:", "'" + xstr[idxx:idxx+6] + "'")
-        return idxx, deco
+        return idxx, deco2
 
     def _found_list(self, xstr):
         idxx = 0
@@ -434,15 +450,17 @@ class packbin():
 
         if idx < len(formstr):
             raise ValueError("More data than chars in format string")
-
         return packed_str
-
 
     def _decode_data(self, dstr):
 
         #print ("---org:\n", dstr, "org---")
+        #print("dstr", type(dstr))
 
-        if dstr[0:3] != 'pg ':
+        if type(dstr) != str:
+            dstr = dstr.decode('utf-8')
+
+        if dstr[:3] != 'pg ':
             raise ValueError("Cannot decode, must begin with pg sequence.")
             #print("pypacker decode: Error, must begin with 'pg '")
             #return ""

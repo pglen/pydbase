@@ -36,7 +36,7 @@ class _m():
     retrx   = ""; getit  = ""
     keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0
-    findrec = "";
+    findrec = ""; getrec = 0
 
     deffile = "data/pydbase.pydb"
 
@@ -76,7 +76,7 @@ def help():
     print("          -S         print num recs       -|-  -D  key    delete by key ")
     print("          -n  num    number of records    -|-  -t  key    retrieve by key")
     print("          -p  num    skip number of recs  -|-  -F  subkey find by sub str")
-    print("          -l  lim    limit number of records on get")
+    print("          -l  lim    limit number of recs -|-  -G  num  get record number ")
     print("          -x  max    limit max number of records to get")
     print("          -f  file   input or output file (default: 'data/pydbase.pydb')")
     print("The verbosity level influences the amount of data presented.")
@@ -89,7 +89,7 @@ def mainfunc():
     opts = []; args = []
 
     # Old fashioned parsing
-    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:"
+    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:"
     opts_normal = "mchiVrwzvqURIK?S"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
@@ -145,6 +145,8 @@ def mainfunc():
             _m.deffile = aa[1]
         if aa[0] == "-g":
             _m.getit = aa[1]
+        if aa[0] == "-G":
+            _m.getrec = aa[1]
         if aa[0] == "-k":
             _m.keyx = aa[1]
         if aa[0] == "-D":
@@ -238,6 +240,9 @@ def mainfunc():
         if _m.lcount == 0: _m.lcount = 1
         ddd = core.find_key(_m.findx, _m.lcount)
         print("Found records:", ddd)
+    elif _m.getrec:
+        ddd = core.get_rec(int(_m.getrec))
+        print("Got:", ddd)
 
     elif _m.keyonly:
         cnt = 0

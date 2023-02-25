@@ -55,9 +55,11 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
-import  struct, io, psutil
+import  struct, io
 
-version = "1.0"
+#psutil
+
+version = "1.0 dev"
 
 # NamedAtomicLock -- did not work here
 
@@ -907,8 +909,8 @@ class TwinCore(TwinCoreBase):
         if recnum >= rsize:
             #print("Past end of data.");
             raise  RuntimeError( \
-                    "Past end of Data. Asking for %d Max is %d records." \
-                                     % (recnum, rsize) )
+                    "Past end of Data. Asking for %d while max is 0 .. %d records." \
+                                     % (recnum, rsize-1) )
             return []
 
         chash = self.getidxint(CURROFFS)
@@ -1062,7 +1064,6 @@ class TwinCore(TwinCoreBase):
     def  findrec(self, strx, limx = INT_MAX, skipx = 0):
 
         ''' Find by string matching substring '''
-
 
         waitlock(self.lckname)
 
