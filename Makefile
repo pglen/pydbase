@@ -79,7 +79,7 @@ git:
 	git add .
 	git commit -m "$(AUTOCHECK)"
 	git push
-	@#git push local
+	git push local
 
 doc:
 	@pdoc --logo image.png  \
