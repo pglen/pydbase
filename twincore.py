@@ -253,7 +253,9 @@ class TwinCoreBase():
             try:
                 fp = open(fname, "wb+")
             except:
-                print("Cannot open /create ", fname, sys.exc_info())
+                dellock(self.lckname)
+                #print("Deleting lock")
+                print("Cannot open / create ", fname, sys.exc_info())
                 if raisex:
                     raise
         return fp
@@ -400,12 +402,13 @@ class TwinCore(TwinCoreBase):
         try:
             #self.fp.ob_flush()
             #self.ifp.ob_flush()
-
             #self.fp.flush()
             #self.ifp.flush()
 
-            self.fp.close()
-            self.ifp.close()
+            if hasattr(self, "fp"):
+                self.fp.close()
+                self.ifp.close()
+
             pass
         except:
             print("Cannot close files", sys.exc_info())
