@@ -1105,6 +1105,49 @@ class TwinCore(TwinCoreBase):
         return arr
 
     # --------------------------------------------------------------------
+    # List all active records
+
+    def  listall(self):
+
+        waitlock(self.lckname)
+        keys = []; arr = []; cnt = 0
+
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        maxrec = chash - self.INTSIZE * 2
+        rsize = self._getdbsize(self.ifp) - 1
+
+        rrr =  range(maxrec,
+                HEADSIZE - self.INTSIZE * 2, -self.INTSIZE * 2)
+        for aa in rrr:
+            rec = self.getidxint(aa)
+
+            #print(" Scanning at %d %d" % (rec, cnt))
+
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == TwinCore.RECDEL:
+                if 1: #core_showdel:
+                    print("Deleted record '%s' at" % sig, rec)
+            elif sig != TwinCore.RECSIG:
+                if 1: #self.core_verbose > 0:
+                    print(" Damaged data '%s' at" % sig, rec)
+            else:
+                    hhh = self.getbuffint(rec+4)
+                    print(" Good data '%s' at" % sig, rec, hhh)
+                    if hhh not in keys:
+                        keys.append(hhh)
+                        # as we are going backwards
+                        arr.append(rsize - cnt)
+                        print("found", hhh)
+
+
+            cnt += 1
+
+        keys = []
+        dellock(self.lckname)
+
+        return arr
+
+    # --------------------------------------------------------------------
     # Search from the end, so latest comes first
 
     def  find_key(self, keyx, limx = 0xffffffff):
