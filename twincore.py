@@ -139,7 +139,7 @@ def waitlock(lockname):
 
     # Finally, create lock
     xfp = create(lockname)
-    xfp.write(str(os.getpid()).encode("cp437"))
+    xfp.write(str(os.getpid()).encode())
     xfp.close()
 
 def truncs(strx, num = 8):
@@ -1113,7 +1113,7 @@ class TwinCore(TwinCoreBase):
 
         skip = 0; arr = []; cnt = 0
         try:
-            arg2e = keyx.encode() #"cp437", errors='strict');
+            arg2e = keyx.encode()
         except:
             arg2e = keyx
 
@@ -1190,7 +1190,7 @@ class TwinCore(TwinCoreBase):
         automatically on entry  '''
 
         if type(strx) == str:
-            strx = strx.encode("cp437")
+            strx = strx.encode()
 
         if self.core_verbose > 1:
             print("Start delete ", strx, "skip", skip)
@@ -1233,11 +1233,11 @@ class TwinCore(TwinCoreBase):
 
         # Prepare all args, if cannot encode, use original
         try:
-            arg2e = arg2.encode() #"cp437", errors='strict');
+            arg2e = arg2.encode()
         except:
             arg2e = arg2
         try:
-            arg3e = arg3.encode() #"cp437", errors='strict')
+            arg3e = arg3.encode()
         except:
             arg3e = arg3
 

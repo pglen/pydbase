@@ -6,7 +6,6 @@ __pycache__/
 
 data/
 .pytest_cache/
-tests/
 test_data/
 
 # C extensions
