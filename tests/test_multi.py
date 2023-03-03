@@ -10,7 +10,7 @@ iname = createidxname(__file__)
 
 def oneproc():
 
-    print("started thread")
+    #print("started thread")
     # Create a database of 500 random records
     for aa in range(5):
         #key = randbin(random.randint(6, 12))
@@ -37,21 +37,6 @@ def setup_module(module):
     core = twincore.TwinCore(fname)
     assert core != 0
 
-    ttt = []
-    for aa in range(100):
-        tt = threading.Thread(target = oneproc)
-        tt.run()
-
-        ttt.append(tt)
-
-    while 1:
-        aa = False
-        for tt in ttt:
-            if tt.is_alive():
-                aa = True
-        if not aa:
-            break
-
 
 def teardown_module(module):
 
@@ -63,6 +48,24 @@ def teardown_module(module):
     except:
         #print(sys.exc_info())
         pass
+
+def test_adders(capsys):
+
+    # Start a handful of threads
+
+    ttt = []
+    for aa in range(300):
+        tt = threading.Thread(target = oneproc)
+        ttt.append(tt)
+        tt.run()
+
+    while 1:
+        aa = False
+        for tt in ttt:
+            if tt.is_alive():
+                aa = True
+        if not aa:
+            break
 
 def test_integrity(capsys):
     ddd = core.integrity_check()

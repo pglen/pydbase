@@ -57,244 +57,11 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
 import  struct, io
 
-#psutil
+from twinbase import *
 
 version = "1.0 dev"
 
 # NamedAtomicLock -- did not work here
-
-INT_MAX         = 0xffffffff    ##< INT_MAX in 'C' py has BIG integer
-HEADSIZE        = 32
-CURROFFS        = 16            ## Sat 04.Feb.2023 deleted
-FIRSTHASH       = HEADSIZE      ##< data starts here
-FIRSTDATA       = HEADSIZE
-LOCK_TIMEOUT    = 20            ##< this is in 0.1 sec units
-
-# Accessed from the main file as well
-
-core_quiet      = 0
-core_pgdebug    = 0
-core_integrity  = 0
-core_showdel    = 0
-core_locktout   = LOCK_TIMEOUT   # Settable from ...
-
-# ------------------------------------------------------------------------
-# Simple file system based locking system
-
-def create(fname, raisex = True):
-
-    ''' Open for read / write. Create if needed. '''
-
-    fp = None
-    try:
-        fp = open(fname, "wb")
-    except:
-        print("Cannot open / create ", fname, sys.exc_info())
-        if raisex:
-            raise
-    return fp
-
-def dellock(lockname):
-
-    ''' Lock removal;
-        Test for stale lock;
-    '''
-
-    try:
-        if os.path.isfile(lockname):
-            os.unlink(lockname)
-    except:
-        if core_pgdebug > 1:
-            print("Del lock failed", sys.exc_info())
-
-def waitlock(lockname):
-
-    ''' Wait for lock file to become available. '''
-
-    cnt = 0
-    while True:
-        if os.path.isfile(lockname):
-            if cnt == 0:
-                try:
-                    fpx = open(lockname)
-                    pid = int(fpx.read())
-                    fpx.close()
-                    #print("pid", pid, psutil.pids())
-                    #if not pid in psutil.pids():
-                    #    #print("breaking on dead process")
-                    #    break
-                except:
-                    print("Exc in pid test", sys.exc_info())
-                    pass
-            cnt += 1
-            time.sleep(0.1)
-            if cnt > core_locktout:
-                # Taking too long; break in
-                if core_pgdebug > 1:
-                    print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
-                dellock(lockname)
-                break
-        else:
-            break
-
-    # Finally, create lock
-    xfp = create(lockname)
-    xfp.write(str(os.getpid()).encode())
-    xfp.close()
-
-def truncs(strx, num = 8):
-
-    ''' Truncate a string for printing nicely. Add '..' if truncated'''
-
-    # no truncation on high verbose
-    #if self.core_verbose > 1:
-    #    return strx
-
-    if len(strx) > num:
-        strx = strx[:num] + b".."
-    return strx
-
-class TwinCoreBase():
-
-    ''' This class provides basic services to twincore. '''
-
-    INTSIZE     = 4
-
-    def __init__(self):
-
-        #print("Initializing core base")
-
-        # Provide placeholders
-        self.fp = None
-        self.ifp = None
-        self.cnt = 0
-        self.fname = "" ;        self.idxname = ""
-        self.lckname = "";
-        self.lasterr = ""
-
-    def getsize(self, buffio):
-
-        ''' get the dabase file size '''
-
-        sss = os.stat(buffio.fileno())
-        #print("sss", sss, sss.st_size)
-        return sss.st_size
-
-    # --------------------------------------------------------------------
-    # Read / write index / data; Data is accessed by int or by str;
-    #  Note: data by int is in little endian (intel) order
-
-    def getidxint(self, offs):
-        ''' get an integer value from index offset '''
-        #print("getidxint", offs)
-        self.ifp.seek(offs, io.SEEK_SET)
-        val = self.ifp.read(4)
-        return struct.unpack("I", val)[0]
-
-    def putidxint(self, offs, val):
-        ''' put an integer value to offset '''
-        #print("putidxint", offs, val)
-        pp = struct.pack("I", val)
-        self.ifp.seek(offs, io.SEEK_SET)
-        self.ifp.write(pp)
-
-    def getbuffint(self, offs):
-        ''' get an integer value from offset '''
-        self.fp.seek(offs, io.SEEK_SET)
-        val = self.fp.read(4)
-        return struct.unpack("I", val)[0]
-
-    def putbuffint(self, offs, val):
-        #print("putbuffint", offs, val)
-        self.fp.seek(offs, io.SEEK_SET)
-        cc = struct.pack("I", val)
-        self.fp.write(cc)
-
-    def getbuffstr(self, offs, xlen):
-        self.fp.seek(offs, io.SEEK_SET)
-        val = self.fp.read(xlen)
-        return val
-
-    def putbuffstr(self, offs, xstr):
-        self.fp.seek(offs, io.SEEK_SET)
-        val = self.fp.write(xstr)
-
-    def _putint(self, ifp, offs, val):
-        pp = struct.pack("I", val)
-        ifp.seek(offs, io.SEEK_SET)
-        ifp.write(pp)
-
-    #def _getint(self, ifp, offs):
-    #    ifp.seek(offs, io.SEEK_SET)
-    #    val = ifp.read(4)
-    #    return struct.unpack("I", val)[0]
-
-    def hash32(self, strx):
-
-        ''' Deliver a 32 bit hash of the passed entity '''
-
-        #print("hashing", strx)
-        lenx = len(strx);  hashx = int(0)
-        for aa in strx:
-            hashx +=  int( (aa << 12) + aa)
-            hashx &= 0xffffffff
-            hashx = int(hashx << 8) + int(hashx >> 8)
-            hashx &= 0xffffffff
-        return hashx
-
-    def softcreate(self, fname, raisex = True):
-
-        ''' Open for read / write. Create if needed. '''
-
-        fp = None
-        try:
-            fp = open(fname, "rb+")
-        except:
-            try:
-                fp = open(fname, "wb+")
-            except:
-                dellock(self.lckname)
-                #print("Deleting lock")
-                print("Cannot open / create ", fname, sys.exc_info())
-                if raisex:
-                    raise
-        return fp
-
-    def create_data(self, fp):
-
-        ''' Sub for initial DATA file '''
-
-        fp.write(bytearray(HEADSIZE))
-
-        fp.seek(0)
-        fp.write(TwinCore.FILESIG)
-        fp.write(struct.pack("B", 0x03))
-        fp.write(struct.pack("I", 0xaabbccdd))
-        fp.write(struct.pack("B", 0xaa))
-        fp.write(struct.pack("B", 0xbb))
-        fp.write(struct.pack("B", 0xcc))
-        fp.write(struct.pack("B", 0xdd))
-        fp.write(struct.pack("B", 0xff))
-
-    def create_idx(self, ifp):
-
-        ''' Sub for initial INDEX file '''
-
-        ifp.write(bytearray(HEADSIZE))
-
-        ifp.seek(0)
-        ifp.write(TwinCore.IDXSIG)
-        ifp.write(struct.pack("I", 0xaabbccdd))
-        ifp.write(struct.pack("B", 0xaa))
-        ifp.write(struct.pack("B", 0xbb))
-        ifp.write(struct.pack("B", 0xcc))
-        ifp.write(struct.pack("B", 0xdd))
-        ifp.write(struct.pack("B", 0xff))
-
-        #pp = struct.pack("I", HEADSIZE)
-        #ifp.seek(CURROFFS, io.SEEK_SET)
-        #ifp.write(pp)
-
 
 # ------------------------------------------------------------------------
 
@@ -306,15 +73,6 @@ class TwinCore(TwinCoreBase):
      The TWIN refers to separate files for data / index.
 
     '''
-
-    ## These are all four bytes, one can read it like integers
-
-    FILESIG     = b"PYDB"
-    IDXSIG      = b"PYIX"
-    RECSIG      = b"RECB"
-    RECDEL      = b"RECX"
-    RECSEP      = b"RECS"
-    RECEND      = b"RECE"
 
     def __init__(self, fname = "pydbase.pydb"):
 
@@ -344,7 +102,6 @@ class TwinCore(TwinCoreBase):
         waitlock(self.lckname)
 
         #print("pid", os.getpid())
-
 
         # Initial file creation
 
@@ -389,7 +146,7 @@ class TwinCore(TwinCoreBase):
                 self.__reindex()
 
         # Check
-        if  self.getbuffstr(0, 4) != TwinCore.FILESIG:
+        if  self.getbuffstr(0, 4) != FILESIG:
             print("Invalid data signature")
             dellock(self.lckname)
             raise  RuntimeError("Invalid database signature.")
@@ -436,10 +193,10 @@ class TwinCore(TwinCoreBase):
         arr = []
         sig = self.getbuffstr(rec, self.INTSIZE)
 
-        if sig == TwinCore.RECDEL:
+        if sig == RECDEL:
             return arr
 
-        if sig != TwinCore.RECSIG:
+        if sig != RECSIG:
             if self.core_verbose > 0:
                 print(" Damaged data (sig) '%s' at" % sig, rec)
             return arr
@@ -460,7 +217,7 @@ class TwinCore(TwinCoreBase):
         #print("%5d pos %5d" % (cnt, rec), "hash %8x" % hash, "ok", ok, "len=", blen, end=" ")
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
-        if endd != TwinCore.RECSEP:
+        if endd != RECSEP:
             if self.core_verbose > 0:
                 print(" Damaged data (sep) '%s' at" % endd, rec)
             return arr
@@ -492,7 +249,7 @@ class TwinCore(TwinCoreBase):
         cnt2 = 0
         sig = self.getbuffstr(rec, self.INTSIZE)
 
-        if sig == TwinCore.RECDEL:
+        if sig == RECDEL:
             if core_showdel:
                 klen = self.getbuffint(rec+8)
                 kdata = self.getbuffstr(rec+12, klen)
@@ -503,7 +260,7 @@ class TwinCore(TwinCoreBase):
                 print(" Del at", rec, "key:", kdata, "data:", truncs(data))
             return cnt2
 
-        if sig != TwinCore.RECSIG:
+        if sig != RECSIG:
             if self.core_verbose > 1:
                 print(" Damaged data (sig) '%s' at" % sig, rec)
             return cnt2
@@ -526,7 +283,7 @@ class TwinCore(TwinCoreBase):
                 return []
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
-        if endd != TwinCore.RECSEP:
+        if endd != RECSEP:
             if self.core_verbose > 0:
                 print(" Damaged data (sep) '%s' at" % endd, rec)
             return cnt2
@@ -569,11 +326,11 @@ class TwinCore(TwinCoreBase):
         sig = self.getbuffstr(rec, self.INTSIZE)
 
         # Do not check deleted, say OK
-        if sig == TwinCore.RECDEL:
+        if sig == RECDEL:
             ret = 1
             return ret
 
-        if sig != TwinCore.RECSIG:
+        if sig != RECSIG:
             if self.core_verbose > 0:
                 print(" Damaged data (sig) '%s' at %d (%d)" % (sig, rec, cnt2))
             #if self.core_verbose > 1:
@@ -600,7 +357,7 @@ class TwinCore(TwinCoreBase):
             return ret
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
-        if endd != TwinCore.RECSEP:
+        if endd != RECSEP:
             if self.core_verbose > 0:
                 print(" Damaged data (sep) '%s' at %d %d %d" % (endd, rec, cnt2))
             return ret
@@ -700,7 +457,7 @@ class TwinCore(TwinCoreBase):
 
             sig = self.getbuffstr(aa, self.INTSIZE)
             # Check if sig is correct
-            if sig != TwinCore.RECSIG:
+            if sig != RECSIG:
                 print("Invalid sig .. resync needed")
 
             #print("reind", aa)
@@ -772,7 +529,7 @@ class TwinCore(TwinCoreBase):
         # Find next valid record, print up to that
         found = 0
         for aa in range(len(ddd)):
-            if ddd[aa:aa+4] == TwinCore.RECSIG:
+            if ddd[aa:aa+4] == RECSIG:
                 found = True
                 #print("found:", ddd[:aa+4])
                 vacerrfp.write(ddd[:aa])
@@ -826,11 +583,11 @@ class TwinCore(TwinCoreBase):
             for aa in rrr:
                 rec = self.getidxint(aa)
                 sig = self.getbuffstr(rec, self.INTSIZE)
-                if sig == TwinCore.RECDEL:
+                if sig == RECDEL:
                     ret += 1
                     if core_pgdebug > 1:
                         print("deleted", rec)
-                elif sig != TwinCore.RECSIG:
+                elif sig != RECSIG:
                     if self.core_verbose:
                         print("Detected error at %d" % rec)
                     ret += 1
@@ -934,11 +691,11 @@ class TwinCore(TwinCoreBase):
             return []
 
         sig = self.getbuffstr(recoffs, self.INTSIZE)
-        if sig == TwinCore.RECDEL:
+        if sig == RECDEL:
             if self.core_verbose:
                 print("Deleted record.")
             return []
-        if sig != TwinCore.RECSIG:
+        if sig != RECSIG:
             print("Unlikely offset %d is not at record boundary." % recoffs, sig)
             return []
         #print("recoffs", recoffs)
@@ -955,11 +712,11 @@ class TwinCore(TwinCoreBase):
             return []
 
         sig = self.getbuffstr(recoffs, self.INTSIZE)
-        if sig == TwinCore.RECDEL:
+        if sig == RECDEL:
             if self.core_verbose:
                 print("Deleted record.")
             return []
-        if sig != TwinCore.RECSIG:
+        if sig != RECSIG:
             print("Unlikely offset %d is not at record boundary." % recoffs, sig)
             return []
         #print("recoffs", recoffs)
@@ -976,12 +733,12 @@ class TwinCore(TwinCoreBase):
         offs = self.getidxint(HEADSIZE + recnum * self.INTSIZE * 2)
         #print("offs", offs)
         old = self.getbuffstr(offs, self.INTSIZE)
-        if old == TwinCore.RECDEL:
+        if old == RECDEL:
             if self.core_verbose:
                 print("Record at %d already deleted." % offs);
             return False
 
-        self.putbuffstr(offs, TwinCore.RECDEL)
+        self.putbuffstr(offs, RECDEL)
         return True
 
     def  del_rec_offs(self, recoffs):
@@ -995,11 +752,11 @@ class TwinCore(TwinCoreBase):
             return False
 
         sig = self.getbuffstr(recoffs, self.INTSIZE)
-        if sig != TwinCore.RECSIG  and sig != TwinCore.RECDEL:
+        if sig != RECSIG  and sig != RECDEL:
             print("Unlikely offset %d is not at record boundary." % recoffs, sig)
             return False
 
-        self.putbuffstr(recoffs, TwinCore.RECDEL)
+        self.putbuffstr(recoffs, RECDEL)
         return True
 
     # Check integrity
@@ -1048,10 +805,10 @@ class TwinCore(TwinCoreBase):
         for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, self.INTSIZE)
-            if sig == TwinCore.RECDEL:
+            if sig == RECDEL:
                 if self.core_verbose > 3:
                     print(" Deleted record '%s' at" % sig, rec)
-            elif sig != TwinCore.RECSIG:
+            elif sig != RECSIG:
                 if self.core_verbose:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
@@ -1082,10 +839,10 @@ class TwinCore(TwinCoreBase):
         for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, self.INTSIZE)
-            if sig == TwinCore.RECDEL:
+            if sig == RECDEL:
                 if core_showdel:
                     print(" Deleted record '%s' at" % sig, rec)
-            elif sig != TwinCore.RECSIG:
+            elif sig != RECSIG:
                 if self.core_verbose > 0:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
@@ -1124,10 +881,10 @@ class TwinCore(TwinCoreBase):
             #print(" Scanning at %d %d" % (rec, cnt))
 
             sig = self.getbuffstr(rec, self.INTSIZE)
-            if sig == TwinCore.RECDEL:
+            if sig == RECDEL:
                 if 1: #core_showdel:
                     print("Deleted record '%s' at" % sig, rec)
-            elif sig != TwinCore.RECSIG:
+            elif sig != RECSIG:
                 if 1: #self.core_verbose > 0:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
@@ -1171,10 +928,10 @@ class TwinCore(TwinCoreBase):
             #print(" Scanning at %d %d" % (rec, cnt))
 
             sig = self.getbuffstr(rec, self.INTSIZE)
-            if sig == TwinCore.RECDEL:
+            if sig == RECDEL:
                 if core_showdel:
                     print("Deleted record '%s' at" % sig, rec)
-            elif sig != TwinCore.RECSIG:
+            elif sig != RECSIG:
                 if self.core_verbose > 0:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
@@ -1209,7 +966,7 @@ class TwinCore(TwinCoreBase):
 
             # Optional check
             #sig = self.getbuffstr(rec, self.INTSIZE)
-            #if sig != TwinCore.RECSIG:
+            #if sig != RECSIG:
             #    print(" Damaged data '%s' at" % sig, rec)
 
             #blen = self.getbuffint(rec+8)
@@ -1220,7 +977,7 @@ class TwinCore(TwinCoreBase):
                 if self.core_verbose > 0:
                     print("Would delete", hhh)
 
-            self.putbuffstr(rec, TwinCore.RECDEL)
+            self.putbuffstr(rec, RECDEL)
 
             cnt += 1
 
@@ -1245,10 +1002,10 @@ class TwinCore(TwinCoreBase):
         for aa in range(HEADSIZE, chash, self.INTSIZE * 2):
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, self.INTSIZE)
-            if sig == TwinCore.RECDEL:
+            if sig == RECDEL:
                 if core_showdel:
                     print(" Deleted record '%s' at" % sig, rec)
-            elif sig != TwinCore.RECSIG:
+            elif sig != RECSIG:
                 if self.core_verbose > 0:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
@@ -1260,7 +1017,7 @@ class TwinCore(TwinCoreBase):
                 if strx == data:
                     if self.core_verbose > 0:
                         print("Deleting", cnt3, aa, data)
-                    self.putbuffstr(rec, TwinCore.RECDEL)
+                    self.putbuffstr(rec, RECDEL)
                     cnt += 1
                     if cnt >= maxrec:
                         break
@@ -1301,11 +1058,11 @@ class TwinCore(TwinCoreBase):
     def __save_data(self, hhh2, arg2e, hhh3, arg3e):
 
         # Update / Append data
-        tmp = TwinCore.RECSIG
+        tmp = RECSIG
         tmp += struct.pack("I", hhh2)
         tmp += struct.pack("I", len(arg2e))
         tmp += arg2e
-        tmp += TwinCore.RECSEP
+        tmp += RECSEP
         tmp += struct.pack("I", hhh3)
         tmp += struct.pack("I", len(arg3e))
         tmp += arg3e
