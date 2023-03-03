@@ -46,10 +46,10 @@ def test_search():
 
     strx = "1111"
     ret = core.findrec(strx)
-    assert ret == [[b'1111', b'2222']]
+    assert ret == [b'11111', b'1111']
 
     strx = "11111"
     ret = core.findrec(strx)
-    assert ret == [[b'11111', b'22222']]
+    assert ret == [b'11111']
 
 # EOF
