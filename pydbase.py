@@ -313,7 +313,7 @@ def mainfunc():
                 print("Found:", end = "")
             print(ret)
     else:
-        print("Use: pydbase.py -h to see options help")
+        print("Use: pydbase.py -h to see options and help")
 
 if __name__ == "__main__":
 

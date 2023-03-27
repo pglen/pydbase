@@ -1095,6 +1095,8 @@ class TwinCore(TwinCoreBase):
 
         return curr
 
-__all__ = ["TwinCore", "self.core_verbose", "core_quiet", "core_pgdebug", "core_lcktimeout"]
+#__all__ = ["TwinCore", "self.core_verbose", "core_quiet", "core_pgdebug",
+#                "core_lcktimeout"]
+#
 
 # EOF
