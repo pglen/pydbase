@@ -8,11 +8,7 @@ while getopts 'nc:h' opt; do
   case "$opt" in
     n)
       #echo "Processing option 'n'"
-      stringZ="abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ1234567890\ ()_+=@#^&"
-      ;;
-
-    b)
-      echo "Processing option 'b'"
+      stringZ="abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ1234567890 \ ()_+=@#^&"
       ;;
 
     c)
@@ -26,21 +22,22 @@ while getopts 'nc:h' opt; do
       ;;
 
     ?)
-      echo -e "Invalid command option.\nUsage: $(basename $0) [-a] [-b] [-c arg]"
+      echo -e "Invalid command option.\nUsage: $(basename $0) [-n] maxlen"
       exit 1
       ;;
   esac
 done
 
+#echo $stringZ
 lenx=${#stringZ}
+#echo $lenx
 
 shift "$(($OPTIND -1))"
 
-for aa in $(seq 0 $1)
-do
-    mmm=$(($RANDOM % $lenx))
-    #echo $aa, $mmm
-    echo -n -e ${stringZ:$mmm:1}
-done
-
+for aa in $(seq 0 $(($1-1)))
+    do
+        mmm=$(($RANDOM % $lenx))
+        #echo $aa, $mmm
+        echo -n -e ${stringZ:$mmm:1}
+    done
 echo

@@ -48,11 +48,15 @@ class TwinChain(TwinCore):
         sss = self.getdbsize()
         if sss == 0:
             payload = b"Initial record, do not use."
-            print("Init anchor record", payload)
+            #print("Init anchor record", payload)
             # Here we fake the initial backlink for the anchor record
             self.old_dicx = {}
             hh = hashlib.new("sha256"); hh.update(payload)
             self.old_dicx["hash256"] =  hh.hexdigest()
+
+            dt = datetime.datetime.utcnow()
+            fdt = dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
+            self.old_dicx["now"] =  fdt
 
             # Produce data structure
             header = str(uuid.uuid4())
@@ -87,9 +91,11 @@ class TwinChain(TwinCore):
         dd = hashlib.new("md5"); dd.update(payload)
         self._key_n_data(aaa, "md5", dd.hexdigest())
 
-        backlink = (self.old_dicx["hash256"] + self.new_fff + fdt).encode()
+        backlink = self.old_dicx["hash256"] + self.old_dicx["now"]
+        backlink += self.new_fff
+
         #print("backlink raw", backlink)
-        bl = hashlib.new("sha256"); bl.update(backlink)
+        bl = hashlib.new("sha256"); bl.update(backlink.encode())
         self._key_n_data(aaa, "backlink", bl.hexdigest())
 
         self.old_dicx = {}
@@ -100,7 +106,7 @@ class TwinChain(TwinCore):
         dic = self.get_fields(decoded[0])
         if self.core_verbose > 0:
             return dic
-        return dic['payload']
+        return arr[0].decode(), dic['payload']
 
     def integrity(self, recnum):
 
@@ -121,14 +127,16 @@ class TwinChain(TwinCore):
         decoded2 = self.packer.decode_data(arr2[1])
         dic2 = self.get_fields(decoded2[0])
 
-        backlink = (dic["hash256"] + dic2["hash256"] + dic['now']).encode()
+        backlink =  dic["hash256"] + dic["now"]
+        backlink += dic2["hash256"]
+
         #print("backlink raw", backlink)
-        hh = hashlib.new("sha256"); hh.update(backlink)
+        hh = hashlib.new("sha256"); hh.update(backlink.encode())
 
         if self.core_verbose > 1:
-            print("calculat", hh.hexdigest())
+            print("calculated", hh.hexdigest())
         if self.core_verbose > 2:
-            print("backlink", dic2['backlink'])
+            print("backlink  ", dic2['backlink'])
 
         return hh.hexdigest() == dic2['backlink']
 
@@ -140,12 +148,15 @@ class TwinChain(TwinCore):
         hh = hashlib.new("sha256"); hh.update(dic['payload'].encode())
         if self.core_verbose > 1:
             print("data", hh.hexdigest())
+        if self.core_verbose > 2:
             print("hash", dic['hash256'])
         return hh.hexdigest() == dic['hash256']
 
     def append(self, datax):
 
-        #print("Appending data", data)
+        if self.core_verbose > 0:
+            print("Append", datax)
+
         if type(datax) == str:
             datax = datax.encode(errors='strict')
 
@@ -174,9 +185,10 @@ class TwinChain(TwinCore):
 
         self.save_data(header, encoded)
 
-        bbb = self.packer.decode_data(encoded)
-        #print(bbb[0])
-        self.dump_rec(bbb[0])
+        if self.core_verbose > 1:
+            bbb = self.packer.decode_data(encoded)
+            #print(bbb[0])
+            self.dump_rec(bbb[0])
 
     def dump_rec(self, bbb):
         for aa in range(len(bbb)//2):

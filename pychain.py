@@ -44,17 +44,17 @@ class _c():
     deffile = "data/pydbchain.pydb"
 
 def help():
-    print("Usage: pychain.py [options] [arg_key arg_data]")
-    print(" Options: -h         help (this screen)")
-    print("          -a  data   append data to chain")
-    print("          -m         dump chain data")
-    print("          -c         check chain data")
-    print("          -i         check chain integrity")
-    print("          -v         increase verbosity")
+    print("Usage: pychain.py [options]")
+    print("   Options: -a  data   append data to the end of chain")
+    print("            -h         help (this screen)")
+    print("            -m         dump chain data")
+    print("            -c         check chain data")
+    print("            -i         check chain integrity")
+    print("            -v         increase verbosity")
 
 def mainfunc():
 
-    ''' Exersize all funtions of the twincore library '''
+    ''' Exersize funtions of the twinchain library. '''
 
     opts = []; args = []
 
@@ -103,14 +103,14 @@ def mainfunc():
 
     if _c.integx:
         #print("Integrity", _c.integx)
-        errx = False; cnt = -1
+        errx = False; cnt = []
         sss = core.getdbsize()
         # Remember record zero is the anchor
         for aa in range(1, sss):
             ppp = core.integrity(aa)
             if _c.verbose:
                 print(aa, ppp)
-            if not ppp: errx = True; cnt = aa
+            if not ppp: errx = True; cnt.append(aa)
         if errx:
             print("error on rec", cnt)
         else:
@@ -138,9 +138,10 @@ def mainfunc():
             print(aa, ppp)
 
     elif _c.append:
-        print("Appending", _c.append)
+        #print("Appending", _c.append)
         core.append(_c.append)
-
+    else:
+        print("use: pychain.py -h for info on usage.")
 
 if __name__ == "__main__":
 
