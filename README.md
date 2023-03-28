@@ -1,4 +1,4 @@
-# pydbase
+# pydbase (see blockcain at the end)
 
 ## High speed database with key / data
 
@@ -218,6 +218,29 @@ record history archived by default.
 
   To clean the old record history, one may delete all the records with
 this same key, except the last one.
+
+# Blockcain implementation
+
+   The database is extended with a blockhcain implementation. The new class
+is called twinchain; and it is a class derived from twincore.
+
+  To drive the blockchain, just use the append method. Th database will calculate
+all the hashes, integrate it into the existing chain with the new item getting
+a backlink field. This field is calulated based upon the previous record's
+hash and the previous record frozen date. This assures that identical data
+will have a different hash, so data cannot be anticipated based upon its hash
+alone.
+
+To drive it:
+
+        core = twinchain.TwinChain()    # Takes an optional file name
+        #core.core_verbose = verbose    # Give details as it operates
+        core.append("The payload")      # Arbitrary data
+
+## Integrity check
+
+   Two levels; Level one is checking if the record checksums are correct;
+   Level two checks if the linkage is correct.
 
 ### TODO
 
