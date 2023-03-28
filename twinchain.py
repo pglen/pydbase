@@ -21,8 +21,14 @@ from twincore import *
 import pypacker
 
 version = "1.0 dev"
+protocol = "1.0"
 
-# NamedAtomicLock -- did not work here
+def _pad(strx, lenx=8):
+    ttt = len(strx)
+    if ttt >= lenx:
+        return strx
+    padx = " " * (lenx-ttt)
+    return strx + padx
 
 # ------------------------------------------------------------------------
 
@@ -39,19 +45,103 @@ class TwinChain(TwinCore):
         super().__init__(fname)
         #print("TwinChain.init", self.fname)
         self.packer = pypacker.packbin()
+        sss = self.getdbsize()
+        if sss == 0:
+            payload = b"Initial record, do not use."
+            print("Init anchor record", payload)
+            # Here we fake the initial backlink for the anchor record
+            self.old_dicx = {}
+            hh = hashlib.new("sha256"); hh.update(payload)
+            self.old_dicx["hash256"] =  hh.hexdigest()
 
-        pass
+            # Produce data structure
+            header = str(uuid.uuid4())
+            aaa = []
+            self._fill_record(aaa, header, payload)
+
+            encoded = self.packer.encode_data("", aaa)
+            self.save_data(header, encoded)
 
     def  _key_n_data(self, arrx, keyx, strx):
         arrx.append(keyx)
         arrx.append(strx)
 
-    def _pad(self, strx, lenx=8):
-        ttt = len(strx)
-        if ttt >= lenx:
-            return strx
-        padx = " " * (lenx-ttt)
-        return strx + padx
+    # --------------------------------------------------------------------
+
+    def _fill_record(self, aaa, header, payload):
+
+        self._key_n_data(aaa, "header", header)
+        self._key_n_data(aaa, "protocol", protocol)
+
+        dt = datetime.datetime.utcnow()
+        fdt = dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
+        self._key_n_data(aaa, "now", fdt)
+        self._key_n_data(aaa, "payload", payload)
+
+        self._key_n_data(aaa, "hash32", str(self.hash32(payload)))
+
+        hh = hashlib.new("sha256"); hh.update(payload)
+        self.new_fff = hh.hexdigest()
+        self._key_n_data(aaa, "hash256", self.new_fff)
+
+        dd = hashlib.new("md5"); dd.update(payload)
+        self._key_n_data(aaa, "md5", dd.hexdigest())
+
+        backlink = (self.old_dicx["hash256"] + self.new_fff + fdt).encode()
+        #print("backlink raw", backlink)
+        bl = hashlib.new("sha256"); bl.update(backlink)
+        self._key_n_data(aaa, "backlink", bl.hexdigest())
+
+        self.old_dicx = {}
+
+    def get_payload(self, recnum):
+        arr = self.get_rec(recnum)
+        decoded = self.packer.decode_data(arr[1])
+        dic = self.get_fields(decoded[0])
+        if self.core_verbose > 0:
+            return dic
+        return dic['payload']
+
+    def integrity(self, recnum):
+
+        ''' Scan one record an its integrity based on the previous one '''
+
+        if recnum < 1:
+            print("Cannot check initial record.")
+            return False
+
+        if self.core_verbose > 4:
+            print("Checking ...", recnum)
+
+        arr = self.get_rec(recnum-1)
+        decoded = self.packer.decode_data(arr[1])
+        dic = self.get_fields(decoded[0])
+
+        arr2 = self.get_rec(recnum)
+        decoded2 = self.packer.decode_data(arr2[1])
+        dic2 = self.get_fields(decoded2[0])
+
+        backlink = (dic["hash256"] + dic2["hash256"] + dic['now']).encode()
+        #print("backlink raw", backlink)
+        hh = hashlib.new("sha256"); hh.update(backlink)
+
+        if self.core_verbose > 1:
+            print("calculat", hh.hexdigest())
+        if self.core_verbose > 2:
+            print("backlink", dic2['backlink'])
+
+        return hh.hexdigest() == dic2['backlink']
+
+    def check(self, recnum):
+        arr = self.get_rec(recnum)
+        decoded = self.packer.decode_data(arr[1])
+        dic = self.get_fields(decoded[0])
+
+        hh = hashlib.new("sha256"); hh.update(dic['payload'].encode())
+        if self.core_verbose > 1:
+            print("data", hh.hexdigest())
+            print("hash", dic['hash256'])
+        return hh.hexdigest() == dic['hash256']
 
     def append(self, datax):
 
@@ -59,7 +149,7 @@ class TwinChain(TwinCore):
         if type(datax) == str:
             datax = datax.encode(errors='strict')
 
-        self.old_fff = ""
+        self.old_dicx = {}
         # Get last data from db
         sss = self.getdbsize()
         #print("sss", sss)
@@ -68,35 +158,16 @@ class TwinChain(TwinCore):
             #print("ooo", ooo)
             decoded = self.packer.decode_data(ooo[1])
             #self.dump_rec(decoded[0])
-            self.old_fff = self.get_field(decoded[0], "hash256")
-            self.old_time = self.get_field(decoded[0], "now")
-            print("old_fff", self.old_fff)
-            print("old_time", self.old_time)
+            self.old_dicx = self.get_fields(decoded[0])
+            #print(old_dicx)
+
+            #print("old_fff", self.old_dicx["hash256"])
+            #print("old_time", self.old_dicx["now"])
 
         # Produce data structure
-        aaa = []
         header = str(uuid.uuid4())
-        self._key_n_data(aaa, "header", header)
-        dt = datetime.datetime.utcnow()
-        fdt = dt.strftime('%a, %d %b %Y %H:%M:%S GMT')
-        self._key_n_data(aaa, "now", fdt)
-        self._key_n_data(aaa, "payload", datax)
-        self._key_n_data(aaa, "hash32", str(self.hash32(datax)))
-
-        hh = hashlib.new("sha256")
-        hh.update(datax)
-        self.new_fff = hh.hexdigest()
-        self._key_n_data(aaa, "hash256", self.new_fff)
-
-        dd = hashlib.new("md5")
-        dd.update(datax)
-        self._key_n_data(aaa, "md5", dd.hexdigest())
-
-        #print("old_fff", self.old_fff, "new_fff", self.new_fff)
-        backlink = (self.old_fff + self.new_fff + fdt).encode()
-        hh.update(backlink)
-        self.new_fff = hh.hexdigest()
-        self._key_n_data(aaa, "backlink", hh.hexdigest())
+        aaa = []
+        self._fill_record(aaa, header, datax)
 
         encoded = self.packer.encode_data("", aaa)
         #print(encoded)
@@ -109,17 +180,16 @@ class TwinChain(TwinCore):
 
     def dump_rec(self, bbb):
         for aa in range(len(bbb)//2):
-            print(self._pad(bbb[2*aa]), "=", bbb[2*aa+1])
+            print(_pad(bbb[2*aa]), "=", bbb[2*aa+1])
 
-    def get_field(self, bbb, field):
+    def get_fields(self, bbb):
+        dicx = {}
         for aa in range(len(bbb)//2):
-            #print("bbb", bbb[2*aa], bbb[2*aa+1])
-            if bbb[2*aa] == field:
-                return bbb[2*aa+1]
+            dicx[bbb[2*aa]]  = bbb[2*aa+1]
+        return dicx
 
     def __del__(self):
         ''' Override for now '''
         pass
-
 
 # EOF

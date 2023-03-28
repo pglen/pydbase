@@ -665,6 +665,9 @@ class TwinCore(TwinCoreBase):
         return ret, vac
 
     def  get_rec(self, recnum):
+
+        ''' Get record from database; recnum is a zero based record counter '''
+
         rsize = self._getdbsize(self.ifp)
         if recnum >= rsize:
             #print("Past end of data.");
