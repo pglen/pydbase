@@ -8,7 +8,7 @@ while getopts 'nc:h' opt; do
   case "$opt" in
     n)
       #echo "Processing option 'n'"
-      stringZ="abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ1234567890 \ ()_+=@#^&"
+      stringZ="abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ 1234567890():/\_+=@#^&"
       ;;
 
     c)
@@ -38,6 +38,6 @@ for aa in $(seq 0 $(($1-1)))
     do
         mmm=$(($RANDOM % $lenx))
         #echo $aa, $mmm
-        echo -n -e ${stringZ:$mmm:1}
+        echo -n -e "${stringZ:$mmm:1}"
     done
 echo
