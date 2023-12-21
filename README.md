@@ -160,28 +160,6 @@ is identified by its hash, there is no speed penalty; Note that the hash is a 32
 one; collisions are possible, however unlikely; To compensate, make sure you compare the
 key proper with the returned key.
 
-## PyTest
-
- The pytest passes with no errors; Run it from the tests/ directory.
-
- The following (and more) test are created / executed:
-
-    collected 24 items
-
-    test_bindata.py .                                                        [  4%]
-    test_create.py .....                                                     [ 25%]
-    test_del.py .                                                            [ 29%]
-    test_dump.py .                                                           [ 33%]
-    test_find.py ..                                                          [ 41%]
-    test_findrec.py ..                                                       [ 50%]
-    test_getrec.py .                                                         [ 54%]
-    test_integrity.py .                                                      [ 58%]
-    test_multi.py .                                                          [ 62%]
-    test_packer.py ......                                                    [ 87%]
-    test_randdata.py .                                                       [ 91%]
-    test_reindex.py .                                                        [ 95%]
-    test_vacuum.py .                                                         [100%]
-
 ## Maintenance
 
   The DB can rebuild its index and purge all deleted records. In the test utility
@@ -245,6 +223,11 @@ To drive it:
 ### TODO
 
     Speed this up by implementing this as a 'C' module
+
+## PyTest
+
+ The pytest passes with no errors;
+ The following (and more) test are created / executed:
 
 ### Test results:
 
