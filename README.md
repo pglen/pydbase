@@ -246,4 +246,31 @@ To drive it:
 
     Speed this up by implementing this as a 'C' module
 
+### Test results:
+
+    ============================= test session starts ==============================
+    platform linux -- Python 3.10.12, pytest-7.4.3, pluggy-1.0.0
+    rootdir: /home/peterglen/pgpygtk/pydbase
+    collected 32 items
+
+    test_bindata.py .                                                        [  3%]
+    test_create.py .....                                                     [ 18%]
+    test_del.py .                                                            [ 21%]
+    test_dump.py .                                                           [ 25%]
+    test_find.py ..                                                          [ 31%]
+    test_findrec.py ..                                                       [ 37%]
+    test_getrec.py .                                                         [ 40%]
+    test_integrity.py .                                                      [ 43%]
+    test_list.py ..                                                          [ 50%]
+    test_lockrel.py ..                                                       [ 56%]
+    test_multi.py ..                                                         [ 62%]
+    test_packer.py ......                                                    [ 81%]
+    test_randdata.py .                                                       [ 84%]
+    test_reindex.py .                                                        [ 87%]
+    test_search.py ...                                                       [ 96%]
+    test_vacuum.py .                                                         [100%]
+
+    ============================== 32 passed in 3.24s ==============================
+    peterglen@getac110:~/pgpygtk/pydbase$
+
 ; EOF
