@@ -42,7 +42,7 @@ setuptools.setup(
     packages=setuptools.find_packages(include=includex),
 
     scripts = ['pydbase.py'],
-    py_modules = ["twincore", "pypacker" ],
+    py_modules = ["twincore", "twinbase", "pypacker" ],
     #package_dir = {'': '.'},
 
     python_requires='>=3',

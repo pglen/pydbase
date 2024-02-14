@@ -40,7 +40,7 @@ class _m():
     dkeyx   = ""; dumpx  = 0
     findrec = ""; getrec = 0
 
-    deffile = "data/pydbase.pydb"
+    deffile = "pydbase.pydb"
 
 version = "0.9.3"
 vdate   =  "Sat 11.Feb.2023"
@@ -249,10 +249,10 @@ def mainfunc():
     elif _m.keyonly:
         cnt = 0
         if _m.lcount + _m.skipx > dbsize:
-            _m.lcount = _m.dbsize - _m.skipx
-        for aa in range(skipx, lcount):
+            _m.lcount = dbsize - _m.skipx
+        for aa in range(_m.skipx, _m.lcount):
             ddd = core.get_rec(aa)
-            print(aa, ddd[0])
+            print(aa, ddd)
             cnt += 1
 
     elif _m.getit:
