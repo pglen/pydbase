@@ -12,9 +12,12 @@ gettext.textdomain('thisapp')
 _ = gettext.gettext
 
 base = os.path.dirname(os.path.realpath(__file__))
-sys.path.append('pydbase')
+sys.path.append(os.path.join(base, 'xpydbase'))
+#sys.path.append(os.path.join(base, "..", 'pydbase'))
+#sys.path.append(os.path.join('..', 'pydbase'))
 
-import twincore
+from xpydbase import twincore
+#import twincore
 
 # ------------------------------------------------------------------------
 
@@ -45,8 +48,8 @@ class _m():
 
     deffile = "pydbase.pydb"
 
-version = "0.9.3"
-vdate   =  "Sat 11.Feb.2023"
+version = "0.4.1"
+vdate   =  "Wed 28.Feb.2024"
 allstr  =    " " + \
                 string.ascii_lowercase +  string.ascii_uppercase +  \
                     string.digits

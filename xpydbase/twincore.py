@@ -58,7 +58,7 @@ import  random, stat, os.path, datetime, threading
 import  struct, io
 
 base = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(base,  '..', "pydbase"))
+sys.path.append(os.path.join(base, '..', 'pydbase'))
 
 #from twinbase import TwinCoreBase
 #from twinbase import HEADSIZE, INT_MAX, CURROFFS

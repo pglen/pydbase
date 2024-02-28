@@ -17,10 +17,10 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading, uuid
 import  struct, io, hashlib
 
-from twincore import *
+#from twincore import *
 import pypacker
 
-version = "1.0 dev"
+version = "1.4.1 dev"
 protocol = "1.0"
 
 def _pad(strx, lenx=8):
