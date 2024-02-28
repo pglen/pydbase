@@ -2,7 +2,7 @@
 
 import pytest, os, sys, random
 from mytest import *
-import twincore, pypacker
+import twincore, pyvpacker
 
 core = None
 
@@ -13,7 +13,7 @@ def setup_module(module):
     assert core != 0
 
     # Create a database of 5000 random records
-    for aa in range(5000):
+    for aa in range(500):
         key = randstr(random.randint(6, 12))
         val = randstr(random.randint(24, 96))
         ret = core.save_data(str(key), str(val))

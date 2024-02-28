@@ -3,8 +3,7 @@
 import pytest, os, sys
 from mytest import *
 
-
-import twincore, pypacker
+import twincore, pyvpacker
 
 core = None
 fname = createname(__file__)
@@ -59,8 +58,7 @@ def test_data(capsys):
 
     print(ddd[2][0], ddd[2][1:])
     dbsize = core.getdbsize()
-    core.save_data(ddd[2][0], 'zzz', w   ddd[2][1:])
-
+    core.save_data(ddd[2][0], 'zzz') #, ddd[2][1:])
 
     try:
         # No dangling data

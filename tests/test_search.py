@@ -2,7 +2,7 @@
 
 import pytest, os, sys, random
 from mytest import *
-import twincore, pypacker
+import twincore, pyvpacker
 
 core = None
 

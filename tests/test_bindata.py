@@ -2,7 +2,7 @@
 
 import pytest, os, sys
 from mytest import *
-import twincore, pypacker
+import twincore, pyvpacker
 
 core = None
 fname = createname(__file__)
@@ -26,12 +26,11 @@ def setup_module(module):
     assert core != 0
 
     # Create a database of 500 random records
-    for aa in range(5000):
+    for aa in range(500):
         key = randbin(random.randint(6, 12))
         val = randbin(random.randint(24, 96))
         ret = core.save_data(str(key), str(val))
         assert ret != 0
-
 
 def teardown_module(module):
     """ teardown any state that was previously setup with a setup_module

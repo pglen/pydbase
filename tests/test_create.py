@@ -4,8 +4,7 @@ import pytest, os, sys
 
 fff = __file__[:]
 from mytest import *
-import twincore, pypacker
-
+import twincore, pyvpacker
 
 core = None
 

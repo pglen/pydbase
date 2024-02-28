@@ -2,7 +2,7 @@
 
 import pytest, os, sys, random
 from mytest import *
-import twincore, pypacker
+import twincore, pyvpacker
 
 core = None
 
@@ -51,6 +51,7 @@ def teardown_module(module):
 
 def test_vacuum(capsys):
 
+    core.pgdebug = 0
     core.vacuum()
     core.dump_data()
     #assert 0

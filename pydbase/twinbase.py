@@ -27,11 +27,11 @@ RECEND      = b"RECE"
 
 # Accessed from the main file as well
 
-core_locktout   = LOCK_TIMEOUT   # Settable from ...
-core_quiet      = 0
-core_pgdebug    = 0
-core_integrity  = 0
-core_showdel    = 0
+base_pgdebug    = 0
+base_locktout   = LOCK_TIMEOUT   # Settable from ...
+base_quiet      = 0
+base_integrity  = 0
+base_showdel    = 0
 
 # ------------------------------------------------------------------------
 # Simple file system based locking system
@@ -55,7 +55,7 @@ def truncs(strx, num = 8):
     ''' Truncate a string for printing nicely. Add '..' if truncated'''
 
     # no truncation on high verbose
-    #if self.core_verbose > 1:
+    #if self.base_verbose > 1:
     #    return strx
 
     if len(strx) > num:
@@ -211,16 +211,22 @@ def dellock(lockname):
         Test for stale lock;
     '''
 
+    if base_pgdebug > 1:
+        print("dellock", lockname)
+
     try:
         if os.path.isfile(lockname):
             os.unlink(lockname)
     except:
-        if core_pgdebug > 1:
+        if base_pgdebug > 1:
             print("Del lock failed", sys.exc_info())
 
 def waitlock(lockname):
 
     ''' Wait for lock file to become available. '''
+
+    if base_pgdebug > 2:
+        print("Waitlock", lockname)
 
     cnt = 0
     while True:
@@ -239,9 +245,9 @@ def waitlock(lockname):
                     pass
             cnt += 1
             time.sleep(0.1)
-            if cnt > core_locktout:
+            if cnt > base_locktout:
                 # Taking too long; break in
-                if core_pgdebug > 1:
+                if base_pgdebug > 1:
                     print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
                 dellock(lockname)
                 break

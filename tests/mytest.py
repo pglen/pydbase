@@ -1,6 +1,10 @@
 import os, string, random, sys
+
 sys.path.append("..")
+sys.path.append("../pydbase")
+
 import twincore
+import pyvpacker
 
 # Return a random string based upon length
 

@@ -57,6 +57,21 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
 import  struct, io
 
+base = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(base,  '..', "pydbase"))
+
+#from twinbase import TwinCoreBase
+#from twinbase import HEADSIZE, INT_MAX, CURROFFS
+#from twinbase import FIRSTHASH, FIRSTDATA, LOCK_TIMEOUT
+#from twinbase import dellock, waitlock
+#from twinbase import FILESIG
+#from twinbase import IDXSIG
+#from twinbase import RECSIG
+#from twinbase import RECDEL
+#from twinbase import RECSEP
+#from twinbase import RECEND
+#from twinbase import truncs
+
 from twinbase import *
 
 version = "1.0 dev"
@@ -76,10 +91,13 @@ class TwinCore(TwinCoreBase):
 
     def __init__(self, fname = "pydbase.pydb"):
 
+        self.pgdebug = 2
+        base_pgdebug = self.pgdebug
+
         super(TwinCoreBase, self).__init__()
         #print("initializing core with", fname)
 
-        self.core_verbose  = 0
+        self.base_verbose  = 0
         #self.pool = threading.BoundedSemaphore(value=1)
 
         self.cnt = 0
@@ -89,7 +107,7 @@ class TwinCore(TwinCoreBase):
         #self.lckname2 = os.path.splitext(self.fname)[0] + ".lock2"
 
         # This will never show ... but it was informative at one point
-        if core_pgdebug > 4:
+        if self.pgdebug > 4:
             print("fname:    ", fname)
             print("idxname:  ", self.idxname)
             print("lockname: ", self.lckname)
@@ -141,7 +159,7 @@ class TwinCore(TwinCoreBase):
             if indexsize < HEADSIZE:
                 self.create_idx(self.ifp)
                 # It was an existing data, new index needed
-                if self.core_verbose > 0:
+                if self.base_verbose > 0:
                     print("Reindexing")
                 self.__reindex()
 
@@ -197,7 +215,7 @@ class TwinCore(TwinCoreBase):
             return arr
 
         if sig != RECSIG:
-            if self.core_verbose > 0:
+            if self.base_verbose > 0:
                 print(" Damaged data (sig) '%s' at" % sig, rec)
             return arr
 
@@ -205,12 +223,12 @@ class TwinCore(TwinCoreBase):
         blen = self.getbuffint(rec+8)
         data = self.getbuffstr(rec + 12, blen)
 
-        if core_integrity:
+        if base_integrity:
             ccc = self.hash32(data)
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 print("rec", rec, "hash", hex(hash), "check", hex(ccc))
             if hash != ccc:
-                if self.core_verbose > 0:
+                if self.base_verbose > 0:
                     print("Error on hash at rec", rec, "hash", hex(hash), "check", hex(ccc))
                 return []
 
@@ -218,7 +236,7 @@ class TwinCore(TwinCoreBase):
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
         if endd != RECSEP:
-            if self.core_verbose > 0:
+            if self.base_verbose > 0:
                 print(" Damaged data (sep) '%s' at" % endd, rec)
             return arr
 
@@ -227,12 +245,12 @@ class TwinCore(TwinCoreBase):
         blen2 = self.getbuffint(rec2+4)
         data2 = self.getbuffstr(rec2+8, blen2)
 
-        if core_integrity:
+        if base_integrity:
             ccc2 = self.hash32(data2)
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 print("rec", rec, "hash2", hex(hash2), "check2", hex(ccc2))
             if hash2 != ccc2:
-                if self.core_verbose > 0:
+                if self.base_verbose > 0:
                     print("Error on hash at rec", rec, "hash2", hex(hash2), "check2", hex(ccc2))
                 return []
 
@@ -250,7 +268,7 @@ class TwinCore(TwinCoreBase):
         sig = self.getbuffstr(rec, self.INTSIZE)
 
         if sig == RECDEL:
-            if core_showdel:
+            if base_showdel:
                 klen = self.getbuffint(rec+8)
                 kdata = self.getbuffstr(rec+12, klen)
                 rec2 = rec + 16 + klen;
@@ -261,7 +279,7 @@ class TwinCore(TwinCoreBase):
             return cnt2
 
         if sig != RECSIG:
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 print(" Damaged data (sig) '%s' at" % sig, rec)
             return cnt2
 
@@ -273,18 +291,18 @@ class TwinCore(TwinCoreBase):
             return cnt2
 
         data = self.getbuffstr(rec+12, blen)
-        if core_integrity:
+        if base_integrity:
             ccc = self.hash32(data)
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 print("rec", rec, "hash", hex(hash), "check", hex(ccc))
             if hash != ccc:
-                if self.core_verbose > 0:
+                if self.base_verbose > 0:
                     print("Error on hash at rec", rec, "hash", hex(hash), "check", hex(ccc))
                 return []
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
         if endd != RECSEP:
-            if self.core_verbose > 0:
+            if self.base_verbose > 0:
                 print(" Damaged data (sep) '%s' at" % endd, rec)
             return cnt2
 
@@ -297,20 +315,20 @@ class TwinCore(TwinCoreBase):
             return cnt2
 
         data2 = self.getbuffstr(rec2+8, blen2)
-        if core_integrity:
+        if base_integrity:
             ccc2 = self.hash32(data2)
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 print("rec", rec, "hash2", hex(hash), "check2", hex(ccc))
             if hash2 != ccc2:
-                if self.core_verbose > 0:
+                if self.base_verbose > 0:
                     print("Error on hash at rec", rec, "hash2", hex(hash), "check2", hex(ccc))
                 return []
-        if self.core_verbose > 1:
+        if self.base_verbose > 1:
             print("%-5d pos %5d" % (cnt, rec), "%8x" % hash, "len", blen, data,
                                                         "%8x" % hash2,"len", blen2, data2)
             print()
 
-        elif self.core_verbose:
+        elif self.base_verbose:
             print("%-5d pos %5d" % (cnt, rec), "%8x" % hash, "len", blen, truncs(data),
                                                         "%8x" % hash2,"len", blen2, truncs(data2))
         else:
@@ -331,9 +349,9 @@ class TwinCore(TwinCoreBase):
             return ret
 
         if sig != RECSIG:
-            if self.core_verbose > 0:
+            if self.base_verbose > 0:
                 print(" Damaged data (sig) '%s' at %d (%d)" % (sig, rec, cnt2))
-            #if self.core_verbose > 1:
+            #if self.base_verbose > 1:
             #    print("Data", data)
 
             return ret
@@ -342,23 +360,23 @@ class TwinCore(TwinCoreBase):
         blen = self.getbuffint(rec+8)
 
         if blen <= 0:
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 print("Invalid key length %d at %d" % (blen, rec))
             return ret
 
         data = self.getbuffstr(rec+12, blen)
         ccc = self.hash32(data)
         if hash != ccc:
-            if self.core_verbose > 0:
+            if self.base_verbose > 0:
                 print("Error on hash at rec", rec, cnt2, "hash", hex(hash), "check", hex(ccc))
 
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 print("Data", data)
             return ret
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
         if endd != RECSEP:
-            if self.core_verbose > 0:
+            if self.base_verbose > 0:
                 print(" Damaged data (sep) '%s' at %d %d %d" % (endd, rec, cnt2))
             return ret
 
@@ -367,20 +385,20 @@ class TwinCore(TwinCoreBase):
         blen2 = self.getbuffint(rec2+4)
 
         if blen2 < 0:
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 print("Invalid data length2 %d at %d" % (blen2, rec))
             return ret
 
         data2 = self.getbuffstr(rec2+8, blen2)
         ccc2 = self.hash32(data2)
         if hash2 != ccc2:
-            if self.core_verbose > 0:
+            if self.base_verbose > 0:
                 print("Error on hash2 at rec", rec, cnt2, "hash2", hex(hash2), "check2", hex(ccc2))
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 print("Data", data, "Data2", data2)
             return ret
 
-        if self.core_verbose > 2:
+        if self.base_verbose > 2:
             print("Record at %d (%d) OK." % (rec, cnt2))
 
         ret += 1
@@ -405,7 +423,7 @@ class TwinCore(TwinCoreBase):
         for aa in rrr:
             rec = self.getidxint(aa)
             #print(aa, rec)
-            if not core_quiet:
+            if not base_quiet:
                 cnt2 += 1
                 ret = self.dump_rec(rec, cnt)
                 if ret:
@@ -447,7 +465,7 @@ class TwinCore(TwinCoreBase):
         self.create_idx(tempifp)
         dlen = self.getsize(self.fp)
 
-        if self.core_verbose > 2:
+        if self.base_verbose > 2:
            print("curr", curr, "dlen", dlen)
 
         aa =  HEADSIZE
@@ -474,10 +492,10 @@ class TwinCore(TwinCoreBase):
             except:
                 print("in reindex", sys.exc_info())
 
-            if self.core_verbose == 1:
+            if self.base_verbose == 1:
                 print(aa, "sig", sig, "hhh2", hex(hhh2), "len", lenx, \
                     "sep", sep, "len2", len2)
-            if self.core_verbose > 1:
+            if self.base_verbose > 1:
                 data =  self.getbuffstr(aa + 12, lenx)
                 data2 =  self.getbuffstr(aa + 24 + lenx, len2)
                 print(aa, "sig", sig, "data", data, "data2", data2)
@@ -554,7 +572,7 @@ class TwinCore(TwinCoreBase):
         vacerr  = os.path.splitext(self.fname)[0] +  ".perr"
         vacidx = os.path.splitext(vacname)[0]  + ".pidx"
 
-        if core_pgdebug > 4:
+        if self.pgdebug > 4:
             print("vacname", vacname)
             print("vacidx", vacidx)
             print("vacerr", vacerr)
@@ -585,21 +603,21 @@ class TwinCore(TwinCoreBase):
                 sig = self.getbuffstr(rec, self.INTSIZE)
                 if sig == RECDEL:
                     ret += 1
-                    if core_pgdebug > 1:
+                    if self.pgdebug > 1:
                         print("deleted", rec)
                 elif sig != RECSIG:
-                    if self.core_verbose:
+                    if self.base_verbose:
                         print("Detected error at %d" % rec)
                     ret += 1
                     self.__save_error(rec, vacerrfp)
                 else:
-                    global core_integrity
-                    tmpi = core_integrity
-                    core_integrity = True
+                    global base_integrity
+                    tmpi = base_integrity
+                    base_integrity = True
                     arr = self.get_rec_offs(rec)
-                    core_integrity = tmpi
+                    base_integrity = tmpi
 
-                    if core_pgdebug > 1:
+                    if self.pgdebug > 1:
                         print(cnt, "vac rec", rec, arr)
 
                     if len(arr) > 1:
@@ -610,7 +628,7 @@ class TwinCore(TwinCoreBase):
                     else:
                         # This could be from empty bacause of hash error
                         self.__save_error(rec, vacerrfp)
-                        if core_pgdebug > 0:
+                        if self.pgdebug > 0:
                             print("Error on vac: %d" % rec)
                 cnt += 1
 
@@ -639,7 +657,7 @@ class TwinCore(TwinCoreBase):
             except:
                 pass
 
-            if core_pgdebug > 1:
+            if self.pgdebug > 1:
                 print("rename", vacname, "->", self.fname)
                 print("rename", vacidx, "->", self.idxname)
 
@@ -653,7 +671,7 @@ class TwinCore(TwinCoreBase):
 
         else:
             # Just remove non vacuumed files
-            if core_pgdebug > 1:
+            if self.pgdebug > 1:
                 print("deleted", vacname, vacidx)
             try:
                 os.remove(vacname)
@@ -695,7 +713,7 @@ class TwinCore(TwinCoreBase):
 
         sig = self.getbuffstr(recoffs, self.INTSIZE)
         if sig == RECDEL:
-            if self.core_verbose:
+            if self.base_verbose:
                 print("Deleted record.")
             return []
         if sig != RECSIG:
@@ -716,7 +734,7 @@ class TwinCore(TwinCoreBase):
 
         sig = self.getbuffstr(recoffs, self.INTSIZE)
         if sig == RECDEL:
-            if self.core_verbose:
+            if self.base_verbose:
                 print("Deleted record.")
             return []
         if sig != RECSIG:
@@ -728,7 +746,7 @@ class TwinCore(TwinCoreBase):
     def  del_rec(self, recnum):
         rsize = self._getdbsize(self.ifp)
         if recnum >= rsize:
-            if self.core_verbose:
+            if self.base_verbose:
                 print("Past end of data.");
             return False
         chash = self.getidxint(CURROFFS)
@@ -737,7 +755,7 @@ class TwinCore(TwinCoreBase):
         #print("offs", offs)
         old = self.getbuffstr(offs, self.INTSIZE)
         if old == RECDEL:
-            if self.core_verbose:
+            if self.base_verbose:
                 print("Record at %d already deleted." % offs);
             return False
 
@@ -793,7 +811,7 @@ class TwinCore(TwinCoreBase):
             strx = strx.encode(errors='strict')
 
         hhhh = self.hash32(strx)
-        if core_pgdebug > 2:
+        if self.pgdebug > 2:
             print("strx", strx, hhhh)
 
         #chash = self.getidxint(CURROFFS)
@@ -809,10 +827,10 @@ class TwinCore(TwinCoreBase):
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, self.INTSIZE)
             if sig == RECDEL:
-                if self.core_verbose > 3:
+                if self.base_verbose > 3:
                     print(" Deleted record '%s' at" % sig, rec)
             elif sig != RECSIG:
-                if self.core_verbose:
+                if self.base_verbose:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
                 hhh = self.getbuffint(rec+4)
@@ -843,15 +861,15 @@ class TwinCore(TwinCoreBase):
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, self.INTSIZE)
             if sig == RECDEL:
-                if core_showdel:
+                if base_showdel:
                     print(" Deleted record '%s' at" % sig, rec)
             elif sig != RECSIG:
-                if self.core_verbose > 0:
+                if self.base_verbose > 0:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
                 blen = self.getbuffint(rec+8)
                 data = self.getbuffstr(rec + 12, blen)
-                if self.core_verbose > 1:
+                if self.base_verbose > 1:
                     print("find", data)
                 #if str(strx2) in str(data):
                 if strx2 in data:
@@ -885,10 +903,10 @@ class TwinCore(TwinCoreBase):
 
             sig = self.getbuffstr(rec, self.INTSIZE)
             if sig == RECDEL:
-                if 1: #core_showdel:
+                if 1: #base_showdel:
                     print("Deleted record '%s' at" % sig, rec)
             elif sig != RECSIG:
-                if 1: #self.core_verbose > 0:
+                if 1: #self.base_verbose > 0:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
                     hhh = self.getbuffint(rec+4)
@@ -932,10 +950,10 @@ class TwinCore(TwinCoreBase):
 
             sig = self.getbuffstr(rec, self.INTSIZE)
             if sig == RECDEL:
-                if core_showdel:
+                if base_showdel:
                     print("Deleted record '%s' at" % sig, rec)
             elif sig != RECSIG:
-                if self.core_verbose > 0:
+                if self.base_verbose > 0:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
                 hhh = self.getbuffint(rec+4)
@@ -977,7 +995,7 @@ class TwinCore(TwinCoreBase):
 
             hhh = self.getbuffint(rec+4)
             if hash == hhh:
-                if self.core_verbose > 0:
+                if self.base_verbose > 0:
                     print("Would delete", hhh)
 
             self.putbuffstr(rec, RECDEL)
@@ -995,7 +1013,7 @@ class TwinCore(TwinCoreBase):
         if type(strx) == str:
             strx = strx.encode()
 
-        if self.core_verbose > 1:
+        if self.base_verbose > 1:
             print("Start delete ", strx, "skip", skip)
 
         cnt = 0; cnt3 = 0
@@ -1006,19 +1024,19 @@ class TwinCore(TwinCoreBase):
             rec = self.getidxint(aa)
             sig = self.getbuffstr(rec, self.INTSIZE)
             if sig == RECDEL:
-                if core_showdel:
+                if base_showdel:
                     print(" Deleted record '%s' at" % sig, rec)
             elif sig != RECSIG:
-                if self.core_verbose > 0:
+                if self.base_verbose > 0:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
                 blen = self.getbuffint(rec+8)
                 data = self.getbuffstr(rec + 12, blen)
-                if self.core_verbose > 2:
+                if self.base_verbose > 2:
                     print("del iterate recs", cnt3, data, strx)
 
                 if strx == data:
-                    if self.core_verbose > 0:
+                    if self.base_verbose > 0:
                         print("Deleting", cnt3, aa, data)
                     self.putbuffstr(rec, RECDEL)
                     cnt += 1
@@ -1044,13 +1062,13 @@ class TwinCore(TwinCoreBase):
         except:
             arg3e = arg3
 
-        if core_pgdebug > 1:
+        if self.pgdebug > 1:
             print("args", arg2e, "arg3", arg3e)
 
         hhh2 = self.hash32(arg2e)
         hhh3 = self.hash32(arg3e)
 
-        if core_pgdebug > 1:
+        if self.pgdebug > 1:
             print("hhh2", hhh2, "hhh3", hhh3)
 
         ret = self.__save_data(hhh2, arg2e, hhh3, arg3e)
@@ -1098,8 +1116,5 @@ class TwinCore(TwinCoreBase):
 
         return curr
 
-#__all__ = ["TwinCore", "self.core_verbose", "core_quiet", "core_pgdebug",
-#                "core_lcktimeout"]
-#
 
 # EOF

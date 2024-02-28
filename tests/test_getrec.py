@@ -2,7 +2,7 @@
 
 import pytest, os, sys
 from mytest import *
-import twincore, pypacker
+import twincore, pyvpacker
 
 fname = createname(__file__)
 iname = createidxname(__file__)

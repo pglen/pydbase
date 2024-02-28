@@ -2,7 +2,7 @@
 
 import pytest, os, sys
 from mytest import *
-import twincore, pypacker
+import twincore, pyvpacker
 
 # Test for pydbase
 
@@ -12,7 +12,7 @@ def setup_module(module):
     """ setup any state specific to the execution of the given module."""
 
     global packer
-    packer = pypacker.packbin()
+    packer = pyvpacker.packbin()
 
     try:
         # Fresh start

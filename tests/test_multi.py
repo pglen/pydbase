@@ -2,7 +2,7 @@
 
 import pytest, os, sys, threading
 from mytest import *
-import twincore, pypacker
+import twincore, pyvpacker
 
 core = None
 fname = createname(__file__)

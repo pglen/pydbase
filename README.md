@@ -1,4 +1,4 @@
-# pydbase (see blockcain at the end)
+# pydbase (see blockchain at the end)
 
 ## High speed database with key / data
 
@@ -255,5 +255,10 @@ To drive it:
 
     ============================== 32 passed in 3.24s ==============================
     peterglen@getac110:~/pgpygtk/pydbase$
+
+## History
+    1.1         Tue 20.Feb.2024     Initial release
+    1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
+    1.4.0       Tue 27.Feb.2024     Addedd pgdebug
 
 ; EOF
