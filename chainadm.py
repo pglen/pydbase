@@ -4,14 +4,14 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading, warnings
 import  string, hashlib
 
-#psutil
+import pyvpacker
 
 import gettext
 gettext.bindtextdomain('thisapp', './locale/')
 gettext.textdomain('thisapp')
 _ = gettext.gettext
 
-import twinchain, pypacker
+from pydbase import twinchain
 
 version = "0.0.1"
 
@@ -41,15 +41,15 @@ class _c():
     dkeyx   = ""; dumpx  = 0
     findrec = ""; getrec = 0
 
-    deffile = "data/pydbchain.pydb"
+    deffile = "pydbchain.pydb"
 
 def help():
     print("Usage: pychain.py [options]")
     print("   Options: -a  data   append data to the end of chain")
     print("            -h         help (this screen)")
     print("            -m         dump chain data")
-    print("            -c         check chain data")
-    print("            -i         check chain integrity")
+    print("            -c         check data integrity")
+    print("            -i         check link integrity")
     print("            -v         increase verbosity")
 
 def mainfunc():
@@ -59,7 +59,7 @@ def mainfunc():
     opts = []; args = []
 
     # Old fashioned parsing
-    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:"
+    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:d:"
     opts_normal = "mchiVrwzvqURIK?S"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
@@ -89,6 +89,12 @@ def mainfunc():
         if aa[0] == "-v":
             _c.verbose += 1
 
+        if aa[0] == "-d":
+            try:
+                _c.pgdebug = int(aa[1])
+            except:
+                print("Warn: debug level needs to be numeric.")
+
         if aa[0] == "-c":
             _c.checkx = True
 
@@ -98,16 +104,15 @@ def mainfunc():
     #print("Use: pychain.py -h to see options and help")
 
     # Create our database
-    core = twinchain.TwinChain(_c.deffile)
-    core.core_verbose = _c.verbose
+    core = twinchain.TwinChain(_c.deffile, _c.pgdebug, _c.verbose)
 
     if _c.integx:
-        #print("Integrity", _c.integx)
+        print("Integrity", _c.integx)
         errx = False; cnt = []
         sss = core.getdbsize()
         # Remember record zero is the anchor
         for aa in range(1, sss):
-            ppp = core.integrity(aa)
+            ppp = core.linkintegrity(aa)
             if _c.verbose:
                 print(aa, ppp)
             if not ppp: errx = True; cnt.append(aa)
@@ -121,7 +126,7 @@ def mainfunc():
         errx = False; cnt = -1
         sss = core.getdbsize()
         for aa in range(sss):
-            ppp = core.check(aa)
+            ppp = core.checkdata(aa)
             if _c.verbose:
                 print(aa, ppp)
             if not ppp: errx = True; cnt = aa
@@ -143,13 +148,11 @@ def mainfunc():
     else:
         print("use: pychain.py -h for info on usage.")
 
+# ------------------------------------------------------------------------
+
 if __name__ == "__main__":
 
-    # Tested with process based lock (OK)
-    #twincore.waitlock(gl_lockname)
     mainfunc()
-
-    #twincore.dellock(gl_lockname)
 
 # EOF
 

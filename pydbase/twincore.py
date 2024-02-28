@@ -160,7 +160,7 @@ class TwinCore(TwinCoreBase):
                 self.create_idx(self.ifp)
                 # It was an existing data, new index needed
                 if self.base_verbose > 0:
-                    print("Reindexing")
+                        print("Reindexing")
                 self.__reindex()
 
         # Check
@@ -477,6 +477,7 @@ class TwinCore(TwinCoreBase):
             # Check if sig is correct
             if sig != RECSIG:
                 print("Invalid sig .. resync needed")
+                raise
 
             #print("reind", aa)
 

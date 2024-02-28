@@ -26,7 +26,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pydbase",
-    version="1.4.2",
+    version="1.4.3",
     author="Peter Glen",
     author_email="peterglen99@gmail.com",
     description="High speed database with key / data in python.",
@@ -41,13 +41,15 @@ setuptools.setup(
     include_package_data=True,
     #packages=setuptools.find_packages(include=includex),
     packages = ["pydbase",],
-    scripts = ['demodbase.py',],
+    scripts = ['dbaseadm.py', 'chainadm.py'],
     py_modules = ["pyvpacker",],
     #package_dir = {'': '.'},
 
     python_requires='>=3',
     entry_points={
-        'console_scripts': [ "demodbase=demodbase:mainfunc", ],
+        'console_scripts': [ "dbaseadm=dbaseadm:mainfunc",
+                                "chainadm=chainadm:mainfunc",
+                           ],
     },
 )
 

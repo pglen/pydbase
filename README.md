@@ -233,32 +233,34 @@ To drive it:
 
     ============================= test session starts ==============================
     platform linux -- Python 3.10.12, pytest-7.4.3, pluggy-1.0.0
-    rootdir: /home/peterglen/pgpygtk/pydbase
-    collected 32 items
+    rootdir: /home/xxxx/pgpygtk/pydbase
+    collected 33 items
 
     test_bindata.py .                                                        [  3%]
-    test_create.py .....                                                     [ 18%]
-    test_del.py .                                                            [ 21%]
-    test_dump.py .                                                           [ 25%]
-    test_find.py ..                                                          [ 31%]
-    test_findrec.py ..                                                       [ 37%]
-    test_getrec.py .                                                         [ 40%]
-    test_integrity.py .                                                      [ 43%]
-    test_list.py ..                                                          [ 50%]
-    test_lockrel.py ..                                                       [ 56%]
-    test_multi.py ..                                                         [ 62%]
+    test_chain.py .                                                          [  6%]
+    test_create.py .....                                                     [ 21%]
+    test_del.py .                                                            [ 24%]
+    test_dump.py .                                                           [ 27%]
+    test_find.py ..                                                          [ 33%]
+    test_findrec.py ..                                                       [ 39%]
+    test_getrec.py .                                                         [ 42%]
+    test_integrity.py .                                                      [ 45%]
+    test_list.py ..                                                          [ 51%]
+    test_lockrel.py ..                                                       [ 57%]
+    test_multi.py ..                                                         [ 63%]
     test_packer.py ......                                                    [ 81%]
     test_randdata.py .                                                       [ 84%]
     test_reindex.py .                                                        [ 87%]
     test_search.py ...                                                       [ 96%]
     test_vacuum.py .                                                         [100%]
 
-    ============================== 32 passed in 3.24s ==============================
-    peterglen@getac110:~/pgpygtk/pydbase$
+    ============================== 33 passed in 0.73s ==============================
 
 ## History
     1.1         Tue 20.Feb.2024     Initial release
     1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
     1.4.0       Tue 27.Feb.2024     Addedd pgdebug
+    1.4.2       Wed 28.Feb.2024     Fixed multiple instances
+    1.4.3       Wed 28.Feb.2024     ChainAdm added
 
 ; EOF

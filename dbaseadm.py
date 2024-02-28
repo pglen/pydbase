@@ -12,12 +12,9 @@ gettext.textdomain('thisapp')
 _ = gettext.gettext
 
 base = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(base, 'xpydbase'))
-#sys.path.append(os.path.join(base, "..", 'pydbase'))
-#sys.path.append(os.path.join('..', 'pydbase'))
+sys.path.append(os.path.join(base, 'pydbase'))
 
 from pydbase import twincore
-#import twincore
 
 # ------------------------------------------------------------------------
 
@@ -69,7 +66,7 @@ def randstr(lenx):
 
 def help():
     print("Usage: pydebase.py [options] [arg_key arg_data]")
-    print(" Options: -h         help (this screen)   -|-  -i  show deleted on dump")
+    print(" Options: -h         help (this screen)   -|-  -G  num  get record number ")
     print("          -V         print version        -|-  -q  quiet on")
     print("          -d         debug level (0-10)   -|-  -v  increment verbosity level")
     print("          -r         randomize data       -|-  -w  write fixed record(s)")
@@ -79,12 +76,12 @@ def help():
     print("          -s         Skip to count recs   -|-  -K  list keys only")
     print("          -y  key    find by key          -|-  -m  dump data to console")
     print("          -o  offs   get data from offset -|-  -e  offs   delete at offset")
-    print("          -u  rec    delete at position   -|-  -g  num    get number of recs.")
+    print("          -F  subkey find by sub str      -|-  -g  num    get number of recs.")
     print("          -k  key    key to save          -|-  -a  str    data to save ")
     print("          -S         print num recs       -|-  -D  key    delete by key ")
     print("          -n  num    number of records    -|-  -t  key    retrieve by key")
-    print("          -p  num    skip number of recs  -|-  -F  subkey find by sub str")
-    print("          -l  lim    limit number of recs -|-  -G  num  get record number ")
+    print("          -p  num    skip number of recs  -|-  -u  rec    delete at recnum")
+    print("          -l  lim    limit number of recs -|-  ")
     print("          -x  max    limit max number of records to get")
     print("          -f  file   input or output file (default: 'pydbase.pydb')")
     print("The verbosity level influences the amount of data presented.")
@@ -319,7 +316,7 @@ def mainfunc():
                 print("Found:", end = "")
             print(ret)
     else:
-        print("Use: pydbase.py -h to see options and help")
+        print("Use:", os.path.split(sys.argv[0])[1], "-h to see options and help")
 
 if __name__ == "__main__":
 

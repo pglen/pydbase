@@ -17,28 +17,21 @@ all:
 
 .PHONY: tests
 
-tests:
-	cd tests; pytest
-	cd ..
-
 help:
 	@echo
 	@echo "Targets:"
-	@echo "	 make clean"
+	@echo "	 make clean        -- Clean Executables"
+	@echo "	 make cleandata    -- Remove test databases"
 	@echo "	 make build"
-	@echo "	 make setup    -- Run the setup.py script as install "
-	@echo "	 make pack     -- package ${PROG}  "
-	@echo "	 make remove   -- remove (all) traces of ${PROG}  from the system"
-	@echo "	 make tests    -- execute test suite ${PROG}"
-	@echo "	 make doc3     -- create ${PROG} documentation"
-	@echo "	 make tests    -- execute ${PROG} test suite"
-	@echo "	 make doxy     -- create ${PROG} documentation"
+	@echo "	 make setup        -- Run the setup.py script as install "
+	@echo "	 make tests        -- execute test suite ${PROG}"
+	@echo "	 make doc3         -- create ${PROG} documentation"
+	@echo "	 make tests        -- execute ${PROG} test suite"
+	@echo "	 make doxy         -- create ${PROG} documentation"
 	@echo
 
-# OLD install; use setup.py
-
-#install:
-#	@python3 ./install.py
+tests:
+	./pytests.sh
 
 setup:
 	@python3 ./setup.py install
@@ -51,15 +44,18 @@ remove:
 	xargs rm -rf < files.txt
 	@rm -f files.txt
 
-pack:
-	@./pack.sh
-
 clean:
-	rm -f *.pyc
-	rm -f pedlib/*.pyc
-	rm -rf ./pydbase/__pycache__
-	rm -rf build/*
-	rm -rf dist/*
+	@rm -f *.pyc
+	@rm -f pedlib/*.pyc
+	@rm -rf ./pydbase/__pycache__
+	@rm -rf build/*
+	@rm -rf dist/*
+
+cleandata:
+	@rm -f pydbase.pydb
+	@rm -f pydbase.pidx
+	@rm -f pydbchain.pydb
+	@rm -f pydbchain.pidx
 
 echo:
 	@echo Echoing: ${CHECK}
