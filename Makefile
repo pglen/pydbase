@@ -10,7 +10,6 @@
 
 .PHONY:  doc doc3 clean echo
 
-
 PROG=pydbase
 
 all:
@@ -25,7 +24,8 @@ tests:
 help:
 	@echo
 	@echo "Targets:"
-	@echo "	 make install  -- Install ${PROG} (unofficial structure) obsolete"
+	@echo "	 make clean"
+	@echo "	 make build"
 	@echo "	 make setup    -- Run the setup.py script as install "
 	@echo "	 make pack     -- package ${PROG}  "
 	@echo "	 make remove   -- remove (all) traces of ${PROG}  from the system"
@@ -43,6 +43,9 @@ help:
 setup:
 	@python3 ./setup.py install
 
+build:
+	@python3 ./setup.py build
+
 remove:
 	@python3 ./setup.py install --record files.txt
 	xargs rm -rf < files.txt
@@ -54,9 +57,9 @@ pack:
 clean:
 	rm -f *.pyc
 	rm -f pedlib/*.pyc
-	rm -rf pedlib/__pycache__
-	rm -rf ../pycommon/__pycache__
-	rm -f  ../pycommon/*.pyc
+	rm -rf ./pydbase/__pycache__
+	rm -rf build/*
+	rm -rf dist/*
 
 echo:
 	@echo Echoing: ${CHECK}

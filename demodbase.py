@@ -16,7 +16,7 @@ sys.path.append(os.path.join(base, 'xpydbase'))
 #sys.path.append(os.path.join(base, "..", 'pydbase'))
 #sys.path.append(os.path.join('..', 'pydbase'))
 
-from xpydbase import twincore
+from pydbase import twincore
 #import twincore
 
 # ------------------------------------------------------------------------

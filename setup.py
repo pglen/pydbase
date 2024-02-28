@@ -19,14 +19,14 @@ classx = [
           'Topic :: Databases',
         ]
 
-includex = ["*"]
+#includex = ["pydbase/"]
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="pydbase",
-    version="1.4.1",
+    version="1.4.2",
     author="Peter Glen",
     author_email="peterglen99@gmail.com",
     description="High speed database with key / data in python.",
@@ -40,7 +40,7 @@ setuptools.setup(
     ],
     include_package_data=True,
     #packages=setuptools.find_packages(include=includex),
-    packages = ["xpydbase",],
+    packages = ["pydbase",],
     scripts = ['demodbase.py',],
     py_modules = ["pyvpacker",],
     #package_dir = {'': '.'},
