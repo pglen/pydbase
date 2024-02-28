@@ -83,7 +83,7 @@ def help():
     print("          -p  num    skip number of recs  -|-  -F  subkey find by sub str")
     print("          -l  lim    limit number of recs -|-  -G  num  get record number ")
     print("          -x  max    limit max number of records to get")
-    print("          -f  file   input or output file (default: 'data/pydbase.pydb')")
+    print("          -f  file   input or output file (default: 'pydbase.pydb')")
     print("The verbosity level influences the amount of data presented.")
     print("On the command line, use quotes for multi word arguments.")
 
@@ -192,15 +192,15 @@ def mainfunc():
         sys.exit(1)
 
     # Set some flags
-    twincore.core_quiet     = _m.quiet
-    twincore.core_pgdebug   = _m.pgdebug
-    twincore.core_showdel   = _m.sdelx
-    twincore.core_integrity = _m.checkx
-    twincore.core_pgdebug   = _m.pgdebug
+    twincore.base_quiet     = _m.quiet
+    twincore.base_pgdebug   = _m.pgdebug
+    twincore.base_showdel   = _m.sdelx
+    twincore.base_integrity = _m.checkx
+    twincore.base_pgdebug   = _m.pgdebug
 
     # Create our database
-    core = twincore.TwinCore(_m.deffile)
-    core.core_verbose   = _m.verbose
+    core = twincore.TwinCore(_m.deffile, _m.pgdebug)
+    core.base_verbose   = _m.verbose
 
     # See if we have arguments, save it as data
     if len(args) == 2:

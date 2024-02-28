@@ -68,9 +68,15 @@ class TwinCoreBase():
 
     INTSIZE     = 4
 
-    def __init__(self):
+    def __init__(self, pgdebug = 0):
 
-        #print("Initializing core base")
+        self.pgdebug = pgdebug
+
+        global base_pgdebug
+        base_pgdebug = pgdebug
+
+        if self.pgdebug > 1:
+            print("Initializing core base pgdebug =", pgdebug)
 
         # Provide placeholders
         self.fp = None
@@ -225,7 +231,7 @@ def waitlock(lockname):
 
     ''' Wait for lock file to become available. '''
 
-    if base_pgdebug > 2:
+    if base_pgdebug > 1:
         print("Waitlock", lockname)
 
     cnt = 0
@@ -236,12 +242,8 @@ def waitlock(lockname):
                     fpx = open(lockname)
                     pid = int(fpx.read())
                     fpx.close()
-                    #print("pid", pid, psutil.pids())
-                    #if not pid in psutil.pids():
-                    #    #print("breaking on dead process")
-                    #    break
                 except:
-                    print("Exc in pid test", sys.exc_info())
+                    print("Exception in lock test", sys.exc_info())
                     pass
             cnt += 1
             time.sleep(0.1)

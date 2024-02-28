@@ -89,13 +89,13 @@ class TwinCore(TwinCoreBase):
 
     '''
 
-    def __init__(self, fname = "pydbase.pydb"):
+    def __init__(self, fname = "pydbase.pydb", pgdebug = 0):
 
-        self.pgdebug = 2
-        base_pgdebug = self.pgdebug
+        self.pgdebug = pgdebug
 
-        super(TwinCoreBase, self).__init__()
-        #print("initializing core with", fname)
+        #super(TwinCoreBase, self).__init__(0)
+        super(TwinCore, self).__init__(pgdebug)
+        #print("initializing core with", fname, pgdebug)
 
         self.base_verbose  = 0
         #self.pool = threading.BoundedSemaphore(value=1)
