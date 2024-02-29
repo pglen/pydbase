@@ -219,8 +219,7 @@ To drive it:
 
         prev     curr
             record
-    |    Now        |     Now        |     Now       |
-    |   hash32      |    hash32      |    hash32     |
+    |   Time Now    |   Time  Now    |  Time Now     |
     |   hash256   | |    hash256   | |   hash256   | |
     |   Header    | |    Header    | |   Header    | |
     |   Payload   | |    Payload   | |   Payload   | |
@@ -276,5 +275,9 @@ To drive it:
     1.4.0       Tue 27.Feb.2024     Addedd pgdebug
     1.4.2       Wed 28.Feb.2024     Fixed multiple instances
     1.4.3       Wed 28.Feb.2024     ChainAdm added
+
+## Errata
+
+    Chain is still in development
 
 // EOF

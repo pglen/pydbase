@@ -9,21 +9,23 @@
 
         prev     curr
             record
-   |    Now        |     Now        |     Now       |
-   |   hash32      |    hash32      |    hash32     |
-   |   hash256   | |    hash256   | |   hash256   | |
-   |   Header    | |    Header    | |   Header    | |
-   |   Payload   | |    Payload   | |   Payload   | |
-   |   Backlink  | |    Backlink  | |   Backlink  | |
-                 |----->---|      |---->---|     |------ ...
+    |   Time Now    |   Time  Now    |  Time Now     |
+    |   hash256   | |    hash256   | |   hash256   | |
+    |   Header    | |    Header    | |   Header    | |
+    |   Payload   | |    Payload   | |   Payload   | |
+    |   Backlink  | |    Backlink  | |   Backlink  | |
+                  |----->---|      |---->---|     |------ ...
 
     The sum of fields saved to the next backlink.
 
-    backlink
-
     History:
 
-        Sun 26.Mar.2023   --  Initial
+        0.0.0       Tue 20.Feb.2024     Initial release
+        0.0.0       Sun 26.Mar.2023     More features
+        1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
+        1.4.0       Tue 27.Feb.2024     Addedd pgdebug
+        1.4.2       Wed 28.Feb.2024     Fixed multiple instances
+        1.4.3       Wed 28.Feb.2024     ChainAdm added
 
 '''
 
