@@ -146,7 +146,7 @@ def mainfunc():
         #print("Appending", _c.append)
         core.append(_c.append)
     else:
-        print("use: pychain.py -h for info on usage.")
+        print("Use:", os.path.split(sys.argv[0])[1], "-h for info on usage.")
 
 # ------------------------------------------------------------------------
 

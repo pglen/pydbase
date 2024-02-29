@@ -54,8 +54,12 @@ clean:
 cleandata:
 	@rm -f pydbase.pydb
 	@rm -f pydbase.pidx
+	@rm -f pydbase.lock
+	@rm -f pydbase.ulock
 	@rm -f pydbchain.pydb
 	@rm -f pydbchain.pidx
+	@rm -f pydbchain.lock
+	@rm -f pydbchain.ulock
 
 echo:
 	@echo Echoing: ${CHECK}

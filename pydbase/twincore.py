@@ -60,23 +60,9 @@ import  struct, io
 base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base, '..', 'pydbase'))
 
-#from twinbase import TwinCoreBase
-#from twinbase import HEADSIZE, INT_MAX, CURROFFS
-#from twinbase import FIRSTHASH, FIRSTDATA, LOCK_TIMEOUT
-#from twinbase import dellock, waitlock
-#from twinbase import FILESIG
-#from twinbase import IDXSIG
-#from twinbase import RECSIG
-#from twinbase import RECDEL
-#from twinbase import RECSEP
-#from twinbase import RECEND
-#from twinbase import truncs
-
 from twinbase import *
 
 version = "1.0 dev"
-
-# NamedAtomicLock -- did not work here
 
 # ------------------------------------------------------------------------
 
@@ -91,22 +77,22 @@ class TwinCore(TwinCoreBase):
 
     def __init__(self, fname = "pydbase.pydb", pgdebug = 0):
 
-        self.pgdebug = pgdebug
-
-        #super(TwinCoreBase, self).__init__(0)
-        super(TwinCore, self).__init__(pgdebug)
-        #print("initializing core with", fname, pgdebug)
-
-        self.base_verbose  = 0
-        #self.pool = threading.BoundedSemaphore(value=1)
-
         self.cnt = 0
+        self.pgdebug = pgdebug
+        self.base_verbose  = 0
         self.fname = fname
         self.idxname  = os.path.splitext(self.fname)[0] + ".pidx"
         self.lckname  = os.path.splitext(self.fname)[0] + ".lock"
-        #self.lckname2 = os.path.splitext(self.fname)[0] + ".lock2"
 
-        # This will never show ... but it was informative at one point
+        # Make sure only one process can use this
+        waitlock(self.lckname)
+
+        super(TwinCore, self).__init__(pgdebug)
+        #print("initializing core with", fname, pgdebug)
+
+        #self.pool = threading.BoundedSemaphore(value=1)
+
+        # It was informative at one point
         if self.pgdebug > 4:
             print("fname:    ", fname)
             print("idxname:  ", self.idxname)
@@ -116,19 +102,13 @@ class TwinCore(TwinCoreBase):
 
         #print("Q pid", os.getpid())
 
-        # Make sure only one process can use this
-        waitlock(self.lckname)
-
         #print("pid", os.getpid())
-
         # Initial file creation
-
         # Nuke false index
         try:
             if not os.path.isfile(self.fname):
                 #os.rename(self.idxname, self.idxname + ".old")
                 os.remove(self.idxname)
-
         except:
             pass
 

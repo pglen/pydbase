@@ -40,6 +40,25 @@ from twincore import *
 
 version = "1.4.1 dev"
 protocol = "1.0"
+chain_pgdebug = 0
+
+def put_exception(xstr):
+
+    cumm = xstr + " "
+    a,b,c = sys.exc_info()
+    if a != None:
+        cumm += str(a) + " " + str(b) + "\n"
+        try:
+            #cumm += str(traceback.format_tb(c, 10))
+            ttt = traceback.extract_tb(c)
+            for aa in ttt:
+                cumm += "File: " + os.path.basename(aa[0]) + \
+                        "  Line: " + str(aa[1]) + "\n" +  \
+                        "    Context: " + aa[2] + " -> " + aa[3] + "\n"
+        except:
+            print( "Could not print trace stack. ", sys.exc_info())
+
+    print(cumm)
 
 # ------------------------------------------------------------------------
 # Get date out of UUID
@@ -67,6 +86,70 @@ def _pad(strx, lenx=8):
     padx = " " * (lenx-ttt)
     return strx + padx
 
+def decode_data(self, encoded):
+
+    try:
+        bbb = self.packer.decode_data(encoded)
+    except:
+        print("Cannot decode", sys.exc_info())
+        bbb = ""
+    return bbb
+
+def delupperlock(lockname):
+
+    ''' Lock removal;
+        Test for stale lock;
+    '''
+
+    if chain_pgdebug > 1:
+        print("Delupperlock", lockname)
+
+    try:
+        if os.path.isfile(lockname):
+            os.unlink(lockname)
+    except:
+        pass
+        if chain_pgdebug > 1:
+            #print("Del upper lock failed", sys.exc_info())
+            put_exception("Del upperLock")
+
+def waitupperlock(lockname):
+
+    ''' Wait for lock file to become available. '''
+
+    if chain_pgdebug > 1:
+        print("WaitUpperlock", lockname)
+
+    cnt = 0
+    while True:
+        if os.path.isfile(lockname):
+            if cnt == 0:
+                #try:
+                #    fpx = open(lockname)
+                #    pid = int(fpx.read())
+                #    fpx.close()
+                #except:
+                #    print("Exception in lock test", sys.exc_info())
+               pass
+            cnt += 1
+            time.sleep(0.3)
+            if cnt > base_locktout * 10:
+                # Taking too long; break in
+                if chain_pgdebug > 1:
+                    print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
+                delupperlock(lockname)
+                break
+        else:
+            break
+
+    #if chain_pgdebug > 1:
+    #    print("Gotlock", lockname)
+
+    # Finally, create lock
+    xfp = create(lockname)
+    xfp.write(str(os.getpid()).encode())
+    xfp.close()
+
 # ------------------------------------------------------------------------
 
 class TwinChain(TwinCore):
@@ -77,11 +160,20 @@ class TwinChain(TwinCore):
 
     def __init__(self, fname = "pydbchain.pydb", pgdebug = 0, core_verbose = 0):
 
-        super(TwinChain, self).__init__(fname)
+        global chain_pgdebug
+
         self.pgdebug = pgdebug
+        chain_pgdebug = pgdebug
         self.core_verbose = core_verbose
 
-        #print("TwinChain.init", self.fname)
+        # Upper lock name
+        self.ulockname = os.path.splitext(fname)[0] + ".ulock"
+        waitupperlock(self.ulockname)
+
+        super(TwinChain, self).__init__(fname, pgdebug)
+
+        #print("TwinChain.init", self.fname, self.ulockname)
+
         self.packer = pyvpacker.packbin()
         sss = self.getdbsize()
         if sss == 0:
@@ -108,6 +200,8 @@ class TwinChain(TwinCore):
             encoded = self.packer.encode_data("", aaa)
             self.save_data(header, encoded)
 
+        delupperlock(self.ulockname)
+
     def  _key_n_data(self, arrx, keyx, strx):
         arrx.append(keyx)
         arrx.append(strx)
@@ -123,7 +217,7 @@ class TwinChain(TwinCore):
         fdt = dt.strftime('%a, %d %b %Y %H:%M:%S')
         self._key_n_data(aaa, "now", fdt)
         self._key_n_data(aaa, "payload", payload)
-        self._key_n_data(aaa, "hash32", str(self.hash32(payload)))
+        #self._key_n_data(aaa, "hash32", str(self.hash32(payload)))
         hh = hashlib.new("sha256"); hh.update(payload)
         self.new_fff = hh.hexdigest()
         self._key_n_data(aaa, "hash256", self.new_fff)
@@ -152,7 +246,11 @@ class TwinChain(TwinCore):
 
     def get_payload(self, recnum):
         arr = self.get_rec(recnum)
-        decoded = self.packer.decode_data(arr[1])
+        try:
+            decoded = self.packer.decode_data(arr[1])
+        except:
+            print("Cannot decode", recnum, sys.exc_info())
+            return "Bad record"
         dic = self.get_fields(decoded[0])
         if self.core_verbose > 2:
             return dic
@@ -178,11 +276,21 @@ class TwinChain(TwinCore):
             print("Checking link ...", recnum)
 
         arr = self.get_rec(recnum-1)
-        decoded = self.packer.decode_data(arr[1])
+        try:
+            decoded = self.packer.decode_data(arr[1])
+        except:
+            print("Cannot decode prev:", recnum, sys.exc_info())
+            return
+
         dico = self.get_fields(decoded[0])
 
         arr2 = self.get_rec(recnum)
-        decoded2 = self.packer.decode_data(arr2[1])
+        try:
+            decoded2 = self.packer.decode_data(arr2[1])
+        except:
+            print("Cannot decode curr:", recnum, sys.exc_info())
+            return
+
         dic = self.get_fields(decoded2[0])
 
         backlink =  dico["hash256"]
@@ -190,7 +298,7 @@ class TwinChain(TwinCore):
         backlink += dico["payload"].decode()
         backlink += dico["backlink"]
 
-        print("backlink raw2", backlink)
+        #print("backlink raw2", backlink)
         hh = hashlib.new("sha256"); hh.update(backlink.encode())
 
         if self.core_verbose > 2:
@@ -201,7 +309,12 @@ class TwinChain(TwinCore):
 
     def checkdata(self, recnum):
         arr = self.get_rec(recnum)
-        decoded = self.packer.decode_data(arr[1])
+        try:
+            decoded = self.packer.decode_data(arr[1])
+        except:
+            print("Cannot decode:", recnum, sys.exc_info())
+            return
+
         dic = self.get_fields(decoded[0])
 
         hh = hashlib.new("sha256");
@@ -215,6 +328,11 @@ class TwinChain(TwinCore):
 
     def append(self, datax):
 
+        waitupperlock(self.ulockname)
+
+        if self.pgdebug > 0:
+            print("Append", datax)
+
         if self.core_verbose > 0:
             print("Append", datax)
 
@@ -227,11 +345,12 @@ class TwinChain(TwinCore):
         #print("sss", sss)
 
         if not sss:
-            raise Valuerror("Invalid database, must be at least one record")
+            raise Valuerror("Invalid database, must have at least one record.")
 
         ooo = self.get_rec(sss-1)
         #print("ooo", ooo)
         decoded = self.packer.decode_data(ooo[1])
+
         self.old_dicx = self.get_fields(decoded[0])
         if self.pgdebug > 3:
             print(self.old_dicx)
@@ -257,6 +376,9 @@ class TwinChain(TwinCore):
         if self.pgdebug:
             bbb = self.packer.decode_data(encoded)
             self.dump_rec(bbb[0])
+
+        delupperlock(self.ulockname)
+
 
     def dump_rec(self, bbb):
         for aa in range(len(bbb)//2):

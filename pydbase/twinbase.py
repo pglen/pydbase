@@ -6,7 +6,7 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
-import  struct, io
+import  struct, io, traceback
 
 HEADSIZE        = 32
 
@@ -33,6 +33,24 @@ base_quiet      = 0
 base_integrity  = 0
 base_showdel    = 0
 
+def put_exception(xstr):
+
+    cumm = xstr + " "
+    a,b,c = sys.exc_info()
+    if a != None:
+        cumm += str(a) + " " + str(b) + "\n"
+        try:
+            #cumm += str(traceback.format_tb(c, 10))
+            ttt = traceback.extract_tb(c)
+            for aa in ttt:
+                cumm += "File: " + os.path.basename(aa[0]) + \
+                        "  Line: " + str(aa[1]) + "\n" +  \
+                        "    Context: " + aa[2] + " -> " + aa[3] + "\n"
+        except:
+            print( "Could not print trace stack. ", sys.exc_info())
+
+    print(cumm)
+
 # ------------------------------------------------------------------------
 # Simple file system based locking system
 
@@ -54,13 +72,61 @@ def truncs(strx, num = 8):
 
     ''' Truncate a string for printing nicely. Add '..' if truncated'''
 
-    # no truncation on high verbose
-    #if self.base_verbose > 1:
-    #    return strx
-
     if len(strx) > num:
         strx = strx[:num] + b".."
     return strx
+
+def dellock(lockname):
+
+    ''' Lock removal;
+        Test for stale lock;
+    '''
+
+    if base_pgdebug > 1:
+        print("Dellock", lockname)
+
+    try:
+        if os.path.isfile(lockname):
+            os.unlink(lockname)
+    except:
+        if base_pgdebug > 1:
+            #print("Del lock failed", sys.exc_info())
+            put_exception("Del Lock")
+
+
+def waitlock(lockname):
+
+    ''' Wait for lock file to become available. '''
+
+    if base_pgdebug > 1:
+        print("Waitlock", lockname)
+
+    cnt = 0
+    while True:
+        if os.path.isfile(lockname):
+            if cnt == 0:
+                #try:
+                #    fpx = open(lockname)
+                #    pid = int(fpx.read())
+                #    fpx.close()
+                #except:
+                #    print("Exception in lock test", sys.exc_info())
+                pass
+            cnt += 1
+            time.sleep(0.1)
+            if cnt > base_locktout * 10:
+                # Taking too long; break in
+                if base_pgdebug > 1:
+                    print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
+                dellock(lockname)
+                break
+        else:
+            break
+
+    # Finally, create lock
+    xfp = create(lockname)
+    xfp.write(str(os.getpid()).encode())
+    xfp.close()
 
 class TwinCoreBase():
 
@@ -82,8 +148,9 @@ class TwinCoreBase():
         self.fp = None
         self.ifp = None
         self.cnt = 0
-        self.fname = "" ;        self.idxname = ""
-        self.lckname = "";
+        #self.fname = "" ;        self.idxname = ""
+        #self.lckname = "";
+
         self.lasterr = ""
 
     def getsize(self, buffio):
@@ -171,9 +238,10 @@ class TwinCoreBase():
             except:
                 #print("Deleting lock", self.lckname)
                 dellock(self.lckname)
-                print("Cannot open / create ", fname, sys.exc_info())
-                if raisex:
-                    raise
+                #print("Cannot open / create ", "'" + fname + "'", sys.exc_info())
+                #if raisex:
+                #    raise
+                pass
         return fp
 
     def create_data(self, fp):
@@ -211,54 +279,5 @@ class TwinCoreBase():
         #ifp.seek(CURROFFS, io.SEEK_SET)
         #ifp.write(pp)
 
-def dellock(lockname):
-
-    ''' Lock removal;
-        Test for stale lock;
-    '''
-
-    if base_pgdebug > 1:
-        print("dellock", lockname)
-
-    try:
-        if os.path.isfile(lockname):
-            os.unlink(lockname)
-    except:
-        if base_pgdebug > 1:
-            print("Del lock failed", sys.exc_info())
-
-def waitlock(lockname):
-
-    ''' Wait for lock file to become available. '''
-
-    if base_pgdebug > 1:
-        print("Waitlock", lockname)
-
-    cnt = 0
-    while True:
-        if os.path.isfile(lockname):
-            if cnt == 0:
-                try:
-                    fpx = open(lockname)
-                    pid = int(fpx.read())
-                    fpx.close()
-                except:
-                    print("Exception in lock test", sys.exc_info())
-                    pass
-            cnt += 1
-            time.sleep(0.1)
-            if cnt > base_locktout:
-                # Taking too long; break in
-                if base_pgdebug > 1:
-                    print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
-                dellock(lockname)
-                break
-        else:
-            break
-
-    # Finally, create lock
-    xfp = create(lockname)
-    xfp.write(str(os.getpid()).encode())
-    xfp.close()
 
 # EOF
