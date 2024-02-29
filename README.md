@@ -197,7 +197,7 @@ record history archived by default.
   To clean the old record history, one may delete all the records with
 this same key, except the last one.
 
-# Blockcain implementation
+# Blockchain implementation
 
    The database is extended with a blockhcain implementation. The new class
 is called twinchain; and it is a class derived from twincore.
@@ -215,19 +215,6 @@ To drive it:
         #core.core_verbose = verbose    # Give details as it operates
         core.append("The payload")      # Arbitrary data
 
-## Integrity check
-
-   Two levels; Level one is checking if the record checksums are correct;
-   Level two checks if the linkage is correct.
-
-### TODO
-
-    Speed this up by implementing this as a 'C' module
-
-## Blockchain
-
-## PyTest
-
     Block chain layer on top of twincore.
 
         prev     curr
@@ -241,6 +228,17 @@ To drive it:
                   |----->---|      |---->---|     |------ ...
 
     The sum of fields saved to the next backlink.
+
+## Integrity check
+
+   Two levels; Level one is checking if the record checksums are correct;
+   Level two checks if the linkage is correct.
+
+### TODO
+
+    Speed this up by implementing this as a 'C' module
+
+## PyTest
 
  The pytest passes with no errors;
  The following (and more) test are created / executed:
@@ -279,4 +277,4 @@ To drive it:
     1.4.2       Wed 28.Feb.2024     Fixed multiple instances
     1.4.3       Wed 28.Feb.2024     ChainAdm added
 
-; EOF
+// EOF
