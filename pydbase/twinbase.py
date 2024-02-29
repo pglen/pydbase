@@ -6,7 +6,7 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
-import  struct, io, traceback
+import  struct, io, traceback, fcntl
 
 HEADSIZE        = 32
 
@@ -114,7 +114,7 @@ def waitlock(lockname):
                 pass
             cnt += 1
             time.sleep(0.1)
-            if cnt > base_locktout * 10:
+            if cnt > base_locktout * 100:
                 # Taking too long; break in
                 if base_pgdebug > 1:
                     print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
@@ -148,10 +148,13 @@ class TwinCoreBase():
         self.fp = None
         self.ifp = None
         self.cnt = 0
+
         #self.fname = "" ;        self.idxname = ""
         #self.lckname = "";
-
         self.lasterr = ""
+
+    def __del__(self):
+        print("Flushing")
 
     def getsize(self, buffio):
 
@@ -235,13 +238,15 @@ class TwinCoreBase():
         except:
             try:
                 fp = open(fname, "wb+")
+                fcntl.lockf(fp, fcntl.LOCK_EX)
             except:
                 #print("Deleting lock", self.lckname)
                 dellock(self.lckname)
-                #print("Cannot open / create ", "'" + fname + "'", sys.exc_info())
-                #if raisex:
-                #    raise
+                print("Cannot open / create ", "'" + fname + "'", sys.exc_info())
+                if raisex:
+                    raise
                 pass
+
         return fp
 
     def create_data(self, fp):

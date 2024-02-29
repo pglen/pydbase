@@ -78,25 +78,28 @@ class TwinCore(TwinCoreBase):
     def __init__(self, fname = "pydbase.pydb", pgdebug = 0):
 
         self.cnt = 0
+        self.fname = fname
+        self.lckname  = os.path.splitext(self.fname)[0] + ".lock"
+        self.idxname  = os.path.splitext(self.fname)[0] + ".pidx"
         self.pgdebug = pgdebug
         self.base_verbose  = 0
-        self.fname = fname
-        self.idxname  = os.path.splitext(self.fname)[0] + ".pidx"
-        self.lckname  = os.path.splitext(self.fname)[0] + ".lock"
+
+        import atexit
+        atexit.register(self.cleanup)
 
         # Make sure only one process can use this
         waitlock(self.lckname)
 
         super(TwinCore, self).__init__(pgdebug)
-        #print("initializing core with", fname, pgdebug)
 
+        #print("initializing core with", fname, pgdebug)
         #self.pool = threading.BoundedSemaphore(value=1)
 
         # It was informative at one point
         if self.pgdebug > 4:
             print("fname:    ", fname)
             print("idxname:  ", self.idxname)
-            print("lockname: ", self.lckname)
+            #print("lockname: ", self.lckname)
 
         self.lasterr = "No Error"
 
@@ -152,21 +155,21 @@ class TwinCore(TwinCoreBase):
         #print("buffsize", buffsize, "indexsize", indexsize)
         dellock(self.lckname)
 
-    def __del__(self):
+    def cleanup(self):
+        print("cleanup")
+        dellock(self.lckname)
 
+    def flush(self):
+        #print("Flushing", self.fp, self.ifp)
         try:
-            #self.fp.ob_flush()
-            #self.ifp.ob_flush()
-            #self.fp.flush()
-            #self.ifp.flush()
-
             if hasattr(self, "fp"):
+                self.fp.flush()
                 self.fp.close()
+            if hasattr(self, "ifp"):
+                self.ifp.flush()
                 self.ifp.close()
-
-            pass
         except:
-            print("Cannot close files", sys.exc_info())
+            print("Cannot flush / close files", sys.exc_info())
 
     def getdbsize(self):
         ret = self._getdbsize(self.ifp)

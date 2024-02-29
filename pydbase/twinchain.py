@@ -40,8 +40,9 @@ sys.path.append(os.path.join(base, '..', 'pydbase'))
 
 from twincore import *
 
-version = "1.4.1 dev"
+version = "1.4.3"
 protocol = "1.0"
+
 chain_pgdebug = 0
 
 def put_exception(xstr):
@@ -134,8 +135,8 @@ def waitupperlock(lockname):
                 #    print("Exception in lock test", sys.exc_info())
                pass
             cnt += 1
-            time.sleep(0.3)
-            if cnt > base_locktout * 10:
+            time.sleep(0.1)
+            if cnt > base_locktout * 100:
                 # Taking too long; break in
                 if chain_pgdebug > 1:
                     print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
@@ -170,7 +171,7 @@ class TwinChain(TwinCore):
 
         # Upper lock name
         self.ulockname = os.path.splitext(fname)[0] + ".ulock"
-        waitupperlock(self.ulockname)
+        #waitupperlock(self.ulockname)
 
         super(TwinChain, self).__init__(fname, pgdebug)
 
@@ -202,6 +203,10 @@ class TwinChain(TwinCore):
             encoded = self.packer.encode_data("", aaa)
             self.save_data(header, encoded)
 
+        #delupperlock(self.ulockname)
+
+    def cleanup(self):
+        #print("cleanup")
         delupperlock(self.ulockname)
 
     def  _key_n_data(self, arrx, keyx, strx):
@@ -331,6 +336,7 @@ class TwinChain(TwinCore):
     def append(self, datax):
 
         waitupperlock(self.ulockname)
+        #xlockfile(self.ulockname)
 
         if self.pgdebug > 0:
             print("Append", datax)
@@ -378,9 +384,18 @@ class TwinChain(TwinCore):
         if self.pgdebug:
             bbb = self.packer.decode_data(encoded)
             self.dump_rec(bbb[0])
-
+        self.flush()
         delupperlock(self.ulockname)
+        #xunlockfile(self.ulockname)
 
+    def __del__(self):
+        print("Deleted")
+
+    def __enter__(self):
+        print("Entering")
+
+    def __exit__(self):
+        print("Exiting")
 
     def dump_rec(self, bbb):
         for aa in range(len(bbb)//2):
