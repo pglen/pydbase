@@ -156,7 +156,7 @@ class TwinCore(TwinCoreBase):
         dellock(self.lckname)
 
     def cleanup(self):
-        print("cleanup")
+        #print("cleanup")
         dellock(self.lckname)
 
     def flush(self):

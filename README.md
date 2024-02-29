@@ -31,7 +31,7 @@ Setting verbosity and debug level:
 
  (Setting before data creation will display mesages from the construtor)
 
-Example db creation:
+Example DB creation:
 
     core = twincore.TwinCore(datafile_name)
 
@@ -42,6 +42,14 @@ Some basic ops:
     core.save_data(keyx, datax)
     rec_arr = core.retrieve(keyx, ncount)
     print("rec_arr", rec_arr)
+
+Example chain DB creation:
+
+    core = twinchain.TwinChain(datafile_name)
+    core.append(keyx, datax)
+    recnum = core.getdbsize()
+    rec = core.get_payload(recnum)
+    print(recnum, rec)
 
 ### Structure of the data:
 
@@ -59,6 +67,7 @@ Some basic ops:
     RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
 
     where:
+
     RECSIG="RECB" (record begin here)
     RECSEP="RECS" (record separated here)
     RECDEL="RECX" (record deleted)
@@ -66,7 +75,7 @@ Some basic ops:
     Deleted records are marked with the RECSIG mutated from RECB to RECX
 
       Vacuum will remove the deleted records; Make sure your database has no
-    pending ops; or non atomic opts;
+    pending ops; or non atomic opts when vacuuming;
 
         (like: find keys - delete keys in two ops)
 
@@ -76,34 +85,46 @@ Some basic ops:
     want; also the record history is kept this way, also a desirable
     behavior.
 
-## The db exerciser executable script 'pydbase.py':
+## Usage:
 
-   The file pydbase.py exercises most of the twincore functionality. It also
+### The DB exerciser
+
+   The file dbaseadm.py exercises most of the twincore functionality. It also
 provides examples of how to drive it.
 
  The command line utility's help response:
 
-    Usage: pydebase.py [options] [arg_key arg_data]
-     Options: -h         help (this screen)   -|-  -i   show deleted on dump
-              -V         print version        -|-  -q   quiet on
-              -d         debug level (0-10)   -|-  -v   increment verbosity level
-              -r         randomize data       -|-  -w   write fixed record(s)
-              -z         dump backwards(s)    -|-  -i   show deleted record(s)
-              -U         Vacuum DB            -|-  -R   reindex / recover DB
-              -I         DB Integrity check   -|-  -c   set check integrity flag
-              -s         Skip to count recs   -|-  -K   list keys only
-              -y  key    find by key          -|-  -m   dump data to console
+    Usage: dbaseadm.py [options] [arg_key arg_data]
+     Options: -h         help (this screen)   -|-  -G  num  get record by number
+              -V         print version        -|-  -q  quiet on, less printting
+              -d         debug level (0-10)   -|-  -v  increment verbosity level
+              -r         randomize data       -|-  -w  write fixed record(s)
+              -z         dump backwards(s)    -|-  -i  show deleted record(s)
+              -U         Vacuum DB            -|-  -R  reindex / recover DB
+              -I         DB Integrity check   -|-  -c  set check integrity flag
+              -s         Skip to count recs   -|-  -K  list keys only
+              -y  key    find by key          -|-  -m  dump data to console
               -o  offs   get data from offset -|-  -e  offs   delete at offset
-              -u  rec    delete at position   -|-  -g  num    get number of recs.
+              -F  subkey find by sub str      -|-  -g  num    get number of recs.
               -k  key    key to save          -|-  -a  str    data to save
               -S         print num recs       -|-  -D  key    delete by key
               -n  num    number of records    -|-  -t  key    retrieve by key
-              -p  num    skip number of records on get
-              -l  lim    limit number of records on get
+              -p  num    skip number of recs  -|-  -u  rec    delete at recnum
+              -l  lim    limit number of recs -|-
               -x  max    limit max number of records to get
-              -f  file   input or output file (default: 'data/pydbase.pydb')
-    The default action is to dump records to screen in reverse order.
-    On the command line, use quotes for multi word arguments.
+              -f  file   input or output file (default: 'pydbase.pydb')
+    The verbosity level influences the amount of data presented.
+    Use quotes for multi word arguments.
+
+### The chain adm utility:
+
+    Usage: pychain.py [options]
+       Options: -a  data   append data to the end of chain
+                -h         help (this screen)
+                -m         dump chain data
+                -c         check data integrity
+                -i         check link integrity
+                -v         increase verbosity
 
 ### Comparison to other databases:
 
@@ -205,14 +226,13 @@ is called twinchain; and it is a class derived from twincore.
   To drive the blockchain, just use the append method. Th database will calculate
 all the hashes, integrate it into the existing chain with the new item getting
 a backlink field. This field is calulated based upon the previous record's
-hash and the previous record frozen date. This assures that identical data
+hash and the previous record's frozen date. This assures that identical data
 will have a different hash, so data cannot be anticipated based upon its hash
-alone.
+alone. The hash is done with 256 bits, assumed to be very secure.
 
 To drive it:
 
         core = twinchain.TwinChain()    # Takes an optional file name
-        #core.core_verbose = verbose    # Give details as it operates
         core.append("The payload")      # Arbitrary data
 
     Block chain layer on top of twincore.
@@ -224,9 +244,9 @@ To drive it:
     |   Header    | |    Header    | |   Header    | |
     |   Payload   | |    Payload   | |   Payload   | |
     |   Backlink  | |    Backlink  | |   Backlink  | |
-                  |----->---|      |---->---|     |------ ...
+                  |---->----|      |---->---|     |------ ...
 
-    The sum of fields saved to the next backlink.
+    The hashed sum of fields saved to the next backlink.
 
 ## Integrity check
 
@@ -278,6 +298,7 @@ To drive it:
 
 ## Errata
 
-    Chain is still in development
+    Chain is still in development, most of it functions well.
+    Not for production.
 
 // EOF

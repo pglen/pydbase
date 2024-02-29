@@ -153,8 +153,8 @@ class TwinCoreBase():
         #self.lckname = "";
         self.lasterr = ""
 
-    def __del__(self):
-        print("Flushing")
+    #def __del__(self):
+    #    print("Flushing")
 
     def getsize(self, buffio):
 

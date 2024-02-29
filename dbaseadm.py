@@ -65,9 +65,10 @@ def randstr(lenx):
     return strx
 
 def help():
-    print("Usage: pydebase.py [options] [arg_key arg_data]")
-    print(" Options: -h         help (this screen)   -|-  -G  num  get record number ")
-    print("          -V         print version        -|-  -q  quiet on")
+    pname = os.path.split(sys.argv[0])[1]
+    print("Usage: %s [options] [arg_key arg_data]" %  pname)
+    print(" Options: -h         help (this screen)   -|-  -G  num  get record by number ")
+    print("          -V         print version        -|-  -q  quiet on, less printting")
     print("          -d         debug level (0-10)   -|-  -v  increment verbosity level")
     print("          -r         randomize data       -|-  -w  write fixed record(s)")
     print("          -z         dump backwards(s)    -|-  -i  show deleted record(s)")
@@ -85,7 +86,7 @@ def help():
     print("          -x  max    limit max number of records to get")
     print("          -f  file   input or output file (default: 'pydbase.pydb')")
     print("The verbosity level influences the amount of data presented.")
-    print("On the command line, use quotes for multi word arguments.")
+    print("Use quotes for multi word arguments.")
 
 def mainfunc():
 
