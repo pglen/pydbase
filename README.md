@@ -224,7 +224,23 @@ To drive it:
 
     Speed this up by implementing this as a 'C' module
 
+## Blockchain
+
 ## PyTest
+
+    Block chain layer on top of twincore.
+
+        prev     curr
+            record
+    |    Now        |     Now        |     Now       |
+    |   hash32      |    hash32      |    hash32     |
+    |   hash256   | |    hash256   | |   hash256   | |
+    |   Header    | |    Header    | |   Header    | |
+    |   Payload   | |    Payload   | |   Payload   | |
+    |   Backlink  | |    Backlink  | |   Backlink  | |
+                  |----->---|      |---->---|     |------ ...
+
+    The sum of fields saved to the next backlink.
 
  The pytest passes with no errors;
  The following (and more) test are created / executed:
