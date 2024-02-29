@@ -186,13 +186,13 @@ key proper with the returned key.
   The DB can rebuild its index and purge all deleted records. In the test utility
 the options are:
 
-        ./pydbase.py -U     for vacuum (add -v for verbosity)
+        ./dbaseadm.py -U     for vacuum (add -v for verbosity)
 
   The database is re-built, the deleted entries are purged, the damaged data (if any)
   is saved into a separate file, created with the same base name as the data base,
   with the '.perr' extension.
 
-        ./pydbase.py -R     for re-index
+        ./dbaseadm.py -R     for re-index
 
   The index is recreated; as of the current file contents. This is useful if
 the index is lost (like copying the data only)
