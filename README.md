@@ -159,10 +159,10 @@ meta data. (for example adding a string in front of it.)
 [like: CUST_  for customer data / details]
 Also the key can be made unique by adding a UUID to it.
 
-  The data can consist of any text / binary. The library pypacker.py can pack any data
-into a string; A copy of pypacker is included here.
+  The data can consist of any text / binary. The library pyvpacker.py can pack any data
+into a string; A copy of pyvpacker can be obtained from pip or github
 
-## pypacker.py
+## pyvpacker.py
 
  This module can pack arbitrary python data into a string; which can be used to store
 anything in the pydbase key / data sections.
@@ -176,7 +176,7 @@ Example from running testpacker.py:
         rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
         (Note: the decode returns an array of data; use data[0] to get the original)
 
-  There is also the option of using pypacker on the key itself. Because the key
+  There is also the option of using pyvpacker on the key itself. Because the key
 is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit
 one; collisions are possible, however unlikely; To compensate, make sure you compare the
 key proper with the returned key.
@@ -202,15 +202,10 @@ the index is lost (like copying the data only)
  the dangling index and nuke it by renaming it to
  orgfilename.pidx.dangle (Tue 07.Feb.2023 just deleted it);
 
-  Note about the 'garbage' and 'old_tries' directory ... older stuff I
-tried; some are really useful; For instance take a look at the
-simplifier: an array of indexes to save offsets and lengths; The
-simplifier makes one range out of overlapping or close to each other
-ranges. (min. dist=4)
-
   The database grows with every record added to it. It does not check if
- the particular record already exists. It adds the new record version to
-the end; Retrieving starts from the end, and the data retrieved
+ the particular record already exists. It adds the new copy of the record to
+the end;
+  Retrieving starts from the end, and the data retrieved
 (for this particular key) is the last record saved. All the other records
 of this key are also there in chronological (save) order. Miracle of
 record history archived by default.
@@ -228,7 +223,7 @@ all the hashes, integrate it into the existing chain with the new item getting
 a backlink field. This field is calulated based upon the previous record's
 hash and the previous record's frozen date. This assures that identical data
 will have a different hash, so data cannot be anticipated based upon its hash
-alone. The hash is done with 256 bits, assumed to be very secure.
+alone. The hash is done with 256 bits, and assumed to be very secure.
 
 To drive it:
 
