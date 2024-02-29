@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 
+import datetime
+
 chain_pgdebug = 0
+
+def set_pgdebug(level):
+    global chain_pgdebug
+    chain_pgdebug = level
 
 # Class for ensuring that all file operations are atomic, treat
 # initialization like a standard call to 'open' that happens to be atomic.
@@ -83,23 +89,22 @@ def put_exception(xstr):
 # ------------------------------------------------------------------------
 # Get date out of UUID
 
-def _uuid2date(uuu):
+def uuid2date(uuu):
 
     UUID_EPOCH = 0x01b21dd213814000
     dd = datetime.datetime.fromtimestamp(\
                     (uuu.time - UUID_EPOCH)*100/1e9)
-    print(dd.timestamp())
-
+    #print(dd.timestamp())
     return dd
 
-def _uuid2timestamp(uuu):
+def uuid2timestamp(uuu):
 
     UUID_EPOCH = 0x01b21dd213814000
     dd = datetime.datetime.fromtimestamp(\
                     (uuu.time - UUID_EPOCH)*100/1e9)
     return dd.timestamp()
 
-def _pad(strx, lenx=8):
+def pad(strx, lenx=8):
     ttt = len(strx)
     if ttt >= lenx:
         return strx
@@ -170,3 +175,28 @@ def waitupperlock(lockname):
     xfp.write(str(os.getpid()).encode())
     xfp.close()
 
+# ------------------------------------------------------------------------
+# Simple file system based locking system
+
+def create(fname, raisex = True):
+
+    ''' Open for read / write. Create if needed. '''
+
+    fp = None
+    try:
+        fp = open(fname, "wb")
+    except:
+        print("Cannot open / create ", fname, sys.exc_info())
+        if raisex:
+            raise
+    return fp
+
+def truncs(strx, num = 8):
+
+    ''' Truncate a string for printing nicely. Add '..' if truncated'''
+
+    if len(strx) > num:
+        strx = strx[:num] + b".."
+    return strx
+
+# EOF

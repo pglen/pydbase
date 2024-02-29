@@ -2,7 +2,7 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading, warnings
-import  string, hashlib
+import  string, hashlib, uuid
 
 import pyvpacker
 
@@ -12,6 +12,7 @@ gettext.textdomain('thisapp')
 _ = gettext.gettext
 
 from pydbase import twinchain
+from pydbase import dbutils
 
 version = "0.0.1"
 
@@ -26,7 +27,7 @@ class _c():
     ncount  = 1
     skipcnt = 0
     append  = 0
-    maxx    = 10
+    maxx    = 0xffffffff
     lcount  = twinchain.INT_MAX
     quiet   = 0; writex  = 0
     randx   = 0; skipx   = 0
@@ -39,14 +40,19 @@ class _c():
     retrx   = ""; getit  = ""
     keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0
-    findrec = ""; getrec = 0
-
+    findrec = ""; getrec = -1
+    datex = 0
     deffile = "pydbchain.pydb"
 
 def help():
-    print("Usage: pychain.py [options]")
+    print("Usage: %s [options]" % os.path.split(sys.argv[0])[1])
     print("   Options: -a  data   append data to the end of chain")
+    print("            -g recnum  get record")
+    print("            -d level   debug level")
     print("            -h         help (this screen)")
+    print("            -t         print UUID date)")
+    print("            -s         skip count")
+    print("            -x         max record count to list")
     print("            -m         dump chain data")
     print("            -c         check data integrity")
     print("            -i         check link integrity")
@@ -59,8 +65,8 @@ def mainfunc():
     opts = []; args = []
 
     # Old fashioned parsing
-    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:d:"
-    opts_normal = "mchiVrwzvqURIK?S"
+    opts_args   = "a:d:e:f:g:k:l:n:o:s:u:x:y:p:D:F:G:d:g:"
+    opts_normal = "mchiVrwzvqURIK?St"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
@@ -83,8 +89,21 @@ def mainfunc():
         if aa[0] == "-a":
             _c.append = aa[1]
 
+        if aa[0] == "-g":
+            _c.getrec = int(aa[1])
+
+        if aa[0] == "-x":
+            _c.maxx = int(aa[1])
+            #print(_c.maxx)
+
+        if aa[0] == "-s":
+            _c.skipcnt = int(aa[1])
+
         if aa[0] == "-m":
             _c.dumpx = True
+
+        if aa[0] == "-t":
+            _c.datex = True
 
         if aa[0] == "-v":
             _c.verbose += 1
@@ -121,6 +140,14 @@ def mainfunc():
         else:
             print("DB integrity checks out OK")
 
+    elif _c.getrec >= 0:
+        sss = core.getdbsize()
+        if _c.getrec > sss:
+            print("Cannot get past end of file.")
+            sys.exit()
+        ppp = core.get_payload(_c.getrec)
+        print(_c.getrec, ppp)
+
     elif _c.checkx:
         #print("Checking", _c.checkx)
         errx = False; cnt = -1
@@ -138,9 +165,23 @@ def mainfunc():
     elif _c.dumpx:
         #print("Dumping", _c.dumpx)
         sss = core.getdbsize()
-        for aa in range(sss):
-            ppp = core.get_payload(aa)
-            print(aa, ppp)
+        cnt = _c.skipcnt
+        if cnt >= sss:
+            print("Passed EOF")
+            sys.exit(0)
+        end = min(sss, _c.maxx + cnt)
+        while True:
+            if cnt >= end:
+                break
+            ppp = core.get_payload(cnt)
+            ddd = ""
+            if  _c.datex:
+                ddd = dbutils.uuid2date(uuid.UUID(ppp[0]))
+                print(cnt, ddd, ppp)
+            else:
+                print(cnt, ddd, ppp)
+
+            cnt = cnt + 1
 
     elif _c.append:
         #print("Appending", _c.append)

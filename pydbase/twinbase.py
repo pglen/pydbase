@@ -8,6 +8,8 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
 import  struct, io, traceback, fcntl
 
+from dbutils import *
+
 HEADSIZE        = 32
 
 INT_MAX         = 0xffffffff    ##< INT_MAX in 'C' py has BIG integer
@@ -32,49 +34,6 @@ base_locktout   = LOCK_TIMEOUT   # Settable from ...
 base_quiet      = 0
 base_integrity  = 0
 base_showdel    = 0
-
-def put_exception(xstr):
-
-    cumm = xstr + " "
-    a,b,c = sys.exc_info()
-    if a != None:
-        cumm += str(a) + " " + str(b) + "\n"
-        try:
-            #cumm += str(traceback.format_tb(c, 10))
-            ttt = traceback.extract_tb(c)
-            for aa in ttt:
-                cumm += "File: " + os.path.basename(aa[0]) + \
-                        "  Line: " + str(aa[1]) + "\n" +  \
-                        "    Context: " + aa[2] + " -> " + aa[3] + "\n"
-        except:
-            print( "Could not print trace stack. ", sys.exc_info())
-
-    print(cumm)
-
-# ------------------------------------------------------------------------
-# Simple file system based locking system
-
-def create(fname, raisex = True):
-
-    ''' Open for read / write. Create if needed. '''
-
-    fp = None
-    try:
-        fp = open(fname, "wb")
-    except:
-        print("Cannot open / create ", fname, sys.exc_info())
-        if raisex:
-            raise
-    return fp
-
-
-def truncs(strx, num = 8):
-
-    ''' Truncate a string for printing nicely. Add '..' if truncated'''
-
-    if len(strx) > num:
-        strx = strx[:num] + b".."
-    return strx
 
 def dellock(lockname):
 

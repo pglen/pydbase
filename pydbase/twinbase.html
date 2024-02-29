@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module twinbase</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>twinbase</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/peterglen/pgpygtk/pydbase/pydbase/twinbase.py">/home/peterglen/pgpygtk/pydbase/pydbase/twinbase.py</a></font></td></tr></table>
+    <p><tt>!<br>
+twinbase&nbsp;--&nbsp;extracted&nbsp;from&nbsp;twincore&nbsp;to&nbsp;make&nbsp;it&nbsp;eazier&nbsp;to&nbsp;read</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="datetime.html">datetime</a><br>
+<a href="fcntl.html">fcntl</a><br>
+<a href="getopt.html">getopt</a><br>
+<a href="io.html">io</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="random.html">random</a><br>
+<a href="select.html">select</a><br>
+<a href="signal.html">signal</a><br>
+</td><td width="25%" valign=top><a href="socket.html">socket</a><br>
+<a href="stat.html">stat</a><br>
+<a href="struct.html">struct</a><br>
+<a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="threading.html">threading</a><br>
+<a href="time.html">time</a><br>
+<a href="traceback.html">traceback</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="twinbase.html#TwinCoreBase">TwinCoreBase</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TwinCoreBase">class <strong>TwinCoreBase</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#TwinCoreBase">TwinCoreBase</a>(pgdebug=0)<br>
+&nbsp;<br>
+This&nbsp;class&nbsp;provides&nbsp;basic&nbsp;services&nbsp;to&nbsp;twincore<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="TwinCoreBase-__init__"><strong>__init__</strong></a>(self, pgdebug=0)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="TwinCoreBase-create_data"><strong>create_data</strong></a>(self, fp)</dt><dd><tt>Sub&nbsp;for&nbsp;initial&nbsp;DATA&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="TwinCoreBase-create_idx"><strong>create_idx</strong></a>(self, ifp)</dt><dd><tt>Sub&nbsp;for&nbsp;initial&nbsp;INDEX&nbsp;file</tt></dd></dl>
+
+<dl><dt><a name="TwinCoreBase-getbuffint"><strong>getbuffint</strong></a>(self, offs)</dt><dd><tt>get&nbsp;an&nbsp;integer&nbsp;value&nbsp;from&nbsp;offset</tt></dd></dl>
+
+<dl><dt><a name="TwinCoreBase-getbuffstr"><strong>getbuffstr</strong></a>(self, offs, xlen)</dt></dl>
+
+<dl><dt><a name="TwinCoreBase-getidxint"><strong>getidxint</strong></a>(self, offs)</dt><dd><tt>get&nbsp;an&nbsp;integer&nbsp;value&nbsp;from&nbsp;index&nbsp;offset</tt></dd></dl>
+
+<dl><dt><a name="TwinCoreBase-getsize"><strong>getsize</strong></a>(self, buffio)</dt><dd><tt>get&nbsp;the&nbsp;dabase&nbsp;file&nbsp;size</tt></dd></dl>
+
+<dl><dt><a name="TwinCoreBase-hash32"><strong>hash32</strong></a>(self, strx)</dt><dd><tt>Deliver&nbsp;a&nbsp;32&nbsp;bit&nbsp;hash&nbsp;of&nbsp;the&nbsp;passed&nbsp;entity</tt></dd></dl>
+
+<dl><dt><a name="TwinCoreBase-putbuffint"><strong>putbuffint</strong></a>(self, offs, val)</dt></dl>
+
+<dl><dt><a name="TwinCoreBase-putbuffstr"><strong>putbuffstr</strong></a>(self, offs, xstr)</dt></dl>
+
+<dl><dt><a name="TwinCoreBase-putidxint"><strong>putidxint</strong></a>(self, offs, val)</dt><dd><tt>put&nbsp;an&nbsp;integer&nbsp;value&nbsp;to&nbsp;offset</tt></dd></dl>
+
+<dl><dt><a name="TwinCoreBase-softcreate"><strong>softcreate</strong></a>(self, fname, raisex=True)</dt><dd><tt>Open&nbsp;for&nbsp;read&nbsp;/&nbsp;write.&nbsp;Create&nbsp;if&nbsp;needed.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>INTSIZE</strong> = 4</dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-dellock"><strong>dellock</strong></a>(lockname)</dt><dd><tt>Lock&nbsp;removal;<br>
+Test&nbsp;for&nbsp;stale&nbsp;lock;</tt></dd></dl>
+ <dl><dt><a name="-waitlock"><strong>waitlock</strong></a>(lockname)</dt><dd><tt>Wait&nbsp;for&nbsp;lock&nbsp;file&nbsp;to&nbsp;become&nbsp;available.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>CURROFFS</strong> = 16<br>
+<strong>FILESIG</strong> = b'PYDB'<br>
+<strong>FIRSTDATA</strong> = 32<br>
+<strong>FIRSTHASH</strong> = 32<br>
+<strong>HEADSIZE</strong> = 32<br>
+<strong>IDXSIG</strong> = b'PYIX'<br>
+<strong>INT_MAX</strong> = 4294967295<br>
+<strong>LOCK_TIMEOUT</strong> = 20<br>
+<strong>RECDEL</strong> = b'RECX'<br>
+<strong>RECEND</strong> = b'RECE'<br>
+<strong>RECSEP</strong> = b'RECS'<br>
+<strong>RECSIG</strong> = b'RECB'<br>
+<strong>base_integrity</strong> = 0<br>
+<strong>base_locktout</strong> = 20<br>
+<strong>base_pgdebug</strong> = 0<br>
+<strong>base_quiet</strong> = 0<br>
+<strong>base_showdel</strong> = 0<br>
+<strong>chain_pgdebug</strong> = 0<br>
+<strong>fhand</strong> = 0</td></tr></table>
+</body></html>

@@ -38,14 +38,13 @@ import pyvpacker
 base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base, '..', 'pydbase'))
 
+from dbutils import *
 from twincore import *
 
 version = "1.4.3"
 protocol = "1.0"
 
 chain_pgdebug = 0
-
-from dbutils import *
 
 # ------------------------------------------------------------------------
 
@@ -61,6 +60,7 @@ class TwinChain(TwinCore):
 
         self.pgdebug = pgdebug
         chain_pgdebug = pgdebug
+        set_pgdebug(pgdebug)
         self.core_verbose = core_verbose
 
         # Upper lock name
@@ -282,18 +282,9 @@ class TwinChain(TwinCore):
         delupperlock(self.ulockname)
         #xunlockfile(self.ulockname)
 
-    def __del__(self):
-        print("Deleted")
-
-    def __enter__(self):
-        print("Entering")
-
-    def __exit__(self):
-        print("Exiting")
-
     def dump_rec(self, bbb):
         for aa in range(len(bbb)//2):
-            print(_pad(bbb[2*aa]), "=", bbb[2*aa+1])
+            print(pad(bbb[2*aa]), "=", bbb[2*aa+1])
 
     def get_fields(self, bbb):
         dicx = {}
@@ -302,9 +293,5 @@ class TwinChain(TwinCore):
 
         #print("dicx", dicx)
         return dicx
-
-    def __del__(self):
-        ''' Override for now '''
-        pass
 
 # EOF
