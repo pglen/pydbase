@@ -43,8 +43,8 @@ def teardown_module(module):
 
     try:
         # No dangling data
-        #os.remove(fname)
-        #os.remove(iname)
+        os.remove(fname)
+        os.remove(iname)
         pass
     except:
         print(sys.exc_info())

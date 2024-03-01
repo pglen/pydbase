@@ -21,28 +21,25 @@ version = "0.0.1"
 # Module variables (pushed to a class)
 
 class _c():
-    pgdebug = 0
-    verbose = 0
-    keyonly = 0
-    ncount  = 1
-    skipcnt = 0
-    append  = 0
+    deffile = "pydbchain.pydb"
     maxx    = 0xffffffff
     lcount  = twinchain.INT_MAX
-    quiet   = 0; writex  = 0
-    randx   = 0; skipx   = 0
-    offsx   = 0; delx    = 0
-    delrx   = 0; delrx2  = 0
-    backx   = 0; sdelx   = 0
-    vacx    = 0; recx    = 0
-    integx  = 0; checkx  = 0
-    sizex   = 0; findx   = ""
-    retrx   = ""; getit  = ""
-    keyx    = ""; datax  = ""
-    dkeyx   = ""; dumpx  = 0
-    findrec = ""; getrec = -1
-    datex = 0   ; cntx = 1
-    deffile = "pydbchain.pydb"
+    quiet   = 0;    writex  = 0
+    randx   = 0;    skipx   = 0
+    offsx   = 0;    delx    = 0
+    delrx   = 0;    delrx2  = 0
+    backx   = 0;    sdelx   = 0
+    vacx    = 0;    recx    = 0
+    integx  = 0;    checkx  = 0
+    sizex   = 0;    findx   = ""
+    pgdebug = 0;    verbose = 0
+    keyonly = 0;    ncount  = 1
+    skipcnt = 0;    append  = 0
+    retrx   = "";   getit  = ""
+    keyx    = "";   datax  = ""
+    dkeyx   = "";   dumpx  = 0
+    findrec = "";   getrec = -1
+    datex = 0   ;   cntx = 1
 
 def help():
     print("Usage: %s [options]" % os.path.split(sys.argv[0])[1])

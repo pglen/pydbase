@@ -81,29 +81,32 @@ def test_links(capsys):
     fp = open(fname, "rb")
     buff = fp.read(); fp.close()
 
-    # Damage file buffer rec 2 -- make sure it is in payload
-    pos = 0x590
+    # Damage file buffer rec 1 -- make sure it is in payload
+    pos = 0x300
     buff = buff[:pos] + b'a' + buff[pos+1:]
 
     fp2 = open(fname, "wb")
     fp2.write(buff)
     fp2.close()
 
-    # Changed file buffer, reload
+    # Changed file buffer, reload by create new
     core2 = twinchain.TwinChain(fname)
     assert core2 != 0
     dbsize = core2.getdbsize()
 
-    # All others
     #for aa in range(1, dbsize):
     #    print(aa, core2.get_payload(aa))
 
-    # The failing record
-    ppp = core2.checkdata(2)
+    # The failing record (last)
+    ppp = core2.linkintegrity(2)
     assert ppp == False
 
-    for aa in range(1, dbsize-2):
-        ppp = core2.checkdata(aa)
+    # All others
+    for aa in range(1, dbsize-1):
+        ppp = core2.linkintegrity(aa)
         assert ppp == True
+
+    #assert 0
+
 
 # EOF
