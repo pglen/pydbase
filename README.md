@@ -1,7 +1,8 @@
-# pydbase - simple high speed database
-## see: blockchain functions at the end
+# pydbase
 
 ## High speed database with key / data
+
+#### see: blockchain functions at the end
 
   The motivation was to create a no frills way of saving / retrieving data.
 It is fast, and the time test shows that this is an order of magnitude
