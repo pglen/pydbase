@@ -38,10 +38,8 @@ def setup_module(module):
     core = twinchain.TwinChain(fname)
     assert core != 0
 
-
     for aa in range(2):
         core.append(pay)
-
 
 def teardown_module(module):
     """ teardown any state that was previously setup with a setup_module
@@ -107,6 +105,5 @@ def test_links(capsys):
         assert ppp == True
 
     #assert 0
-
 
 # EOF

@@ -46,7 +46,7 @@ class _m():
     deffile = "pydbase.pydb"
 
 version = "0.4.1"
-vdate   =  "Wed 28.Feb.2024"
+vdate   = "Fri 01.Mar.2024"
 allstr  =    " " + \
                 string.ascii_lowercase +  string.ascii_uppercase +  \
                     string.digits

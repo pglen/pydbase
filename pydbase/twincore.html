@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>twincore</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/peterglen/pgpygtk/pydbase/twincore.py">/home/peterglen/pgpygtk/pydbase/twincore.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/peterglen/pgpygtk/pydbase/pydbase/twincore.py">/home/peterglen/pgpygtk/pydbase/pydbase/twincore.py</a></font></td></tr></table>
     <p><tt>!<br>
 @mainpage<br>
 &nbsp;<br>
@@ -67,19 +67,21 @@ History:<br>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="datetime.html">datetime</a><br>
+<a href="fcntl.html">fcntl</a><br>
 <a href="getopt.html">getopt</a><br>
-<a href="io.html">io</a><br>
+<a href="hashlib.html">hashlib</a><br>
+</td><td width="25%" valign=top><a href="io.html">io</a><br>
 <a href="os.html">os</a><br>
-</td><td width="25%" valign=top><a href="psutil.html">psutil</a><br>
 <a href="random.html">random</a><br>
 <a href="select.html">select</a><br>
-<a href="signal.html">signal</a><br>
-</td><td width="25%" valign=top><a href="socket.html">socket</a><br>
+</td><td width="25%" valign=top><a href="signal.html">signal</a><br>
+<a href="socket.html">socket</a><br>
 <a href="stat.html">stat</a><br>
 <a href="struct.html">struct</a><br>
-<a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top><a href="threading.html">threading</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="threading.html">threading</a><br>
 <a href="time.html">time</a><br>
+<a href="traceback.html">traceback</a><br>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
@@ -88,7 +90,7 @@ History:<br>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
-<dt><font face="helvetica, arial"><a href="twincore.html#TwinCoreBase">TwinCoreBase</a>(<a href="builtins.html#object">builtins.object</a>)
+<dt><font face="helvetica, arial"><a href="twinbase.html#TwinCoreBase">twinbase.TwinCoreBase</a>(<a href="builtins.html#object">builtins.object</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="twincore.html#TwinCore">TwinCore</a>
@@ -99,32 +101,32 @@ History:<br>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="TwinCore">class <strong>TwinCore</strong></a>(<a href="twincore.html#TwinCoreBase">TwinCoreBase</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="TwinCore">class <strong>TwinCore</strong></a>(<a href="twinbase.html#TwinCoreBase">twinbase.TwinCoreBase</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt><a href="#TwinCore">TwinCore</a>(fname='pydbase.pydb')<br>
+<td colspan=2><tt><a href="#TwinCore">TwinCore</a>(fname='pydbase.pydb',&nbsp;pgdebug=0)<br>
 &nbsp;<br>
 Data&nbsp;file&nbsp;and&nbsp;index&nbsp;file;&nbsp;protected&nbsp;by&nbsp;locks<br>
 The&nbsp;TWIN&nbsp;refers&nbsp;to&nbsp;separate&nbsp;files&nbsp;for&nbsp;data&nbsp;/&nbsp;index.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="twincore.html#TwinCore">TwinCore</a></dd>
-<dd><a href="twincore.html#TwinCoreBase">TwinCoreBase</a></dd>
+<dd><a href="twinbase.html#TwinCoreBase">twinbase.TwinCoreBase</a></dd>
 <dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="TwinCore-__del__"><strong>__del__</strong></a>(self)</dt></dl>
-
-<dl><dt><a name="TwinCore-__init__"><strong>__init__</strong></a>(self, fname='pydbase.pydb')</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="TwinCore-__init__"><strong>__init__</strong></a>(self, fname='pydbase.pydb', pgdebug=0)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-check_rec"><strong>check_rec</strong></a>(self, rec, cnt2)</dt><dd><tt>Print&nbsp;record&nbsp;to&nbsp;the&nbsp;screen</tt></dd></dl>
+
+<dl><dt><a name="TwinCore-cleanup"><strong>cleanup</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="TwinCore-del_data"><strong>del_data</strong></a>(self, hash, skip=1)</dt><dd><tt>Delete&nbsp;data&nbsp;by&nbsp;hash</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-del_rec"><strong>del_rec</strong></a>(self, recnum)</dt></dl>
 
-<dl><dt><a name="TwinCore-del_rec_bykey"><strong>del_rec_bykey</strong></a>(self, strx, skip=0, maxrec=1)</dt><dd><tt>Delete&nbsp;records&nbsp;by&nbsp;key&nbsp;string;&nbsp;needs&nbsp;bin&nbsp;str,&nbsp;converted<br>
+<dl><dt><a name="TwinCore-del_rec_bykey"><strong>del_rec_bykey</strong></a>(self, strx, maxrec=1, skip=0)</dt><dd><tt>Delete&nbsp;records&nbsp;by&nbsp;key&nbsp;string;&nbsp;needs&nbsp;bin&nbsp;str,&nbsp;converted<br>
 automatically&nbsp;on&nbsp;entry</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-del_rec_offs"><strong>del_rec_offs</strong></a>(self, recoffs)</dt></dl>
@@ -133,11 +135,15 @@ automatically&nbsp;on&nbsp;entry</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-dump_rec"><strong>dump_rec</strong></a>(self, rec, cnt)</dt><dd><tt>Print&nbsp;record&nbsp;to&nbsp;the&nbsp;screen</tt></dd></dl>
 
-<dl><dt><a name="TwinCore-find_key"><strong>find_key</strong></a>(self, hashx, limx=4294967295)</dt></dl>
+<dl><dt><a name="TwinCore-find_key"><strong>find_key</strong></a>(self, keyx, limx=4294967295)</dt></dl>
 
-<dl><dt><a name="TwinCore-findrec"><strong>findrec</strong></a>(self, strx, limx=1)</dt><dd><tt>#&nbsp;Find&nbsp;by&nbsp;string&nbsp;matching&nbsp;substring</tt></dd></dl>
+<dl><dt><a name="TwinCore-findrec"><strong>findrec</strong></a>(self, strx, limx=4294967295, skipx=0)</dt><dd><tt>Find&nbsp;by&nbsp;string&nbsp;matching&nbsp;substring</tt></dd></dl>
 
-<dl><dt><a name="TwinCore-get_rec"><strong>get_rec</strong></a>(self, recnum)</dt></dl>
+<dl><dt><a name="TwinCore-flush"><strong>flush</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TwinCore-get_key_offs"><strong>get_key_offs</strong></a>(self, recoffs)</dt></dl>
+
+<dl><dt><a name="TwinCore-get_rec"><strong>get_rec</strong></a>(self, recnum)</dt><dd><tt>Get&nbsp;record&nbsp;from&nbsp;database;&nbsp;recnum&nbsp;is&nbsp;a&nbsp;zero&nbsp;based&nbsp;record&nbsp;counter</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-get_rec_offs"><strong>get_rec_offs</strong></a>(self, recoffs)</dt></dl>
 
@@ -145,11 +151,13 @@ automatically&nbsp;on&nbsp;entry</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-integrity_check"><strong>integrity_check</strong></a>(self, skip=0)</dt></dl>
 
+<dl><dt><a name="TwinCore-listall"><strong>listall</strong></a>(self)</dt></dl>
+
 <dl><dt><a name="TwinCore-rec2arr"><strong>rec2arr</strong></a>(self, rec)</dt><dd><tt>#&nbsp;--------------------------------------------------------------------</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-reindex"><strong>reindex</strong></a>(self)</dt></dl>
 
-<dl><dt><a name="TwinCore-retrieve"><strong>retrieve</strong></a>(self, hashx, limx=1)</dt></dl>
+<dl><dt><a name="TwinCore-retrieve"><strong>retrieve</strong></a>(self, strx, limx=1)</dt><dd><tt>Retrive&nbsp;in&nbsp;reverse,&nbsp;limit&nbsp;it</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-revdump_data"><strong>revdump_data</strong></a>(self, lim, skip=0)</dt><dd><tt>Put&nbsp;all&nbsp;data&nbsp;to&nbsp;screen&nbsp;in&nbsp;reverse&nbsp;order</tt></dd></dl>
 
@@ -159,21 +167,7 @@ automatically&nbsp;on&nbsp;entry</tt></dd></dl>
 Make&nbsp;sure&nbsp;the&nbsp;db&nbsp;in&nbsp;not&nbsp;in&nbsp;session.</tt></dd></dl>
 
 <hr>
-Data and other attributes defined here:<br>
-<dl><dt><strong>FILESIG</strong> = b'PYDB'</dl>
-
-<dl><dt><strong>IDXSIG</strong> = b'PYIX'</dl>
-
-<dl><dt><strong>RECDEL</strong> = b'RECX'</dl>
-
-<dl><dt><strong>RECEND</strong> = b'RECE'</dl>
-
-<dl><dt><strong>RECSEP</strong> = b'RECS'</dl>
-
-<dl><dt><strong>RECSIG</strong> = b'RECB'</dl>
-
-<hr>
-Methods inherited from <a href="twincore.html#TwinCoreBase">TwinCoreBase</a>:<br>
+Methods inherited from <a href="twinbase.html#TwinCoreBase">twinbase.TwinCoreBase</a>:<br>
 <dl><dt><a name="TwinCore-create_data"><strong>create_data</strong></a>(self, fp)</dt><dd><tt>Sub&nbsp;for&nbsp;initial&nbsp;DATA&nbsp;file</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-create_idx"><strong>create_idx</strong></a>(self, ifp)</dt><dd><tt>Sub&nbsp;for&nbsp;initial&nbsp;INDEX&nbsp;file</tt></dd></dl>
@@ -186,7 +180,8 @@ Methods inherited from <a href="twincore.html#TwinCoreBase">TwinCoreBase</a>:<br
 
 <dl><dt><a name="TwinCore-getsize"><strong>getsize</strong></a>(self, buffio)</dt><dd><tt>get&nbsp;the&nbsp;dabase&nbsp;file&nbsp;size</tt></dd></dl>
 
-<dl><dt><a name="TwinCore-hash32"><strong>hash32</strong></a>(self, strx)</dt><dd><tt>Deliver&nbsp;a&nbsp;32&nbsp;bit&nbsp;hash&nbsp;of&nbsp;the&nbsp;passed&nbsp;entity</tt></dd></dl>
+<dl><dt><a name="TwinCore-hash32"><strong>hash32</strong></a>(self, strx)</dt><dd><tt>Deliver&nbsp;a&nbsp;32&nbsp;bit&nbsp;hash&nbsp;of&nbsp;the&nbsp;passed&nbsp;entity.&nbsp;Re-written<br>
+to&nbsp;use&nbsp;sha&nbsp;and&nbsp;cut&nbsp;the&nbsp;result&nbsp;to&nbsp;size</tt></dd></dl>
 
 <dl><dt><a name="TwinCore-putbuffint"><strong>putbuffint</strong></a>(self, offs, val)</dt></dl>
 
@@ -197,7 +192,7 @@ Methods inherited from <a href="twincore.html#TwinCoreBase">TwinCoreBase</a>:<br
 <dl><dt><a name="TwinCore-softcreate"><strong>softcreate</strong></a>(self, fname, raisex=True)</dt><dd><tt>Open&nbsp;for&nbsp;read&nbsp;/&nbsp;write.&nbsp;Create&nbsp;if&nbsp;needed.</tt></dd></dl>
 
 <hr>
-Data descriptors inherited from <a href="twincore.html#TwinCoreBase">TwinCoreBase</a>:<br>
+Data descriptors inherited from <a href="twinbase.html#TwinCoreBase">twinbase.TwinCoreBase</a>:<br>
 <dl><dt><strong>__dict__</strong></dt>
 <dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
@@ -205,7 +200,7 @@ Data descriptors inherited from <a href="twincore.html#TwinCoreBase">TwinCoreBas
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
 <hr>
-Data and other attributes inherited from <a href="twincore.html#TwinCoreBase">TwinCoreBase</a>:<br>
+Data and other attributes inherited from <a href="twinbase.html#TwinCoreBase">twinbase.TwinCoreBase</a>:<br>
 <dl><dt><strong>INTSIZE</strong> = 4</dl>
 
 </td></tr></table></td></tr></table><p>
@@ -215,7 +210,25 @@ Data and other attributes inherited from <a href="twincore.html#TwinCoreBase">Tw
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>__all__</strong> = ['TwinCore', 'self.core_verbose', 'core_quiet', 'core_pgdebug', 'core_lcktimeout']<br>
-<strong>core_pgdebug</strong> = 0<br>
-<strong>core_quiet</strong> = 0</td></tr></table>
+<td width="100%"><strong>CURROFFS</strong> = 16<br>
+<strong>FILESIG</strong> = b'PYDB'<br>
+<strong>FIRSTDATA</strong> = 32<br>
+<strong>FIRSTHASH</strong> = 32<br>
+<strong>HEADSIZE</strong> = 32<br>
+<strong>IDXSIG</strong> = b'PYIX'<br>
+<strong>INT_MAX</strong> = 4294967295<br>
+<strong>LOCK_TIMEOUT</strong> = 20<br>
+<strong>RECDEL</strong> = b'RECX'<br>
+<strong>RECEND</strong> = b'RECE'<br>
+<strong>RECSEP</strong> = b'RECS'<br>
+<strong>RECSIG</strong> = b'RECB'<br>
+<strong>base</strong> = '/home/peterglen/pgpygtk/pydbase/pydbase'<br>
+<strong>base_integrity</strong> = 0<br>
+<strong>base_locktout</strong> = 20<br>
+<strong>base_pgdebug</strong> = 0<br>
+<strong>base_quiet</strong> = 0<br>
+<strong>base_showdel</strong> = 0<br>
+<strong>chain_pgdebug</strong> = 0<br>
+<strong>fhand</strong> = 0<br>
+<strong>version</strong> = '1.0 dev'</td></tr></table>
 </body></html>

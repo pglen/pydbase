@@ -229,16 +229,21 @@ class TwinChain(TwinCore):
             print("hash", dic['hash256'])
         return hh.hexdigest() == dic['hash256']
 
-    def append(self, datax):
+    def appendwith(self, header, datax):
 
         waitupperlock(self.ulockname)
-        #xlockfile(self.ulockname)
 
         if self.pgdebug > 0:
-            print("Append", datax)
+            print("Appendwith", datax)
 
         if self.core_verbose > 0:
-            print("Append", datax)
+            print("Appendwith", datax)
+
+        try:
+            uuu = uuid.UUID(header)
+        except:
+            print("Header override must be a valif UUID string.")
+            return
 
         if type(datax) == str:
             datax = datax.encode() #errors='strict')
@@ -262,11 +267,8 @@ class TwinChain(TwinCore):
         #print("old_fff", self.old_dicx["hash256"])
         #print("old_time", self.old_dicx["now"])
 
-        # Produce data structure
-        uuu = uuid.uuid1()
-        #print(_uuid2date(uuu))
-        header = str(uuu)
         aaa = []
+
         self._fill_record(aaa, header, datax)
         encoded = self.packer.encode_data("", aaa)
         if self.pgdebug > 2:
@@ -284,9 +286,32 @@ class TwinChain(TwinCore):
             bbb = self.packer.decode_data(encoded)
             self.dump_rec(bbb[0])
 
-        #self.flush()
         delupperlock(self.ulockname)
-        #xunlockfile(self.ulockname)
+
+    def append(self, datax):
+
+        if self.pgdebug > 0:
+            print("Append", datax)
+
+        if self.core_verbose > 0:
+            print("Append", datax)
+
+        if type(datax) == str:
+            datax = datax.encode() #errors='strict')
+
+        self.old_dicx = {}
+        # Get last data from db
+        sss = self.getdbsize()
+        #print("sss", sss)
+
+        if not sss:
+            raise ValueError("Invalid database, must have at least one record.")
+
+        # Produce header  structure
+        uuu = uuid.uuid1()
+        #print(_uuid2date(uuu))
+        header = str(uuu)
+        self.appendwith(header, datax)
 
     def dump_rec(self, bbb):
         for aa in range(len(bbb)//2):

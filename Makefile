@@ -8,11 +8,12 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 
-.PHONY:  doc doc3 clean echo
+.PHONY:  doc doc3 clean echo tests
 
 PROG=pydbase
 
 all:
+	@echo "Targets: clean cleandata tests
 	@echo "Type 'make help' for a list of targets"
 
 .PHONY: tests
@@ -25,7 +26,7 @@ help:
 	@echo "	 make build"
 	@echo "	 make setup        -- Run the setup.py script as install "
 	@echo "	 make tests        -- execute test suite ${PROG}"
-	@echo "	 make doc3         -- create ${PROG} documentation"
+	@echo "	 make doc          -- create ${PROG} documentation"
 	@echo "	 make tests        -- execute ${PROG} test suite"
 	@echo "	 make doxy         -- create ${PROG} documentation"
 	@echo

@@ -21,16 +21,17 @@ twinbase&nbsp;--&nbsp;extracted&nbsp;from&nbsp;twincore&nbsp;to&nbsp;make&nbsp;i
 <td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="datetime.html">datetime</a><br>
 <a href="fcntl.html">fcntl</a><br>
 <a href="getopt.html">getopt</a><br>
-<a href="io.html">io</a><br>
-</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="hashlib.html">hashlib</a><br>
+</td><td width="25%" valign=top><a href="io.html">io</a><br>
+<a href="os.html">os</a><br>
 <a href="random.html">random</a><br>
 <a href="select.html">select</a><br>
-<a href="signal.html">signal</a><br>
-</td><td width="25%" valign=top><a href="socket.html">socket</a><br>
+</td><td width="25%" valign=top><a href="signal.html">signal</a><br>
+<a href="socket.html">socket</a><br>
 <a href="stat.html">stat</a><br>
 <a href="struct.html">struct</a><br>
-<a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top><a href="threading.html">threading</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="threading.html">threading</a><br>
 <a href="time.html">time</a><br>
 <a href="traceback.html">traceback</a><br>
 </td></tr></table></td></tr></table><p>
@@ -74,7 +75,8 @@ This&nbsp;class&nbsp;provides&nbsp;basic&nbsp;services&nbsp;to&nbsp;twincore<br>
 
 <dl><dt><a name="TwinCoreBase-getsize"><strong>getsize</strong></a>(self, buffio)</dt><dd><tt>get&nbsp;the&nbsp;dabase&nbsp;file&nbsp;size</tt></dd></dl>
 
-<dl><dt><a name="TwinCoreBase-hash32"><strong>hash32</strong></a>(self, strx)</dt><dd><tt>Deliver&nbsp;a&nbsp;32&nbsp;bit&nbsp;hash&nbsp;of&nbsp;the&nbsp;passed&nbsp;entity</tt></dd></dl>
+<dl><dt><a name="TwinCoreBase-hash32"><strong>hash32</strong></a>(self, strx)</dt><dd><tt>Deliver&nbsp;a&nbsp;32&nbsp;bit&nbsp;hash&nbsp;of&nbsp;the&nbsp;passed&nbsp;entity.&nbsp;Re-written<br>
+to&nbsp;use&nbsp;sha&nbsp;and&nbsp;cut&nbsp;the&nbsp;result&nbsp;to&nbsp;size</tt></dd></dl>
 
 <dl><dt><a name="TwinCoreBase-putbuffint"><strong>putbuffint</strong></a>(self, offs, val)</dt></dl>
 

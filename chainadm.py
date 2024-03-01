@@ -40,21 +40,23 @@ class _c():
     dkeyx   = "";   dumpx  = 0
     findrec = "";   getrec = -1
     datex = 0   ;   cntx = 1
-
+    headx = ""
 def help():
     print("Usage: %s [options]" % os.path.split(sys.argv[0])[1])
     print("   Options: -a  data   append data to the end of chain")
     print("            -g recnum  get record")
     print("            -d level   debug level")
     print("            -n         append number of records")
-    print("            -h         help (this screen)")
-    print("            -t         print UUID date)")
+    print("            -e         override header")
+    print("            -t         print record's UUID date)")
     print("            -s         skip count")
     print("            -x         max record count to list")
     print("            -m         dump chain data")
     print("            -c         check data integrity")
     print("            -i         check link integrity")
+    print("            -S         get db size")
     print("            -v         increase verbosity")
+    print("            -h         help (this screen)")
 
 def mainfunc():
 
@@ -103,8 +105,14 @@ def mainfunc():
         if aa[0] == "-m":
             _c.dumpx = True
 
+        if aa[0] == "-e":
+            _c.headx = aa[1]
+
         if aa[0] == "-t":
             _c.datex = True
+
+        if aa[0] == "-S":
+            _c.sizex = True
 
         if aa[0] == "-v":
             _c.verbose += 1
@@ -187,7 +195,13 @@ def mainfunc():
     elif _c.append:
         #print("Appending", _c.append)
         for aaa in range(_c.cntx):
-            core.append(_c.append)
+            if _c.headx:
+                core.appendwith(_c.headx, _c.append)
+            else:
+                core.append(_c.append)
+
+    elif _c.sizex:
+        print("Database size:", core.getdbsize())
 
     else:
         print("Use:", os.path.split(sys.argv[0])[1], "-h for info on usage.")
