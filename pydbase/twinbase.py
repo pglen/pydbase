@@ -6,7 +6,7 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
-import  struct, io, traceback, fcntl
+import  struct, io, traceback, fcntl, hashlib
 
 from dbutils import *
 
@@ -174,16 +174,52 @@ class TwinCoreBase():
 
     def hash32(self, strx):
 
-        ''' Deliver a 32 bit hash of the passed entity '''
+        ''' Deliver a 32 bit hash of the passed entity. Re-written
+            to use sha and cut the result to size '''
 
         #print("hashing", strx)
-        lenx = len(strx);  hashx = int(0)
-        for aa in strx:
-            hashx +=  int( (aa << 12) + aa)
-            hashx &= 0xffffffff
-            hashx = int(hashx << 8) + int(hashx >> 8)
-            hashx &= 0xffffffff
+        #ttt = time.time()
+
+        hh = hashlib.new("sha256"); hh.update(strx)
+        hashx = int(hh.hexdigest()[:8], base=16)
+
+        #hashx = 0
+        #lenx = len(strx);  hashx = int(0)
+        #for aa in strx:
+        #    hashx +=  int( (aa << 12) + aa)
+        #    hashx &= 0xffffffff
+        #    hashx = int(hashx << 8) + int(hashx >> 8)
+        #    hashx &= 0xffffffff
+
+        #print("hash32 %.3f" % ((time.time() - ttt) * 1000) )
+        #print("hash32: %x" % hashx)
+
         return hashx
+
+    def hash64(self, strx):
+
+        ''' Deliver a 64 bit hash of the passed entity. Re-written
+            to use sha and cut the result to size '''
+
+        #print("hashing", strx)
+        #ttt = time.time()
+
+        hh = hashlib.new("sha256"); hh.update(strx)
+        hashx = int(hh.hexdigest()[:16], base=16)
+
+        #hashx = 0
+        #lenx = len(strx);  hashx = int(0)
+        #for aa in strx:
+        #    hashx +=  int( (aa << 12) + aa)
+        #    hashx &= 0xffffffff
+        #    hashx = int(hashx << 8) + int(hashx >> 8)
+        #    hashx &= 0xffffffff
+
+        #print("hash32 %.3f" % ((time.time() - ttt) * 1000) )
+        print("hash64: %x" % hashx)
+
+        return hashx
+
 
     def softcreate(self, fname, raisex = True):
 

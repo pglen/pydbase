@@ -1,4 +1,5 @@
-# pydbase (see blockchain at the end)
+# pydbase - simple high speed database
+## see: blockchain functions at the end
 
 ## High speed database with key / data
 
@@ -132,49 +133,50 @@ provides examples of how to drive it.
 In the tests the record size is about the same (Hello, 1  /vs/ "Hello", 1)
 Please see the sqlite_test.sql for details of data output;
 
-The test can be repeated with running the 'time.sh' script file.
-Please note the the time.sh clears all files test_data/* for a fair test.
+ The test can be repeated with running the 'time.sh' script file.
+Please note the the time.sh clears all files in test_data/* for a fair test.
 
-        sqlite time test, writing 500 records ...
-        real	0m1.730s
-        user	0m0.110s
-        sys	0m0.455s
-
-        pydbase time test, writing 500 records ...
-        real	0m0.120s
-        user	0m0.075s
-        sys	0m0.044s
-
-        -rw-r--r-- 1 peterglen users  4032 Feb  7 15:35 pydb_test.pidx
-        -rw-r--r-- 1 peterglen users 15032 Feb  7 15:35 pydb_test.pydb
-        -rw-r--r-- 1 peterglen users 20480 Feb  7 15:35 sqlite_test.db
+    dbaseadm time test, writing 500 records ...
+    real	0m0.108s
+    user	0m0.068s
+    sys	0m0.040s
+    chainadm time test, writing 500 records ...
+    real	0m0.225s
+    user	0m0.154s
+    sys	0m0.071s
+    sqlite time test, writing 500 records ...
+    real	0m1.465s
+    user	0m0.130s
+    sys	0m0.292s
 
   Please mind the fact that the sqlite engine has to do a lot of parsing which we
 skip doing; That is why pydbase is more than an order of magnitude faster ...
+even with all the hashing for data integrity check
 
 ### Saving more complex data
 
-  The database saves a key / value pair. However, the key can be mutated to contain
-meta data. (for example adding a string in front of it.)
-[like: CUST_  for customer data / details]
-Also the key can be made unique by adding a UUID to it.
+  The database saves a key / value pair. However, the key can be mutated
+to contain more sophisticated data. For example: adding a string in front of it.
+[ Like: the string CUST_ for customer data / details]. Also the key can be made
+unique by adding a UUID to it, or using pyvpacker to construct it. (see below)
 
-  The data can consist of any text / binary. The library pyvpacker.py can pack any data
-into a string; A copy of pyvpacker can be obtained from pip or github
+  The data may consist of any text / binary. The library pyvpacker and can pack any data
+into a string; It is installed as a dependency, and a copy of pyvpacker can be
+obtained from pip or github.
 
 ## pyvpacker.py
 
  This module can pack arbitrary python data into a string; which can be used to store
-anything in the pydbase key / data sections.
+anything in the pydbase's key / data sections.
 
 Example from running testpacker.py:
 
-        org: (1, 2, 'aa', ['bb', b'dd'])
-        packed: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
-        unpacked: [1, 2, 'aa', ['bb', b'dd']]
-        rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
-        rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
-        (Note: the decode returns an array of data; use data[0] to get the original)
+    org: (1, 2, 'aa', ['bb', b'dd'])
+    packed: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
+    unpacked: [1, 2, 'aa', ['bb', b'dd']]
+    rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
+    rec_arr_upacked: [1, 2, 'aa', ['bb', b'dd']]
+    (Note: the decode returns an array of data; use data[0] to get the original)
 
   There is also the option of using pyvpacker on the key itself. Because the key
 is identified by its hash, there is no speed penalty; Note that the hash is a 32 bit
@@ -183,8 +185,8 @@ key proper with the returned key.
 
 ## Maintenance
 
-  The DB can rebuild its index and purge all deleted records. In the test utility
-the options are:
+  The DB can rebuild its index and purge (vacuum)  all deleted records. In the
+test utility the options are:
 
         ./dbaseadm.py -U     for vacuum (add -v for verbosity)
 
@@ -213,7 +215,7 @@ record history archived by default.
   To clean the old record history, one may delete all the records with
 this same key, except the last one.
 
-# Blockchain implementation
+## Blockchain implementation
 
    The database is extended with a blockhcain implementation. The new class
 is called twinchain; and it is a class derived from twincore.
@@ -285,11 +287,13 @@ To drive it:
     ============================== 33 passed in 0.73s ==============================
 
 ## History
+
     1.1         Tue 20.Feb.2024     Initial release
     1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
     1.4.0       Tue 27.Feb.2024     Addedd pgdebug
     1.4.2       Wed 28.Feb.2024     Fixed multiple instances
     1.4.3       Wed 28.Feb.2024     ChainAdm added
+    1.4.4       Fri 01.Mar.2024     Tests for chain functions
 
 ## Errata
 

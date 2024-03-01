@@ -19,6 +19,8 @@ ddd = \
   {'_Proof': 'dfd58c2cc281cee281631d20a2032332af26d0df8a8f758043f2098ff9bae000'}
   ]]
 
+pay  = "payload string " * 10
+
 # ------------------------------------------------------------------------
 
 def setup_module(module):
@@ -35,6 +37,11 @@ def setup_module(module):
 
     core = twinchain.TwinChain(fname)
     assert core != 0
+
+
+    for aa in range(2):
+        core.append(pay)
+
 
 def teardown_module(module):
     """ teardown any state that was previously setup with a setup_module
@@ -56,12 +63,51 @@ def teardown_module(module):
 
 def test_data(capsys):
 
-    pay  = "payload string " * 10
-
-    core.append(pay)
     dbsize = core.getdbsize()
     payload = core.get_payload(dbsize-1)
     #print(payload[1].decode(), pay)
     assert payload[1].decode() == pay
+
+    for aa in range(1, dbsize-1):
+        ppp = core.linkintegrity(aa)
+        assert ppp == True
+
+    for aa in range(1, dbsize-1):
+        ppp = core.checkdata(aa)
+        assert ppp == True
+
+def test_links(capsys):
+
+    fp = open(fname, "rb")
+    buff = fp.read(); fp.close()
+
+    # Damage file buffer -- make sure it is in payload
+    pos = 0x310
+    buff = buff[:pos] + b'a' + buff[pos+1:]
+
+    fp2 = open(fname, "wb")
+    fp2.write(buff)
+    fp2.close()
+
+    core2 = twinchain.TwinChain(fname)
+    assert core2 != 0
+
+    dbsize = core2.getdbsize()
+
+    for aa in range(1, dbsize-1):
+        ppp = core2.linkintegrity(aa)
+        assert ppp == True
+
+    # The failing record
+    ppp = core2.checkdata(1)
+    assert ppp == False
+
+    # All others
+    for aa in range(2, dbsize-1):
+        ppp = core2.checkdata(aa)
+        assert ppp == True
+
+    #assert 0
+
 
 # EOF

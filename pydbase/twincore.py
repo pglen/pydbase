@@ -1100,5 +1100,4 @@ class TwinCore(TwinCoreBase):
 
         return curr
 
-
 # EOF

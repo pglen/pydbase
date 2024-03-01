@@ -41,7 +41,7 @@ class _c():
     keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0
     findrec = ""; getrec = -1
-    datex = 0
+    datex = 0   ; cntx = 1
     deffile = "pydbchain.pydb"
 
 def help():
@@ -49,6 +49,7 @@ def help():
     print("   Options: -a  data   append data to the end of chain")
     print("            -g recnum  get record")
     print("            -d level   debug level")
+    print("            -n         append number of records")
     print("            -h         help (this screen)")
     print("            -t         print UUID date)")
     print("            -s         skip count")
@@ -88,6 +89,9 @@ def mainfunc():
 
         if aa[0] == "-a":
             _c.append = aa[1]
+
+        if aa[0] == "-n":
+            _c.cntx = int(aa[1])
 
         if aa[0] == "-g":
             _c.getrec = int(aa[1])
@@ -185,7 +189,9 @@ def mainfunc():
 
     elif _c.append:
         #print("Appending", _c.append)
-        core.append(_c.append)
+        for aaa in range(_c.cntx):
+            core.append(_c.append)
+
     else:
         print("Use:", os.path.split(sys.argv[0])[1], "-h for info on usage.")
 

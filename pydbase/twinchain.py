@@ -63,6 +63,8 @@ class TwinChain(TwinCore):
         set_pgdebug(pgdebug)
         self.core_verbose = core_verbose
 
+        import atexit
+        atexit.register(self.cleanup)
         # Upper lock name
         self.ulockname = os.path.splitext(fname)[0] + ".ulock"
         #waitupperlock(self.ulockname)
@@ -247,7 +249,7 @@ class TwinChain(TwinCore):
         #print("sss", sss)
 
         if not sss:
-            raise Valuerror("Invalid database, must have at least one record.")
+            raise ValueError("Invalid database, must have at least one record.")
 
         ooo = self.get_rec(sss-1)
         #print("ooo", ooo)
@@ -269,7 +271,10 @@ class TwinChain(TwinCore):
         encoded = self.packer.encode_data("", aaa)
         if self.pgdebug > 2:
             print(encoded)
+
+        #print("bbb", self.getdbsize())
         self.save_data(header, encoded)
+        #print("eee", self.getdbsize())
 
         if self.core_verbose > 1:
             bbb = self.packer.decode_data(encoded)
@@ -278,7 +283,8 @@ class TwinChain(TwinCore):
         if self.pgdebug:
             bbb = self.packer.decode_data(encoded)
             self.dump_rec(bbb[0])
-        self.flush()
+
+        #self.flush()
         delupperlock(self.ulockname)
         #xunlockfile(self.ulockname)
 
