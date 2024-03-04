@@ -224,22 +224,7 @@ def mainfunc():
         if _m.verbose:
             print("adding", _m.keyx, _m.datax)
         for aa in range(_m.ncount):
-            was = False
-            if _m.replace:
-                mrep2 =  _m.datax.encode()
-                rrr = core.recoffset(_m.keyx)
-                #print("Replace rec", hex(rrr[0]), "len:", rrr[1])
-                if len(_m.datax) <= rrr[1]:
-                    #print("Fit")
-                    padded = mrep2 + b' ' * (rrr[1] - len(_m.datax))
-                    #print("Padded", padded)
-                    ccc = core.hash32(padded)
-                    core.putbuffint(rrr[0] - 8, ccc)
-                    #print("ccc", hex(ccc))
-                    core.putbuffstr(rrr[0], padded)
-                    was = True
-            if not was:
-                curr = core.save_data(_m.keyx, _m.datax)
+            curr = core.save_data(_m.keyx, _m.datax, _m.replace)
 
     elif _m.keyx:
         curr = 0
@@ -247,7 +232,7 @@ def mainfunc():
         if _m.verbose:
             print("adding", _m.keyx, data)
         for aa in range(_m.ncount):
-            curr = core.save_data(_m.keyx, data)
+            curr = core.save_data(_m.keyx, data, _m.replace)
         #print("curr", curr)
     elif _m.writex:
         curr = 0;

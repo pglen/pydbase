@@ -826,13 +826,14 @@ class TwinCore(TwinCoreBase):
 
     def  recoffset(self, strx, limx = INT_MAX, skipx = 0):
 
-        waitlock(self.lckname)
-
         #chash = self.getidxint(CURROFFS)            #;print("chash", chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         rec = 0; blen = 0; data = ""
         arr = []
-        strx2 = strx.encode(errors='strict');
+        if type(strx) != type(b""):
+            strx2 = strx.encode(errors='strict');
+        else:
+            strx2 = strx
 
         #print("recoffset", strx2)
 
@@ -857,7 +858,6 @@ class TwinCore(TwinCoreBase):
                     data = self.getbuffstr(rec + 24 + blen, xlen)
                     #print("rec offset", rec + 12,  "key:", keyz, "data:", data)
                     break       # Only the last one
-        dellock(self.lckname)
         return rec+24 + blen, len(data)
 
     def  findrec(self, strx, limx = INT_MAX, skipx = 0):
@@ -1063,12 +1063,45 @@ class TwinCore(TwinCoreBase):
             cnt3 += 1
         return cnt
 
+    def  save_data(self, arg2, arg3, replace = False):
+
+        waitlock(self.lckname)
+        ret = 0
+        was = False
+        # Put new data in place
+        if replace:
+            if type(arg3) != type(b""):
+                mrep2 = arg3.encode()
+            else:
+                mrep2 = arg3
+
+            rrr = self.recoffset(arg2)
+            if rrr[1]:
+                #print("Replace rec", hex(rrr[0]), "len:", rrr[1])
+                if len(mrep2) <= rrr[1]:
+                    #print("Fit")
+                    padded = mrep2 + b' ' * (rrr[1] - len(mrep2))
+                    #print("Padded", padded)
+                    ccc = self.hash32(padded)
+                    self.putbuffint(rrr[0] - 8, ccc)
+                    #print("ccc", hex(ccc))
+                    self.putbuffstr(rrr[0], padded)
+                    was = True
+                    self.fp.flush()
+                    self.ifp.flush()
+
+        if not was:
+            ret = self._save_data2(arg2, arg3)
+
+        dellock(self.lckname)
+
+        return ret
+
     # --------------------------------------------------------------------
     # Save data to database file
 
-    def  save_data(self, arg2, arg3):
+    def  _save_data2(self, arg2, arg3):
 
-        waitlock(self.lckname)
 
         # Prepare all args, if cannot encode, use original
         try:
@@ -1091,7 +1124,6 @@ class TwinCore(TwinCoreBase):
 
         ret = self.__save_data(hhh2, arg2e, hhh3, arg3e)
 
-        dellock(self.lckname)
         return ret
 
     def __save_data(self, hhh2, arg2e, hhh3, arg3e):
