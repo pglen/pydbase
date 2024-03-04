@@ -295,6 +295,8 @@ To drive it:
     1.4.2       Wed 28.Feb.2024     Fixed multiple instances
     1.4.3       Wed 28.Feb.2024     ChainAdm added
     1.4.4       Fri 01.Mar.2024     Tests for chain functions
+    1.4.5       Fri 01.Mar.2024     Misc fixes
+    1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
 
 ## Errata
 

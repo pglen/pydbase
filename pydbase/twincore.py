@@ -588,6 +588,7 @@ class TwinCore(TwinCoreBase):
                 sig = self.getbuffstr(rec, self.INTSIZE)
                 if sig == RECDEL:
                     ret += 1
+                    vac += 1
                     if self.pgdebug > 1:
                         print("deleted", rec)
                 elif sig != RECSIG:
@@ -609,7 +610,7 @@ class TwinCore(TwinCoreBase):
                         hhh2 = self.hash32(arr[0])
                         hhh3 = self.hash32(arr[1])
                         vacdb.__save_data(hhh2, arr[0], hhh3, arr[1])
-                        vac += 1
+                        #vac += 1
                     else:
                         # This could be from empty bacause of hash error
                         self.__save_error(rec, vacerrfp)
@@ -626,7 +627,6 @@ class TwinCore(TwinCoreBase):
                     os.remove(vacerr)
             except:
                 print("vacerr", sys.exc_info())
-
 
         dellock(self.lckname)
 
