@@ -40,13 +40,14 @@ class _c():
     dkeyx   = "";   dumpx  = 0
     findrec = "";   getrec = -1
     datex = 0   ;   cntx = 1
-    headx = ""
+    headx = ""  ;   gethead = -1
 def help():
     print("Usage: %s [options]" % os.path.split(sys.argv[0])[1])
     print("   Options: -a  data   append data to the end of chain")
     print("            -g recnum  get record")
+    print("            -r recnum  get record header")
     print("            -d level   debug level")
-    print("            -n         append number of records")
+    print("            -n         append / show number of records")
     print("            -e         override header")
     print("            -t         print record's UUID date)")
     print("            -s         skip count")
@@ -65,8 +66,8 @@ def mainfunc():
     opts = []; args = []
 
     # Old fashioned parsing
-    opts_args   = "a:d:e:f:g:k:l:n:o:s:u:x:y:p:D:F:G:d:g:"
-    opts_normal = "mchiVrwzvqURIK?St"
+    opts_args   = "a:d:e:f:g:k:l:n:o:r:s:u:x:y:p:D:F:G:d:g:"
+    opts_normal = "mchiVwzvqURIK?St"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
@@ -98,6 +99,9 @@ def mainfunc():
         if aa[0] == "-x":
             _c.maxx = int(aa[1])
             #print(_c.maxx)
+
+        if aa[0] == "-r":
+            _c.gethead = int(aa[1])
 
         if aa[0] == "-s":
             _c.skipcnt = int(aa[1])
@@ -135,7 +139,7 @@ def mainfunc():
     core = twinchain.TwinChain(_c.deffile, _c.pgdebug, _c.verbose)
 
     if _c.integx:
-        print("Integrity", _c.integx)
+        #print("Integrity", _c.integx)
         errx = False; cnt = []
         sss = core.getdbsize()
         # Remember record zero is the anchor
@@ -154,8 +158,20 @@ def mainfunc():
         if _c.getrec > sss:
             print("Cannot get past end of file.")
             sys.exit()
-        ppp = core.get_payload(_c.getrec)
-        print(_c.getrec, ppp)
+        if _c.getrec + _c.cntx > sss:
+            _c.cntx = sss - _c.getrec
+        for aaa in range(_c.cntx):
+            ppp = core.get_payload(_c.getrec + aaa)
+            print(ppp)
+
+    elif _c.gethead >= 0:
+        sss = core.getdbsize()
+        if _c.gethead > sss:
+            print("Cannot get past end of file.")
+            sys.exit()
+        for aaa in range(_c.cntx):
+            ppp = core.get_header(_c.gethead + aaa)
+            print(ppp)
 
     elif _c.checkx:
         #print("Checking", _c.checkx)
@@ -182,18 +198,17 @@ def mainfunc():
         while True:
             if cnt >= end:
                 break
+            hhh = core.get_header(cnt)
             ppp = core.get_payload(cnt)
             ddd = ""
             if  _c.datex:
                 ddd = dbutils.uuid2date(uuid.UUID(ppp[0]))
-                print(cnt, ddd, ppp)
-            else:
-                print(cnt, ddd, ppp)
+            print(cnt, hhh, ddd, ppp)
 
             cnt = cnt + 1
 
     elif _c.append:
-        #print("Appending", _c.append)
+        print("Appending", _c.append)
         for aaa in range(_c.cntx):
             if _c.headx:
                 core.appendwith(_c.headx, _c.append)

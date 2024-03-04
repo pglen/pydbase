@@ -128,6 +128,7 @@ class TwinChain(TwinCore):
         dd = hashlib.new("md5"); dd.update(payload)
         self._key_n_data(aaa, "md5", dd.hexdigest())
 
+        backlink =  self.old_dicx["now"]
         backlink =  self.old_dicx["hash256"]
         backlink += self.old_dicx["header"]
         backlink += self.old_dicx["payload"].decode()
@@ -159,13 +160,22 @@ class TwinChain(TwinCore):
             return dic
         if self.core_verbose > 1:
             uuu = uuid.UUID(dic['header'])
-            ddd = str(_uuid2date(uuu))
+            ddd = str(uuid2date(uuu))
             return dic['header'] + " " + dic['now'] + " -- " + ddd + " -- " \
                                 + dic['payload'].decode()
         if self.core_verbose > 0:
             return dic['header'] + " " + dic['now'] + " " + dic['payload'].decode()
 
         return arr[0].decode(), dic['payload']
+
+    def get_header(self, recnum):
+        arr = self.get_rec(recnum)
+        if self.core_verbose > 0:
+            print("arr[0]", arr[0])
+            uuu = uuid.UUID(arr[0].decode())
+            ddd = str(uuid2date(uuu))
+            return  ddd, arr[0].decode()
+        return arr[0].decode()
 
     def linkintegrity(self, recnum):
 
@@ -196,6 +206,7 @@ class TwinChain(TwinCore):
 
         dic = self.get_fields(decoded2[0])
 
+        backlink =  dico["now"]
         backlink =  dico["hash256"]
         backlink += dico["header"]
         backlink += dico["payload"].decode()
@@ -274,6 +285,8 @@ class TwinChain(TwinCore):
         if self.pgdebug > 2:
             print(encoded)
 
+        #print("save", header, "-", encoded)
+
         #print("bbb", self.getdbsize())
         self.save_data(header, encoded)
         #print("eee", self.getdbsize())
@@ -309,8 +322,11 @@ class TwinChain(TwinCore):
 
         # Produce header  structure
         uuu = uuid.uuid1()
-        #print(_uuid2date(uuu))
+        #print(uuid2date(uuu))
         header = str(uuu)
+        #uuuu = uuid.UUID(header)
+        #print(uuid2date(uuuu))
+
         self.appendwith(header, datax)
 
     def dump_rec(self, bbb):

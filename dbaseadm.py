@@ -42,7 +42,7 @@ class _m():
     keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0
     findrec = ""; getrec = 0
-
+    replace = 0;
     deffile = "pydbase.pydb"
 
 version = "0.4.1"
@@ -82,7 +82,7 @@ def help():
     print("          -S         print num recs       -|-  -D  key    delete by key ")
     print("          -n  num    number of records    -|-  -t  key    retrieve by key")
     print("          -p  num    skip number of recs  -|-  -u  rec    delete at recnum")
-    print("          -l  lim    limit number of recs -|-  ")
+    print("          -l  lim    limit number of recs -|-  -E  replace record in place")
     print("          -x  max    limit max number of records to get")
     print("          -f  file   input or output file (default: 'pydbase.pydb')")
     print("The verbosity level influences the amount of data presented.")
@@ -96,7 +96,7 @@ def mainfunc():
 
     # Old fashioned parsing
     opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:"
-    opts_normal = "mchiVrwzvqURIK?S"
+    opts_normal = "mchiVrwzvqURIK?SE"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
@@ -175,6 +175,8 @@ def mainfunc():
             _m.offsx = aa[1]
         if aa[0] == "-e":
             _m.delx = aa[1]
+        if aa[0] == "-E":
+            _m.replace = True
         if aa[0] == "-c":
             _m.checkx = True
         if aa[0] == "-S":
@@ -222,14 +224,30 @@ def mainfunc():
         if _m.verbose:
             print("adding", _m.keyx, _m.datax)
         for aa in range(_m.ncount):
-            curr = core.save_data(_m.keyx, _m.datax)
-        #print("curr", curr)
+            was = False
+            if _m.replace:
+                mrep2 =  _m.datax.encode()
+                rrr = core.recoffset(_m.keyx)
+                #print("Replace rec", hex(rrr[0]), "len:", rrr[1])
+                if len(_m.datax) <= rrr[1]:
+                    #print("Fit")
+                    padded = mrep2 + b' ' * (rrr[1] - len(_m.datax))
+                    #print("Padded", padded)
+                    ccc = core.hash32(padded)
+                    core.putbuffint(rrr[0] - 8, ccc)
+                    #print("ccc", hex(ccc))
+                    core.putbuffstr(rrr[0], padded)
+                    was = True
+            if not was:
+                curr = core.save_data(_m.keyx, _m.datax)
+
     elif _m.keyx:
         curr = 0
-        if verbose:
-            print("adding", keyx)
-        for aa in range(ncount):
-            curr = core.save_data(keyx, "dddd dddd")
+        data = randstr(random.randint(4, 24))
+        if _m.verbose:
+            print("adding", _m.keyx, data)
+        for aa in range(_m.ncount):
+            curr = core.save_data(_m.keyx, data)
         #print("curr", curr)
     elif _m.writex:
         curr = 0;

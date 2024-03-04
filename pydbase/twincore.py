@@ -75,7 +75,7 @@ class TwinCore(TwinCoreBase):
 
     '''
 
-    def __init__(self, fname = "pydbase.pydb", pgdebug = 0):
+    def __init__(self, fname = "pydbase.pydb", pgdebug = 0, devmode = 1):
 
         self.cnt = 0
         self.fname = fname
@@ -83,6 +83,7 @@ class TwinCore(TwinCoreBase):
         self.idxname  = os.path.splitext(self.fname)[0] + ".pidx"
         self.pgdebug = pgdebug
         self.base_verbose  = 0
+        self.devmode = devmode
 
         import atexit
         atexit.register(self.cleanup)
@@ -309,7 +310,7 @@ class TwinCore(TwinCoreBase):
         if self.base_verbose > 1:
             print("%-5d pos %5d" % (cnt, rec), "%8x" % hash, "len", blen, data,
                                                         "%8x" % hash2,"len", blen2, data2)
-            print()
+            #print()
 
         elif self.base_verbose:
             print("%-5d pos %5d" % (cnt, rec), "%8x" % hash, "len", blen, truncs(data),
@@ -769,23 +770,18 @@ class TwinCore(TwinCoreBase):
     def integrity_check(self, skip = 0):
 
         waitlock(self.lckname)
-
         ret = 0; cnt2 = 0
         #chash = self.getidxint(CURROFFS)        #;print("chash", chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
-
         # Direction sensitivity
         rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
         for aa in rrr:
             rec = self.getidxint(aa)
             #print(aa, rec)
-            ret  += self.check_rec(rec, cnt2)
+            ret += self.check_rec(rec, cnt2)
             cnt2 += 1
-
         dellock(self.lckname)
-
         return ret, cnt2
-
 
     def  retrieve(self, strx, limx = 1):
 
@@ -825,6 +821,44 @@ class TwinCore(TwinCoreBase):
         dellock(self.lckname)
 
         return arr
+
+    # Return record offset
+
+    def  recoffset(self, strx, limx = INT_MAX, skipx = 0):
+
+        waitlock(self.lckname)
+
+        #chash = self.getidxint(CURROFFS)            #;print("chash", chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        rec = 0; blen = 0; data = ""
+        arr = []
+        strx2 = strx.encode(errors='strict');
+
+        #print("recoffset", strx2)
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(" Deleted record '%s' at" % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose > 0:
+                    print(" Damaged data '%s' at" % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                keyz = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose > 1:
+                    print("recoffset", keyz)
+                if strx2 == keyz:
+                    sig = self.getbuffstr(rec + 16 + blen,  self.INTSIZE)
+                    xlen = self.getbuffint(rec + 20 + blen)
+                    data = self.getbuffstr(rec + 24 + blen, xlen)
+                    #print("rec offset", rec + 12,  "key:", keyz, "data:", data)
+                    break       # Only the last one
+        dellock(self.lckname)
+        return rec+24 + blen, len(data)
 
     def  findrec(self, strx, limx = INT_MAX, skipx = 0):
 
@@ -1063,14 +1097,18 @@ class TwinCore(TwinCoreBase):
     def __save_data(self, hhh2, arg2e, hhh3, arg3e):
 
         # Update / Append data
-        tmp = RECSIG
-        tmp += struct.pack("I", hhh2)
-        tmp += struct.pack("I", len(arg2e))
-        tmp += arg2e
-        tmp += RECSEP
-        tmp += struct.pack("I", hhh3)
-        tmp += struct.pack("I", len(arg3e))
-        tmp += arg3e
+
+        # Building array added some efficiency
+        arr = []
+        arr.append(RECSIG)
+        arr.append(struct.pack("I", hhh2))
+        arr.append(struct.pack("I", len(arg2e)))
+        arr.append(arg2e)
+        arr.append(RECSEP)
+        arr.append(struct.pack("I", hhh3))
+        arr.append(struct.pack("I", len(arg3e)))
+        arr.append(arg3e)
+        tmp = b"".join(arr)
 
         #print(tmp)
         # The pre - assemple to string added 20% efficiency

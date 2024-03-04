@@ -2,6 +2,8 @@
 
 import datetime
 
+import sys
+
 chain_pgdebug = 0
 
 def set_pgdebug(level):
