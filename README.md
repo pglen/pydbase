@@ -94,39 +94,50 @@ Example chain DB creation:
    The file dbaseadm.py exercises most of the twincore functionality. It also
 provides examples of how to drive it.
 
- The command line utility's help response:
+The command line utility's help response:
 
-    Usage: dbaseadm.py [options] [arg_key arg_data]
-     Options: -h         help (this screen)   -|-  -G  num  get record by number
-              -V         print version        -|-  -q  quiet on, less printting
-              -d         debug level (0-10)   -|-  -v  increment verbosity level
-              -r         randomize data       -|-  -w  write fixed record(s)
-              -z         dump backwards(s)    -|-  -i  show deleted record(s)
-              -U         Vacuum DB            -|-  -R  reindex / recover DB
-              -I         DB Integrity check   -|-  -c  set check integrity flag
-              -s         Skip to count recs   -|-  -K  list keys only
-              -y  key    find by key          -|-  -m  dump data to console
-              -o  offs   get data from offset -|-  -e  offs   delete at offset
-              -F  subkey find by sub str      -|-  -g  num    get number of recs.
-              -k  key    key to save          -|-  -a  str    data to save
-              -S         print num recs       -|-  -D  key    delete by key
-              -n  num    number of records    -|-  -t  key    retrieve by key
-              -p  num    skip number of recs  -|-  -u  rec    delete at recnum
-              -l  lim    limit number of recs -|-
-              -x  max    limit max number of records to get
-              -f  file   input or output file (default: 'pydbase.pydb')
-    The verbosity level influences the amount of data presented.
+     Usage: dbaseadm.py [options] [arg_key arg_data]
+       -h         Help (this screen)   -|-  -E         Replace record in place
+       -V         Print version        -|-  -q         Quiet on, less printing
+       -d         Debug level (0-10)   -|-  -v         Increment verbosity level
+       -r         Randomize data       -|-  -w         Write random record(s)
+       -z         Dump backwards(s)    -|-  -i         Show deleted record(s)
+       -U         Vacuum DB            -|-  -R         Re-index / recover DB
+       -I         DB Integrity check   -|-  -c         Set check integrity flag
+       -s         Skip to count recs   -|-  -K         List keys only
+       -S         Print num recs       -|-  -m         Dump data to console
+       -o  offs   Get data from offset -|-  -G  num    Get record by number
+       -F  subkey Find by sub str      -|-  -g  num    Get number of recs.
+       -k  keyval Key to save          -|-  -a  str    Data to save
+       -y  keyval Find by key          -|-  -D  keyval Delete by key
+       -n  num    Number of records    -|-  -t  keyval Retrieve by key
+       -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum
+       -l  lim    Limit get records    -|-  -e  offs   Delete at offset
+       -Z  keyval Get record position  -|-  -X  max    Limit recs on delete
+       -x  max    Limit max number of records to get (default: 1)
+       -f  file   Input or output file (default: 'pydbase.pydb')
+    The verbosity / debugl level influences the amount of data presented.
     Use quotes for multi word arguments.
 
 ### The chain adm utility:
 
-    Usage: pychain.py [options]
+    Usage: chainadm.py [options]
        Options: -a  data   append data to the end of chain
-                -h         help (this screen)
+                -g recnum  get record
+                -k reckey  get record by key/header
+                -r recnum  get record header
+                -d level   debug level
+                -n         append / show number of records
+                -e         override header
+                -t         print record's UUID date)
+                -s         skip count
+                -x         max record count to list
                 -m         dump chain data
                 -c         check data integrity
                 -i         check link integrity
+                -S         get db size
                 -v         increase verbosity
+                -h         help (this screen)
 
 ### Comparison to other databases:
 
@@ -259,6 +270,23 @@ To drive it:
 
  The pytest passes with no errors;
  The following (and more) test are created / executed:
+
+## The in-place update
+
+  The save operation has a flag for in-place update. This is useful for updating
+without the data storage extending. Useful for counts and timers. The in-place
+update operates as a record overwrite, and has to be equal length than the existing
+record. If shorter, the record is padded to the original data's length by appending
+spaces. Below is an example to update a counter in the database, which will execute
+in a microsecond time range.
+
+    dbcore = twinchain.TwinCore(filename)
+    rec = dbcore.get_rec(xxx)
+    # Increment count:
+    arr = self.packer.decode_data(rec[1])[0]
+    arr[0] = "%05d" % (int(arr[0]) + 1)
+    strx = str(self.packer.encode_data("", arr))
+    ret = dbcore.save_data(rec[0], strx, True)
 
 ### Test results:
 
