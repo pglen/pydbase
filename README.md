@@ -4,27 +4,27 @@
 
 #### see: blockchain functions at the end
 
-  The motivation was to create a no frills way of saving / retrieving data.
+ &nbsp; The motivation was to create a no frills way of saving / retrieving data.
 It is fast, and the time test shows that this is an order of magnitude
 faster than most mainstream databases. This is due to the engine's simplicity.
 It avoids expensive computations in favor of quickly saving data.
 
 ### Fast data save / retrieve
 
-Mostly ready for production. All tests pass. Please use caution, as this is new.
+ &nbsp; Mostly ready for production. All tests pass. Please use caution, as this is new.
 The command line tester can drive most aspects of this API; and it is somewhat
 complete. It is also  good way to see the API / Module in action.
 
 ## API
 
-  The module 'twincore' uses two data files and a lock file. The file
+  &nbsp; The module 'twincore' uses two data files and a lock file. The file
  names are generated from the base name of the data file;
 name.pydb for data; name.pidx for the index, name.lock for the lock file.
  In case of frozen process the lock file times out in xx seconds
 and breaks the lock. If the locking process (id in lockfile) does
 not exist, the lock breaks immediately.
 
-Setting verbosity and debug level:
+### Setting verbosity and debug level:
 
     twincore.core_quiet   = quiet
     twincore.core_verbose = verbose
@@ -287,6 +287,11 @@ in a microsecond time range.
     arr[0] = "%05d" % (int(arr[0]) + 1)
     strx = str(self.packer.encode_data("", arr))
     ret = dbcore.save_data(rec[0], strx, True)
+
+ If the in-place data is longer, a new record is created, just like a normal
+operation. This new, longer record than accommodates all the new in-place requests.
+It is recommended that one produces a fixed record size for consistent results.
+(See: sprintf (python % operator) in the example above.)
 
 ### Test results:
 
