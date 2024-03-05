@@ -26,7 +26,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pydbase",
-    version="1.4.6",
+    version="1.4.7",
     author="Peter Glen",
     author_email="peterglen99@gmail.com",
     description="High speed database with key / data in python.",

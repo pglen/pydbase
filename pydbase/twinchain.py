@@ -63,6 +63,8 @@ class TwinChain(TwinCore):
         set_pgdebug(pgdebug)
         self.core_verbose = core_verbose
 
+        #print("pgdebug:", pgdebug)
+
         import atexit
         atexit.register(self.cleanup)
         # Upper lock name
@@ -98,8 +100,6 @@ class TwinChain(TwinCore):
             self._fill_record(aaa, header, payload)
             encoded = self.packer.encode_data("", aaa)
             self.save_data(header, encoded)
-
-        #delupperlock(self.ulockname)
 
     def cleanup(self):
         #print("cleanup")
@@ -152,10 +152,11 @@ class TwinChain(TwinCore):
         arr = self.get_rec(recnum)
         try:
             decoded = self.packer.decode_data(arr[1])
+            #print("decoded", decoded)
         except:
             print("Cannot decode", recnum, sys.exc_info())
             return "Bad record"
-        dic = self.get_fields(decoded[0])
+        dic = self._get_fields(decoded[0])
         if self.core_verbose > 2:
             return dic
         if self.core_verbose > 1:
@@ -167,6 +168,12 @@ class TwinChain(TwinCore):
             return dic['header'] + " " + dic['now'] + " " + dic['payload'].decode()
 
         return arr[0].decode(), dic['payload']
+
+    def retr_rec(self, keyval):
+
+        arr = []
+
+        return arr
 
     def get_header(self, recnum):
         arr = self.get_rec(recnum)
@@ -195,7 +202,7 @@ class TwinChain(TwinCore):
             print("Cannot decode prev:", recnum, sys.exc_info())
             return
 
-        dico = self.get_fields(decoded[0])
+        dico = self._get_fields(decoded[0])
 
         arr2 = self.get_rec(recnum)
         try:
@@ -204,7 +211,7 @@ class TwinChain(TwinCore):
             print("Cannot decode curr:", recnum, sys.exc_info())
             return
 
-        dic = self.get_fields(decoded2[0])
+        dic = self._get_fields(decoded2[0])
 
         backlink =  dico["now"]
         backlink =  dico["hash256"]
@@ -229,7 +236,7 @@ class TwinChain(TwinCore):
             print("Cannot decode:", recnum, sys.exc_info())
             return
 
-        dic = self.get_fields(decoded[0])
+        dic = self._get_fields(decoded[0])
 
         hh = hashlib.new("sha256");
         hh.update(dic['payload'])
@@ -244,7 +251,7 @@ class TwinChain(TwinCore):
 
         waitupperlock(self.ulockname)
 
-        if self.pgdebug > 0:
+        if self.pgdebug > 1:
             print("Appendwith", datax)
 
         if self.core_verbose > 0:
@@ -256,7 +263,7 @@ class TwinChain(TwinCore):
             print("Header override must be a valif UUID string.")
             return
 
-        if type(datax) == str:
+        if type(datax) != type(b""):
             datax = datax.encode() #errors='strict')
 
         self.old_dicx = {}
@@ -268,10 +275,14 @@ class TwinChain(TwinCore):
             raise ValueError("Invalid database, must have at least one record.")
 
         ooo = self.get_rec(sss-1)
-        #print("ooo", ooo)
-        decoded = self.packer.decode_data(ooo[1])
+        if self.pgdebug > 2:
+            print("ooo", ooo)
 
-        self.old_dicx = self.get_fields(decoded[0])
+        decoded = self.packer.decode_data(ooo[1])
+        if self.pgdebug > 4:
+            print("decoded", decoded)
+
+        self.old_dicx = self._get_fields(decoded[0])
         if self.pgdebug > 3:
             print(self.old_dicx)
 
@@ -283,13 +294,14 @@ class TwinChain(TwinCore):
         self._fill_record(aaa, header, datax)
         encoded = self.packer.encode_data("", aaa)
         if self.pgdebug > 2:
-            print(encoded)
+            print("encoded", encoded)
 
         #print("save", header, "-", encoded)
 
         #print("bbb", self.getdbsize())
         self.save_data(header, encoded)
         #print("eee", self.getdbsize())
+        #if self.pgdebug > 5:
 
         if self.core_verbose > 1:
             bbb = self.packer.decode_data(encoded)
@@ -333,12 +345,12 @@ class TwinChain(TwinCore):
         for aa in range(len(bbb)//2):
             print(pad(bbb[2*aa]), "=", bbb[2*aa+1])
 
-    def get_fields(self, bbb):
+    def _get_fields(self, bbb):
         dicx = {}
         for aa in range(len(bbb)//2):
             dicx[bbb[2*aa]] = bbb[2*aa+1]
-
-        #print("dicx", dicx)
+        if self.pgdebug > 7:
+            print("dicx", dicx)
         return dicx
 
 # EOF

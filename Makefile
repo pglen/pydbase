@@ -8,15 +8,13 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 
-.PHONY:  doc doc3 clean echo tests
+.PHONY:  doc clean echo tests
 
 PROG=pydbase
 
 all:
-	@echo "Targets: clean cleandata tests
+	@echo "Targets: clean cleandata tests pipupload"
 	@echo "Type 'make help' for a list of targets"
-
-.PHONY: tests
 
 help:
 	@echo
@@ -30,6 +28,10 @@ help:
 	@echo "	 make tests        -- execute ${PROG} test suite"
 	@echo "	 make doxy         -- create ${PROG} documentation"
 	@echo
+
+pipupload:
+	./pip-build.py
+	./pip-upload.py
 
 tests:
 	./pytests.sh
@@ -88,9 +90,6 @@ git:
 doc:
 	@pdoc --logo image.png  \
                 -o doc `find . -maxdepth 2 -name  \*.py`
-
-doc3:
-	@pdoc3  --html --force -o doc3 `find . -maxdepth 2 -name  \*.py`
 
 doxy:
 	doxygen

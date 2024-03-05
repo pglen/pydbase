@@ -264,28 +264,32 @@ To drive it:
 
     ============================= test session starts ==============================
     platform linux -- Python 3.10.12, pytest-7.4.3, pluggy-1.0.0
-    rootdir: /home/xxxx/pgpygtk/pydbase
-    collected 33 items
+    rootdir: /home/peterglen/pgpygtk/pydbase
+    collected 43 items
 
-    test_bindata.py .                                                        [  3%]
-    test_chain.py .                                                          [  6%]
-    test_create.py .....                                                     [ 21%]
-    test_del.py .                                                            [ 24%]
-    test_dump.py .                                                           [ 27%]
-    test_find.py ..                                                          [ 33%]
+    test_acreate.py .....                                                    [ 11%]
+    test_bindata.py .                                                        [ 13%]
+    test_chain.py .                                                          [ 16%]
+    test_chain_integ.py ..                                                   [ 20%]
+    test_chain_link.py ..                                                    [ 25%]
+    test_del.py .                                                            [ 27%]
+    test_dump.py .                                                           [ 30%]
+    test_find.py ..                                                          [ 34%]
     test_findrec.py ..                                                       [ 39%]
-    test_getrec.py .                                                         [ 42%]
-    test_integrity.py .                                                      [ 45%]
-    test_list.py ..                                                          [ 51%]
-    test_lockrel.py ..                                                       [ 57%]
-    test_multi.py ..                                                         [ 63%]
-    test_packer.py ......                                                    [ 81%]
-    test_randdata.py .                                                       [ 84%]
-    test_reindex.py .                                                        [ 87%]
-    test_search.py ...                                                       [ 96%]
+    test_getoffs.py ...                                                      [ 46%]
+    test_getrec.py .                                                         [ 48%]
+    test_inplace.py ...                                                      [ 55%]
+    test_integrity.py .                                                      [ 58%]
+    test_list.py ..                                                          [ 62%]
+    test_lockrel.py ..                                                       [ 67%]
+    test_multi.py ..                                                         [ 72%]
+    test_packer.py ......                                                    [ 86%]
+    test_randdata.py .                                                       [ 88%]
+    test_reindex.py .                                                        [ 90%]
+    test_search.py ...                                                       [ 97%]
     test_vacuum.py .                                                         [100%]
 
-    ============================== 33 passed in 0.73s ==============================
+    ============================== 43 passed in 0.68s ==============================
 
 ## History
 
@@ -297,6 +301,7 @@ To drive it:
     1.4.4       Fri 01.Mar.2024     Tests for chain functions
     1.4.5       Fri 01.Mar.2024     Misc fixes
     1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
+    1.4.7       Tue 05.Mar.2024     In place record update
 
 ## Errata
 

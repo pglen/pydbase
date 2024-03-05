@@ -8,6 +8,9 @@ import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
 import  struct, io, traceback, fcntl, hashlib
 
+base = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(base, '..', 'pydbase'))
+
 from dbutils import *
 
 HEADSIZE        = 32
@@ -175,7 +178,9 @@ class TwinCoreBase():
     def hash32(self, strx):
 
         ''' Deliver a 32 bit hash of the passed entity. Re-written
-            to use sha and cut the result to size '''
+            to use sha and cut the result to size
+            Replaced this with an external hash function for speed.
+        '''
 
         #print("hashing", strx)
         #ttt = time.time()
@@ -183,7 +188,7 @@ class TwinCoreBase():
         hh = hashlib.new("sha256"); hh.update(strx)
         hashx = int(hh.hexdigest()[:8], base=16)
 
-        # Replaced this with an external hash function
+        # Replaced this with an external hash function for speed
         #hashx = 0
         #lenx = len(strx);  hashx = int(0)
         #for aa in strx:
@@ -191,7 +196,6 @@ class TwinCoreBase():
         #    hashx &= 0xffffffff
         #    hashx = int(hashx << 8) + int(hashx >> 8)
         #    hashx &= 0xffffffff
-
         #print("hash32 %.3f" % ((time.time() - ttt) * 1000) )
         #print("hash32: %x" % hashx)
 

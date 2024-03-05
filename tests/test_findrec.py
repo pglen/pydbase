@@ -38,15 +38,25 @@ def teardown_function(function):
 # Start
 
 def test_get():
+
+    # Get record, verify
     ret = core.get_rec(2)
     assert ret != 0
     assert ret == [b'111', b'222']
 
 def test_findrec():
 
+    # Found
     strx = "11111"
     ret = core.findrec(strx)
-    assert ret == [b'11111']
+    print (ret)
+    assert ret == [[b'11111', b'22222']]
+
+    # Not found
+    strx = "11111x"
+    ret = core.findrec(strx)
+    print (ret)
+    assert ret == []
 
 
 # EOF

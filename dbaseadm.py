@@ -28,7 +28,7 @@ class _m():
     keyonly = 0
     ncount  = 1
     skipcnt = 0
-    maxx    = 10
+    maxx    = 1; maxdel = 0xffffffff
     lcount  = twincore.INT_MAX
     quiet   = 0; writex  = 0
     randx   = 0; skipx   = 0
@@ -42,7 +42,7 @@ class _m():
     keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0
     findrec = ""; getrec = 0
-    replace = 0;
+    replace = 0 ; recpos = 0
     deffile = "pydbase.pydb"
 
 version = "0.4.1"
@@ -67,35 +67,36 @@ def randstr(lenx):
 def help():
     pname = os.path.split(sys.argv[0])[1]
     print("Usage: %s [options] [arg_key arg_data]" %  pname)
-    print(" Options: -h         help (this screen)   -|-  -G  num  get record by number ")
-    print("          -V         print version        -|-  -q  quiet on, less printting")
-    print("          -d         debug level (0-10)   -|-  -v  increment verbosity level")
-    print("          -r         randomize data       -|-  -w  write fixed record(s)")
-    print("          -z         dump backwards(s)    -|-  -i  show deleted record(s)")
-    print("          -U         Vacuum DB            -|-  -R  reindex / recover DB")
-    print("          -I         DB Integrity check   -|-  -c  set check integrity flag")
-    print("          -s         Skip to count recs   -|-  -K  list keys only")
-    print("          -y  key    find by key          -|-  -m  dump data to console")
-    print("          -o  offs   get data from offset -|-  -e  offs   delete at offset")
-    print("          -F  subkey find by sub str      -|-  -g  num    get number of recs.")
-    print("          -k  key    key to save          -|-  -a  str    data to save ")
-    print("          -S         print num recs       -|-  -D  key    delete by key ")
-    print("          -n  num    number of records    -|-  -t  key    retrieve by key")
-    print("          -p  num    skip number of recs  -|-  -u  rec    delete at recnum")
-    print("          -l  lim    limit number of recs -|-  -E  replace record in place")
-    print("          -x  max    limit max number of records to get")
-    print("          -f  file   input or output file (default: 'pydbase.pydb')")
-    print("The verbosity level influences the amount of data presented.")
+    print("   -h         Help (this screen)   -|-  -E         Replace record in place")
+    print("   -V         Print version        -|-  -q         Quiet on, less printing")
+    print("   -d         Debug level (0-10)   -|-  -v         Increment verbosity level")
+    print("   -r         Randomize data       -|-  -w         Write random record(s)")
+    print("   -z         Dump backwards(s)    -|-  -i         Show deleted record(s)")
+    print("   -U         Vacuum DB            -|-  -R         Re-index / recover DB")
+    print("   -I         DB Integrity check   -|-  -c         Set check integrity flag")
+    print("   -s         Skip to count recs   -|-  -K         List keys only")
+    print("   -S         Print num recs       -|-  -m         Dump data to console")
+    print("   -o  offs   Get data from offset -|-  -G  num    Get record by number ")
+    print("   -F  subkey Find by sub str      -|-  -g  num    Get number of recs.")
+    print("   -k  keyval Key to save          -|-  -a  str    Data to save ")
+    print("   -y  keyval Find by key          -|-  -D  keyval Delete by key ")
+    print("   -n  num    Number of records    -|-  -t  keyval Retrieve by key")
+    print("   -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum")
+    print("   -l  lim    Limit get records    -|-  -e  offs   Delete at offset")
+    print("   -Z  keyval Get record position  -|-  -X  max    Limit recs on delete ")
+    print("   -x  max    Limit max number of records to get (default: 1)")
+    print("   -f  file   Input or output file (default: 'pydbase.pydb')")
+    print("The verbosity / debugl level influences the amount of data presented.")
     print("Use quotes for multi word arguments.")
 
 def mainfunc():
 
-    ''' Exersize all funtions of the twincore library '''
+    ''' Exersize most / all funtions of the twincore library '''
 
     opts = []; args = []
 
     # Old fashioned parsing
-    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:"
+    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:X:Z:"
     opts_normal = "mchiVrwzvqURIK?SE"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
@@ -145,6 +146,8 @@ def mainfunc():
             _m.lcount = int(aa[1])
         if aa[0] == "-x":
             _m.maxx = int(aa[1])
+        if aa[0] == "-X":
+            _m.maxdel = int(aa[1])
         if aa[0] == "-s":
             _m.skipcnt = int(aa[1])
         if aa[0] == "-f":
@@ -187,6 +190,8 @@ def mainfunc():
             _m.dumpx = True
         if aa[0] == "-F":
             _m.findrec = aa[1]
+        if aa[0] == "-Z":
+            _m.recpos = aa[1]
 
     #print("args", len(args), args)
 
@@ -205,7 +210,7 @@ def mainfunc():
     core = twincore.TwinCore(_m.deffile, _m.pgdebug)
     core.base_verbose   = _m.verbose
 
-    # See if we have arguments, save it as data
+    # See if we have two arguments, save it as data
     if len(args) == 2:
         #print("args", args)
         curr = core.save_data(args[0], args[1])
@@ -214,7 +219,7 @@ def mainfunc():
     #print(dir(core))
 
     # Correct maxx
-    if _m.maxx == 0 : _m.maxx = 1
+    if _m.maxx <= 0 : _m.maxx = 1
 
     dbsize = core.getdbsize()
     #print("DBsize", dbsize)
@@ -251,7 +256,7 @@ def mainfunc():
         print("Found records:", ddd)
     elif _m.getrec:
         ddd = core.get_rec(int(_m.getrec))
-        print("Got:", ddd)
+        print(_m.getrec, "Got:", ddd)
 
     elif _m.keyonly:
         cnt = 0
@@ -298,7 +303,7 @@ def mainfunc():
         ddd = core.del_rec(int(_m.delrx))
         print(ddd)
     elif _m.dkeyx:
-        ddd = core.del_rec_bykey(_m.dkeyx)
+        ddd = core.del_rec_bykey(_m.dkeyx, maxdelrec = _m.maxdel)
         print("Deleted:", ddd, "records.")
     elif _m.recx:
         ddd = core.reindex()
@@ -318,6 +323,9 @@ def mainfunc():
             ret = core.findrec(_m.findrec, _m.lcount, _m.skipx)
             if _m.verbose:
                 print("Found:", end = "")
+            print(ret)
+    elif _m.recpos:
+            ret = core.findrecpos(_m.recpos, _m.lcount, _m.skipx)
             print(ret)
     else:
         print("Use:", os.path.split(sys.argv[0])[1], "-h to see options and help")
