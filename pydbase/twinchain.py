@@ -178,15 +178,11 @@ class TwinChain(TwinCore):
             print("Cannot decode", recnum, sys.exc_info())
             return "Bad record"
         dic = self._get_fields(decoded[0])
+
         if self.core_verbose > 2:
-            return dic
-        if self.core_verbose > 1:
-            uuu = uuid.UUID(dic['header'])
-            ddd = str(uuid2date(uuu))
-            return dic['header'] + " " + dic['now'] + " -- " + ddd + " -- " \
-                                + dic['payload'].decode()
+            print(dic)
         if self.core_verbose > 0:
-            return dic['header'] + " " + dic['now'] + " " + dic['payload'].decode()
+            print(dic['header'] + " " + dic['now'], dic['payload'])
 
         return arr[0].decode(), dic['payload']
 
