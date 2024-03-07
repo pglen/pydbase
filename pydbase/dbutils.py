@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import datetime
+import datetime, time
 
 import sys
 
 chain_pgdebug = 0
+chain_locktout = 10
 
 def set_pgdebug(level):
     global chain_pgdebug
@@ -160,7 +161,7 @@ def waitupperlock(lockname):
                pass
             cnt += 1
             time.sleep(0.1)
-            if cnt > base_locktout * 100:
+            if cnt > chain_locktout * 100:
                 # Taking too long; break in
                 if chain_pgdebug > 1:
                     print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)

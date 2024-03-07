@@ -169,10 +169,29 @@ class TwinChain(TwinCore):
 
         return arr[0].decode(), dic['payload']
 
-    def retr_rec(self, keyval):
+    def get_payoffs_bykey(self, keyval, maxrec = 1):
 
         arr = []
+        rrr = self.getdbsize()
+        for aa in range(rrr -1, -1, -1):
+            head = self.get_header(aa)
+            if head == keyval:
+                arr.append(aa)
+                if len(arr) >= maxrec:
+                    break
+        return arr
 
+    def get_data_bykey(self, keyval, maxrec = 1):
+
+        arr = []
+        rrr = self.getdbsize()
+        for aa in range(rrr -1, -1, -1):
+            head = self.get_header(aa)
+            if head == keyval:
+                pay = self.get_payload(aa)
+                arr.append((head, pay))
+                if len(arr) >= maxrec:
+                    break
         return arr
 
     def get_header(self, recnum):
@@ -249,22 +268,26 @@ class TwinChain(TwinCore):
 
     def appendwith(self, header, datax):
 
-        waitupperlock(self.ulockname)
+        #if type(header) != type(b""):
+        #    header = header.encode() #errors='strict')
+
+        if type(datax) != type(b""):
+            datax = datax.encode() #errors='strict')
 
         if self.pgdebug > 1:
-            print("Appendwith", datax)
+            print("Appendwith", header, datax)
 
         if self.core_verbose > 0:
-            print("Appendwith", datax)
+            print("Appendwith", header, datax)
 
         try:
             uuu = uuid.UUID(header)
         except:
-            print("Header override must be a valif UUID string.")
-            return
+            if self.core_verbose:
+                print("Header override must be a valid UUID string.")
+            raise ValueError("Header override must be a valid UUID string.")
 
-        if type(datax) != type(b""):
-            datax = datax.encode() #errors='strict')
+        waitupperlock(self.ulockname)
 
         self.old_dicx = {}
         # Get last data from db
@@ -312,16 +335,14 @@ class TwinChain(TwinCore):
             self.dump_rec(bbb[0])
 
         delupperlock(self.ulockname)
+        return True
 
     def append(self, datax):
-
-        if self.pgdebug > 0:
-            print("Append", datax)
 
         if self.core_verbose > 0:
             print("Append", datax)
 
-        if type(datax) == str:
+        if type(datax) != b"":
             datax = datax.encode() #errors='strict')
 
         self.old_dicx = {}
@@ -334,12 +355,12 @@ class TwinChain(TwinCore):
 
         # Produce header  structure
         uuu = uuid.uuid1()
-        #print(uuid2date(uuu))
+        #print("uuid date",uuid2date(uuu))
         header = str(uuu)
-        #uuuu = uuid.UUID(header)
-        #print(uuid2date(uuuu))
-
-        self.appendwith(header, datax)
+        uuuu = uuid.UUID(header)
+        #print("uuid date2", header, uuid2date(uuuu))
+        ret = self.appendwith(header, datax)
+        return ret
 
     def dump_rec(self, bbb):
         for aa in range(len(bbb)//2):

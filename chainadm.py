@@ -41,17 +41,17 @@ class _c():
     findrec = "";   getrec = -1
     datex = 0   ;   cntx = 1
     headx = ""  ;   gethead = -1
-    getby = ""  ;
+    getby = ""  ;   getoffs = ""
 
 def help():
     print("Usage: %s [options]" % os.path.split(sys.argv[0])[1])
     print("   Options: -a  data   append data to the end of chain")
     print("            -g recnum  get record")
     print("            -k reckey  get record by key/header")
+    print("            -G recnum  get record offset by key")
     print("            -r recnum  get record header")
-    print("            -d level   debug level")
-    print("            -n         append / show number of records")
-    print("            -e         override header")
+    print("            -n         append / show / get number of records")
+    print("            -e         override header (checked for UUID)")
     print("            -t         print record's UUID date)")
     print("            -s         skip count")
     print("            -x         max record count to list")
@@ -69,7 +69,7 @@ def mainfunc():
     opts = []; args = []
 
     # Old fashioned parsing
-    opts_args   = "a:d:e:f:g:k:l:n:o:r:s:u:x:y:p:D:F:G:d:g:k:"
+    opts_args   = "K:a:d:e:f:g:k:l:n:o:r:s:u:x:y:p:D:F:G:d:g:k:"
     opts_normal = "mchiVwzvqURIK?St"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
@@ -102,9 +102,11 @@ def mainfunc():
         if aa[0] == "-k":
             _c.getby = aa[1]
 
+        if aa[0] == "-G":
+            _c.getoffs = aa[1]
+
         if aa[0] == "-x":
             _c.maxx = int(aa[1])
-            #print(_c.maxx)
 
         if aa[0] == "-r":
             _c.gethead = int(aa[1])
@@ -223,8 +225,8 @@ def mainfunc():
 
     elif _c.getby:
         #print("getby")
-        rec = core.retrieve(_c.getby, _c.ncount)
-
+        #rec = core.retrieve(_c.getby, _c.ncount)
+        rec = core.get_data_bykey(_c.getby, _c.ncount)
         if not rec:
             print("Record:", "'" + _c.getby + "'", "not found")
         else:
@@ -232,6 +234,10 @@ def mainfunc():
 
     elif _c.sizex:
         print("Database size:", core.getdbsize())
+    elif _c.getoffs:
+        arr = core.get_payoffs_bykey(_c.getoffs, _c.cntx)
+        print(arr)
+
     else:
         print("Use:", os.path.split(sys.argv[0])[1], "-h for info on usage.")
 
@@ -243,4 +249,3 @@ if __name__ == "__main__":
     #print(type(b"") == bytes)
 
 # EOF
-
