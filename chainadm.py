@@ -216,17 +216,22 @@ def mainfunc():
             cnt = cnt + 1
 
     elif _c.append:
-        print("Appending", _c.append)
-        dicx = {};
+        #print("Appending", _c.append)
+        dicx = {}; arrx = []
         arrx = _c.append.split()
         if len(arrx) % 2:
             dicx['unkown'] = _c.append
         else:
             for aa in arrx:
                 arrz = aa.split(":")
-                dicx[arrz[0]] = arrz[1]
-        print("Appending", dicx)
-
+                if len(arrz) == 1:
+                    arrx = aa
+                else:
+                    dicx[arrz[0]] = arrz[1]
+        # Array or dic?
+        if len(arrx):
+            dicx =  arrx
+        #print("Appending", dicx)
         for aaa in range(_c.cntx):
             if _c.headx:
                 core.appendwith(_c.headx, dicx)

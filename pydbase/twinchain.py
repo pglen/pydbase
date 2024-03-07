@@ -44,7 +44,7 @@ from twincore import *
 version         = "1.4.3"
 ProtocolVersion = "1.0"
 
-chain_pgdebug = 0
+# Exceptions for bad records
 
 class DBCheckError(Exception):
 
@@ -66,14 +66,7 @@ class TwinChain(TwinCore):
 
     def __init__(self, fname = "pydbchain.pydb", pgdebug = 0, core_verbose = 0):
 
-        global chain_pgdebug
-
-        self.pgdebug = pgdebug
-        chain_pgdebug = pgdebug
-        set_pgdebug(pgdebug)
         self.core_verbose = core_verbose
-
-        #print("pgdebug:", pgdebug)
 
         import atexit
         atexit.register(self.cleanup)
@@ -93,27 +86,34 @@ class TwinChain(TwinCore):
             # Here we fake the initial backlink for the anchor record
             self.old_dicx = {}
 
+            # Produce initial data structure
+            header = str(uuid.uuid1())
+
             dt = datetime.datetime.utcnow()
             fdt = dt.strftime('%a, %d %b %Y %H:%M:%S`')
             self.old_dicx["now"] =  fdt
-
-            # Produce initial data structure
-            header = str(uuid.uuid1())
-            hh = self._hash_any(payload)
-
-            self.old_dicx["hash256"]  =  hh.hexdigest()
+            self.old_dicx["hash256"]  =  self._hash_any(payload).hexdigest()
             self.old_dicx["header"]   =  header
             self.old_dicx["payload"]  =  payload
-            self.old_dicx["backlink"] =  ""    # empty backlink
+            self.old_dicx["backlink"] =  ""
 
-            aaa = {}
-            self._fill_record(aaa, header, payload)
+            aaa = self._fill_record(header, payload)
+            #print(aaa)
             encoded = self.packer.encode_data("", aaa)
             self.save_data(header, encoded)
 
     def cleanup(self):
         #print("cleanup")
         delupperlock(self.ulockname)
+
+    def _hashtohex(self, varx):
+
+        if type(varx) == type(""):
+            varx = varx.encode()
+
+        hh = hashlib.new("sha256");
+        hh.update(varx)
+        return hh.hexdigest()
 
     def _hash_any(self, any):
 
@@ -128,15 +128,43 @@ class TwinChain(TwinCore):
     def _expand_dict(self, dicx):
 
         sstr = ""
-        for aa in sorted(dicx.keys()):
-            sstr += dicx[aa]
-        print("sstr", sstr)
+        if type(dicx) == type({}):
+            for aa in sorted(dicx.keys()):
+                sstr += aa + ":" + dicx[aa]
+        if type(dicx) == type([]):
+            for aa in dicx:
+                sstr += aa
+        if type(dicx) == type(""):
+            sstr = dicx
+        if type(dicx) == type(b""):
+            sstr = dicx
+
+        #print("sstr", sstr)
         return sstr
+
+    def _build_sumstr(self, aaa):
+
+        sumstr  = aaa['now']
+        sumstr += aaa['header']
+        sumstr += self._expand_dict(aaa['payload'])
+        #print("raw sumstr", sumstr)
+        return sumstr
+
+    def _build_backlink(self, dicold):
+
+        backlink  =  dicold["now"]
+        backlink +=  dicold["hash256"]
+        backlink += dicold["header"]
+        backlink += self._expand_dict(dicold["payload"])
+        backlink += dicold["backlink"]
+        #print("raw backlink", backlink)
+        return backlink
 
     # --------------------------------------------------------------------
 
-    def _fill_record(self, aaa, header, payload):
+    def _fill_record(self, header, payload):
 
+        aaa = {}
         aaa["header"] = header
         aaa["payload"] = payload
         aaa["protocol"] = ProtocolVersion
@@ -145,29 +173,14 @@ class TwinChain(TwinCore):
         fdt = dt.strftime('%a, %d %b %Y %H:%M:%S')
         aaa["now"] = fdt
         #self._key_n_data(aaa, "hash32", str(self.hash32(payload)))
-        hh = hashlib.new("sha256");
 
+        sumstr = self._build_sumstr(aaa)
+        aaa["hash256"] = self._hashtohex(sumstr)
 
-        aaa["hash256"] = hh.hexdigest()
+        backlink = self._build_backlink(self.old_dicx)
+        aaa["backlink"] = self._hashtohex(backlink)
 
-        #dd = hashlib.new("md5"); dd.update(payload)
-        #aaa["md5"] =  dd.hexdigest()
-
-        backlink =  self.old_dicx["now"]
-        backlink =  self.old_dicx["hash256"]
-        backlink += self.old_dicx["header"]
-        backlink += self._expand_dict(self.old_dicx["payload"])
-        backlink += self.old_dicx["backlink"]
-
-        #print("backlink raw", backlink)
-
-        bl = hashlib.new("sha256"); bl.update(backlink.encode())
-        if self.core_verbose > 2:
-            print("backlink  ", bl.hexdigest())
-        aaa["backlink"] = bl.hexdigest()
-
-        if self.pgdebug > 5:
-            print(aaa)
+        return aaa
 
     def get_payload(self, recnum):
         arr = self.get_rec(recnum)
@@ -236,8 +249,9 @@ class TwinChain(TwinCore):
         ''' Scan one record an its integrity based on the previous one '''
 
         if recnum < 1:
-            print("Cannot check initial record.")
-            return False
+            if self.core_verbose:
+                print("Cannot check initial record.")
+            return True
 
         if self.core_verbose > 4:
             print("Checking link ...", recnum)
@@ -248,32 +262,20 @@ class TwinChain(TwinCore):
         except:
             print("Cannot decode prev:", recnum, sys.exc_info())
             return
-
-        dico = self._get_fields(decoded[0])
-
+        dicold = self._get_fields(decoded[0])
         arr2 = self.get_rec(recnum)
         try:
             decoded2 = self.packer.decode_data(arr2[1])
         except:
             print("Cannot decode curr:", recnum, sys.exc_info())
             return
-
         dic = self._get_fields(decoded2[0])
-
-        backlink =  dico["now"]
-        backlink =  dico["hash256"]
-        backlink += dico["header"]
-        backlink += self._expand_dict(dico["payload"])
-        backlink += dico["backlink"]
-
-        #print("backlink raw2", backlink)
-        hh = hashlib.new("sha256"); hh.update(backlink.encode())
-
+        backlink = self._build_backlink(dicold)
+        hhh = self._hashtohex(backlink)
         if self.core_verbose > 2:
-            print("calc      ", hh.hexdigest())
+            print("calc      ", hhh)
             print("backlink  ", dic['backlink'])
-
-        return hh.hexdigest() == dic['backlink']
+        return hhh == dic['backlink']
 
     def checkdata(self, recnum):
         arr = self.get_rec(recnum)
@@ -283,14 +285,14 @@ class TwinChain(TwinCore):
             print("Cannot decode:", recnum, sys.exc_info())
             return
 
-        dic = self._get_fields(decoded[0])
-        hh = self._hash_any(dic['payload'])
-        #hh.update(dic['payload'].encode())
+        aaa = self._get_fields(decoded[0])
+        sumstr = self._build_sumstr(aaa)
+        hhh = self._hashtohex(sumstr)
         if self.core_verbose > 1:
-            print("data", hh.hexdigest())
+            print("data", hhh)
         if self.core_verbose > 2:
-            print("hash", dic['hash256'])
-        return hh.hexdigest() == dic['hash256']
+            print("hash", aaa['hash256'])
+        return hhh == aaa['hash256']
 
     def appendwith(self, header, datax):
 
@@ -299,9 +301,6 @@ class TwinChain(TwinCore):
 
         #if type(datax) != type(b""):
         #    datax = datax.encode() #errors='strict')
-
-        if self.pgdebug > 1:
-            print("Appendwith", header, datax)
 
         if self.core_verbose > 0:
             print("Appendwith", header, datax)
@@ -324,41 +323,27 @@ class TwinChain(TwinCore):
             raise ValueError("Invalid database, must have at least one record.")
 
         ooo = self.get_rec(sss-1)
-        if self.pgdebug > 2:
-            print("ooo", ooo)
 
         decoded = self.packer.decode_data(ooo[1])
-        if self.pgdebug > 4:
-            print("decoded", decoded)
 
         self.old_dicx = self._get_fields(decoded[0])
-        if self.pgdebug > 3:
-            print(self.old_dicx)
 
         #print("old_fff", self.old_dicx["hash256"])
         #print("old_time", self.old_dicx["now"])
 
-        aaa = {}
-        self._fill_record(aaa, header, datax)
+        aaa = self._fill_record(header, datax)
 
         encoded = self.packer.encode_data("", aaa)
-        if self.pgdebug > 2:
-            print("encoded", encoded)
 
         #print("save", header, "-", encoded)
 
         #print("bbb", self.getdbsize())
         self.save_data(header, encoded)
         #print("eee", self.getdbsize())
-        #if self.pgdebug > 5:
 
         if self.core_verbose > 1:
             bbb = self.packer.decode_data(encoded)
             print("Rec", bbb[0])
-
-        if self.pgdebug:
-            bbb = self.packer.decode_data(encoded)
-            self.dump_rec(bbb[0])
 
         delupperlock(self.ulockname)
         return True
@@ -367,9 +352,6 @@ class TwinChain(TwinCore):
 
         if self.core_verbose > 0:
             print("Append", datax)
-
-        #if type(datax) != b"":
-        #    datax = datax.encode() #errors='strict')
 
         self.old_dicx = {}
         # Get last data from db
@@ -399,8 +381,6 @@ class TwinChain(TwinCore):
             dicx = {}
             for aa in range(len(bbb)//2):
                 dicx[bbb[2*aa]] = bbb[2*aa+1]
-            if self.pgdebug > 7:
-                print("dicx", dicx)
         return dicx
 
 # EOF

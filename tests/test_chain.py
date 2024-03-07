@@ -61,7 +61,7 @@ def test_data(capsys):
     core.append(pay)
     dbsize = core.getdbsize()
     payload = core.get_payload(dbsize-1)
-    #print(payload[1].decode(), pay)
-    assert payload[1].decode() == pay
+    #print(payload[1], pay)
+    assert payload[1] == pay
 
 # EOF
