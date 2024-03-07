@@ -216,15 +216,25 @@ def mainfunc():
             cnt = cnt + 1
 
     elif _c.append:
-        #print("Appending", _c.append)
+        print("Appending", _c.append)
+        dicx = {};
+        arrx = _c.append.split()
+        if len(arrx) % 2:
+            dicx['unkown'] = _c.append
+        else:
+            for aa in arrx:
+                arrz = aa.split(":")
+                dicx[arrz[0]] = arrz[1]
+        print("Appending", dicx)
+
         for aaa in range(_c.cntx):
             if _c.headx:
-                core.appendwith(_c.headx, _c.append)
+                core.appendwith(_c.headx, dicx)
             else:
-                core.append(_c.append)
+                core.append(dicx)
 
     elif _c.getby:
-        #print("getby")
+        #print("get bykey getby")
         #rec = core.retrieve(_c.getby, _c.ncount)
         rec = core.get_data_bykey(_c.getby, _c.ncount)
         if not rec:
