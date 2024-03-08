@@ -68,12 +68,10 @@ class TwinChain(TwinCore):
 
         self.core_verbose = core_verbose
 
-        import atexit
-        atexit.register(self.cleanup)
         # Upper lock name
         self.ulockname = os.path.splitext(fname)[0] + ".ulock"
-        #waitupperlock(self.ulockname)
 
+        waitupperlock(self.ulockname)
         super(TwinChain, self).__init__(fname, pgdebug)
 
         #print("TwinChain.init", self.fname, self.ulockname)
@@ -83,6 +81,7 @@ class TwinChain(TwinCore):
         if sss == 0:
             payload = {"Initial": "Initial record, do not use."}
             #print("Init anchor record", payload)
+
             # Here we fake the initial backlink for the anchor record
             self.old_dicx = {}
 
@@ -102,8 +101,6 @@ class TwinChain(TwinCore):
             encoded = self.packer.encode_data("", aaa)
             self.save_data(header, encoded)
 
-    def cleanup(self):
-        #print("cleanup")
         delupperlock(self.ulockname)
 
     def _hashtohex(self, varx):
@@ -305,14 +302,16 @@ class TwinChain(TwinCore):
         if self.core_verbose > 0:
             print("Appendwith", header, datax)
 
+        waitupperlock(self.ulockname)
+
         try:
             uuu = uuid.UUID(header)
         except:
             if self.core_verbose:
                 print("Header override must be a valid UUID string.")
-            raise ValueError("Header override must be a valid UUID string.")
 
-        waitupperlock(self.ulockname)
+            delupperlock(self.ulockname)
+            raise ValueError("Header override must be a valid UUID string.")
 
         self.old_dicx = {}
         # Get last data from db
@@ -353,7 +352,6 @@ class TwinChain(TwinCore):
         if self.core_verbose > 0:
             print("Append", datax)
 
-        self.old_dicx = {}
         # Get last data from db
         sss = self.getdbsize()
         #print("sss", sss)

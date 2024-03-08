@@ -85,9 +85,6 @@ class TwinCore(TwinCoreBase):
         self.base_verbose  = 0
         self.devmode = devmode
 
-        import atexit
-        atexit.register(self.cleanup)
-
         # Make sure only one process can use this
         waitlock(self.lckname)
 
@@ -119,8 +116,6 @@ class TwinCore(TwinCoreBase):
 
         self.fp = self.softcreate(self.fname)
         self.ifp = self.softcreate(self.idxname)
-
-        #waitlock(self.waitlock2)
 
         buffsize = self.getsize(self.fp)
         if buffsize < HEADSIZE:
@@ -155,10 +150,6 @@ class TwinCore(TwinCoreBase):
             raise  RuntimeError("Invalid database signature.")
 
         #print("buffsize", buffsize, "indexsize", indexsize)
-        dellock(self.lckname)
-
-    def cleanup(self):
-        #print("cleanup")
         dellock(self.lckname)
 
     def flush(self):
@@ -515,7 +506,8 @@ class TwinCore(TwinCoreBase):
         self.fp.flush()
         self.ifp.flush();
         self.ifp.close()
-        tempifp.flush();        tempifp.close()
+        tempifp.flush();
+        tempifp.close()
 
         # Now move files
         try:
@@ -837,7 +829,7 @@ class TwinCore(TwinCoreBase):
 
     # Return record offset
 
-    def  recoffset(self, strx, limx = INT_MAX, skipx = 0):
+    def  _recoffset(self, strx, limx = INT_MAX, skipx = 0):
 
         #chash = self.getidxint(CURROFFS)            #;print("chash", chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
@@ -848,7 +840,7 @@ class TwinCore(TwinCoreBase):
         else:
             strx2 = strx
 
-        #print("recoffset", strx2)
+        #print("_recoffset", strx2)
 
         #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
         for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
@@ -864,7 +856,7 @@ class TwinCore(TwinCoreBase):
                 blen = self.getbuffint(rec+8)
                 keyz = self.getbuffstr(rec + 12, blen)
                 if self.base_verbose > 1:
-                    print("recoffset", keyz)
+                    print("_recoffset", keyz)
                 if strx2 == keyz:
                     sig = self.getbuffstr(rec + 16 + blen,  self.INTSIZE)
                     xlen = self.getbuffint(rec + 20 + blen)
@@ -1175,7 +1167,7 @@ class TwinCore(TwinCoreBase):
             else:
                 mrep2 = arg3
 
-            rrr = self.recoffset(arg2)
+            rrr = self._recoffset(arg2, 1)
             if rrr[2]:
                 #print("Replace rec", hex(rrr[0]), "len:", rrr[1])
                 if len(mrep2) <= rrr[2]:
@@ -1203,27 +1195,22 @@ class TwinCore(TwinCoreBase):
 
     def  _save_data2(self, arg2, arg3):
 
-
         # Prepare all args, if cannot encode, use original
-        try:
-            arg2e = arg2.encode()
-        except:
-            arg2e = arg2
-        try:
-            arg3e = arg3.encode()
-        except:
-            arg3e = arg3
+        if type(arg2) != type(b""):
+            arg2 = arg2.encode()
+        if type(arg3) != type(b""):
+            arg3 = arg3.encode()
 
         if self.pgdebug > 1:
-            print("args", arg2e, "arg3", arg3e)
+            print("args", arg2, "arg3", arg3)
 
-        hhh2 = self.hash32(arg2e)
-        hhh3 = self.hash32(arg3e)
+        hhh2 = self.hash32(arg2)
+        hhh3 = self.hash32(arg3)
 
         if self.pgdebug > 1:
-            print("hhh2", hhh2, "hhh3", hhh3)
+            print("_save_data2 hhh2", hhh2, "hhh3", hhh3)
 
-        ret = self.__save_data(hhh2, arg2e, hhh3, arg3e)
+        ret = self.__save_data(hhh2, arg2, hhh3, arg3)
 
         return ret
 
@@ -1262,6 +1249,9 @@ class TwinCore(TwinCoreBase):
         #print("hashpos", hashpos)
 
         # Update / Append index
+        if self.pgdebug > 1:
+            print("__save_data idx", dcurr)
+
         self.putidxint(curr, dcurr)
         self.putidxint(curr + self.INTSIZE, hhh2)
         #self.putidxint(CURROFFS, self.ifp.tell())
@@ -1276,16 +1266,16 @@ class TwinCore(TwinCoreBase):
         if self.pgdebug > 9:
             print("__del__ called.")
 
-        self.flush()
+        #self.flush()
 
         if hasattr(self, "fp"):
                 if self.fp:
+                    self.fp.flush()
                     self.fp.close()
 
         if hasattr(self, "ifp"):
                 if self.ifp:
+                    self.ifp.flush()
                     self.ifp.close()
-
-        dellock(self.lckname)
 
 # EOF

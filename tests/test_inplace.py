@@ -47,11 +47,11 @@ def test_getoffs():
 
     # This is in place
     ret = core.save_data("11111", "333", True)
-    print(ret)
+    #print(ret)
     assert ret == 64
 
     ret4 = core.get_rec_offs(ret)
-    print(ret4)
+    #print(ret4)
     assert ret4 == [b'11111', b'333  ']
 
 def test_finder():

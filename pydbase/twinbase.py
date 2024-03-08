@@ -6,7 +6,7 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
-import  struct, io, traceback, fcntl, hashlib
+import  struct, io, traceback, fcntl, hashlib, traceback
 
 base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base, '..', 'pydbase'))
@@ -67,16 +67,20 @@ def waitlock(lockname):
     while True:
         if os.path.isfile(lockname):
             if cnt == 0:
+                buff = ""
                 # break in if not this process
                 try:
                     fpx = open(lockname)
-                    pid = int(fpx.read())
+                    #fcntl.lockf(fpx, fcntl.LOCK_EX)
+                    buff = fpx.read()
+                    pid = int(buff)
                     fpx.close()
+
+                    #print(os.getpid())
+                    if os.getpid() == pid:
+                        dellock(lockname)
                 except:
-                    print("Exception in lock test", sys.exc_info())
-                print(os.getpid())
-                if os.getpid() == pid:
-                    dellock(lockname)
+                    print("Exception in lock test", put_exception("Del Lock"))
 
             cnt += 1
             time.sleep(1)
