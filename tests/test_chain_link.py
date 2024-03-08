@@ -96,6 +96,7 @@ def test_links(capsys):
     ppp = core2.linkintegrity(2)
     assert ppp == False
 
+    # Test print of the setup
     #for aa in range(0, dbsize):
     #    ppp = core2.checkdata(aa)
     #    print("data", aa, ppp)
@@ -103,7 +104,6 @@ def test_links(capsys):
     #for aa in range(0, dbsize):
     #    ppp = core2.linkintegrity(aa)
     #    print("link", aa, ppp)
-
     #assert 0
 
 # EOF

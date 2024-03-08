@@ -1286,4 +1286,6 @@ class TwinCore(TwinCoreBase):
                 if self.ifp:
                     self.ifp.close()
 
+        dellock(self.lckname)
+
 # EOF

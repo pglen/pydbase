@@ -43,6 +43,7 @@ class _m():
     dkeyx   = ""; dumpx  = 0
     findrec = ""; getrec = 0
     replace = 0 ; recpos = 0
+    inplace = 0
     deffile = "pydbase.pydb"
 
 version = "0.4.1"
@@ -84,14 +85,13 @@ def help():
     print("   -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum")
     print("   -l  lim    Limit get records    -|-  -e  offs   Delete at offset")
     print("   -Z  keyval Get record position  -|-  -X  max    Limit recs on delete ")
-    print("   -x  max    Limit max number of records to get (default: 1)")
-    print("   -f  file   Input or output file (default: 'pydbase.pydb')")
-    print("The verbosity / debugl level influences the amount of data presented.")
+    print("   -f  file   DB file for save/retrieve default: 'pydbase.pydb')")
+    print("The verbosity / debug  level influences the amount of data presented.")
     print("Use quotes for multi word arguments.")
 
 def mainfunc():
 
-    ''' Exersize most / all funtions of the twincore library '''
+    ''' Exercise most / all functions of the twincore library '''
 
     opts = []; args = []
 
@@ -172,6 +172,8 @@ def mainfunc():
             _m.recx = True
         if aa[0] == "-p":
             _m.skipx = int(aa[1])
+        if aa[0] == "-P":
+            _m.replace
         if aa[0] == "-y":
             _m.findx = aa[1]
         if aa[0] == "-o":

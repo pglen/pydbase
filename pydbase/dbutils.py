@@ -160,8 +160,8 @@ def waitupperlock(lockname):
                 #    print("Exception in lock test", sys.exc_info())
                pass
             cnt += 1
-            time.sleep(0.1)
-            if cnt > chain_locktout * 100:
+            time.sleep(1)
+            if cnt > chain_locktout * 5:
                 # Taking too long; break in
                 if chain_pgdebug > 1:
                     print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)

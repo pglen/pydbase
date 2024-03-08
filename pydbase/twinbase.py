@@ -67,16 +67,20 @@ def waitlock(lockname):
     while True:
         if os.path.isfile(lockname):
             if cnt == 0:
-                #try:
-                #    fpx = open(lockname)
-                #    pid = int(fpx.read())
-                #    fpx.close()
-                #except:
-                #    print("Exception in lock test", sys.exc_info())
-                pass
+                # break in if not this process
+                try:
+                    fpx = open(lockname)
+                    pid = int(fpx.read())
+                    fpx.close()
+                except:
+                    print("Exception in lock test", sys.exc_info())
+                print(os.getpid())
+                if os.getpid() == pid:
+                    dellock(lockname)
+
             cnt += 1
-            time.sleep(0.1)
-            if cnt > base_locktout * 100:
+            time.sleep(1)
+            if cnt > base_locktout * 5:
                 # Taking too long; break in
                 if base_pgdebug > 1:
                     print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
