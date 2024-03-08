@@ -180,6 +180,9 @@ class TwinChain(TwinCore):
         return aaa
 
     def get_payload(self, recnum):
+
+        ''' Return the payload on record number '''
+
         arr = self.get_rec(recnum)
         try:
             decoded = self.packer.decode_data(arr[1])
@@ -197,7 +200,7 @@ class TwinChain(TwinCore):
         return arr[0].decode(), dic['payload']
 
     def get_payoffs_bykey(self, keyval, maxrec = 1):
-
+        " get payload offset by key"
         arr = []
         rrr = self.getdbsize()
         for aa in range(rrr -1, -1, -1):
@@ -210,6 +213,20 @@ class TwinChain(TwinCore):
 
     def get_data_bykey(self, keyval, maxrec = 1, check = True):
 
+        ''' Get data by key value. Searches the database from the back so lastly
+            entered data is presented.
+
+            Input:
+
+                keyval    :    value to search for
+                maxrec    :    maximum number of records
+                check     :    check as found. Raises exception
+
+            Returns:
+
+                data array matching criteria.
+
+        '''
         arr = []
         rrr = self.getdbsize()
         for aa in range(rrr -1, -1, -1):
@@ -233,6 +250,9 @@ class TwinChain(TwinCore):
         return arr
 
     def get_header(self, recnum):
+
+        ''' Get header of record '''
+
         arr = self.get_rec(recnum)
         if self.core_verbose > 1:
             print("arr[0]", arr[0])
@@ -275,6 +295,9 @@ class TwinChain(TwinCore):
         return hhh == dic['backlink']
 
     def checkdata(self, recnum):
+
+        ''' Integrity check of record. '''
+
         arr = self.get_rec(recnum)
         try:
             decoded = self.packer.decode_data(arr[1])
@@ -292,6 +315,8 @@ class TwinChain(TwinCore):
         return hhh == aaa['hash256']
 
     def appendwith(self, header, datax):
+
+        ''' Append data and header to the end of database '''
 
         #if type(header) != type(b""):
         #    header = header.encode() #errors='strict')
@@ -349,6 +374,8 @@ class TwinChain(TwinCore):
 
     def append(self, datax):
 
+        ''' Append data to the end of database '''
+
         if self.core_verbose > 0:
             print("Append", datax)
 
@@ -369,6 +396,9 @@ class TwinChain(TwinCore):
         return ret
 
     def dump_rec(self, bbb):
+
+        ''' Dump one record to console '''
+
         for aa in range(len(bbb)//2):
             print(pad(bbb[2*aa]), "=", bbb[2*aa+1])
 

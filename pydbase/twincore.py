@@ -154,6 +154,8 @@ class TwinCore(TwinCoreBase):
 
     def flush(self):
 
+        ''' Flush files to disk '''
+
         if self.pgdebug > 9:
             print("Flushing", self.fp, self.ifp)
 
@@ -175,6 +177,8 @@ class TwinCore(TwinCoreBase):
 
     def _getdbsize(self, ifp):
 
+        ''' Return number of records. Return total including deleted / damaged '''
+
         try:
             #chash = self.getidxint(CURROFFS) - HEADSIZE
             chash = self.getsize(ifp) - HEADSIZE
@@ -185,7 +189,7 @@ class TwinCore(TwinCoreBase):
         return  ret
 
     # --------------------------------------------------------------------
-    def rec2arr(self, rec):
+    def _rec2arr(self, rec):
 
         arr = []
         sig = self.getbuffstr(rec, self.INTSIZE)
@@ -429,6 +433,9 @@ class TwinCore(TwinCoreBase):
         self.__dump_data(lim, skip)
 
     def  reindex(self):
+
+        ''' Re create index file '''
+
         waitlock(self.lckname)
         ret = self.__reindex()
         dellock(self.lckname)
@@ -545,8 +552,10 @@ class TwinCore(TwinCoreBase):
     # ----------------------------------------------------------------
 
     def  vacuum(self):
-        ''' Remove all deleted data
-            Make sure the db in not in session. '''
+
+        ''' Remove all deleted data. Reindex.
+            Make sure the db in not in session, and no pending
+            operations are  present (like find / retrieve cycle)'''
 
         waitlock(self.lckname)
         ret = self._vacuum()
@@ -689,10 +698,12 @@ class TwinCore(TwinCoreBase):
         offs = self.getidxint(HEADSIZE + recnum * self.INTSIZE * 2)
 
         #print("offs", offs)
-        return self.rec2arr(offs)
+        return self._rec2arr(offs)
 
     def  get_rec_offs(self, recoffs):
 
+        ''' Return record by offset '''
+
         rsize = self.getsize(self.fp)
         if recoffs >= rsize:
             #print("Past end of data.");
@@ -710,10 +721,12 @@ class TwinCore(TwinCoreBase):
             print("Unlikely offset %d is not at record boundary." % recoffs, sig)
             return []
         #print("recoffs", recoffs)
-        return self.rec2arr(recoffs)
+        return self._rec2arr(recoffs)
 
     def  get_key_offs(self, recoffs):
 
+        ''' Get key by offset '''
+
         rsize = self.getsize(self.fp)
         if recoffs >= rsize:
             #print("Past end of data.");
@@ -731,9 +744,16 @@ class TwinCore(TwinCoreBase):
             print("Unlikely offset %d is not at record boundary." % recoffs, sig)
             return []
         #print("recoffs", recoffs)
-        return self.rec2arr(recoffs)[0]
+        return self._rec2arr(recoffs)[0]
 
     def  del_rec(self, recnum):
+
+        ''' Delete by record number.
+            Deleted record is marked as deleted but not removed.
+            Deleted records are ignored in further operations.
+            Use 'vacuum' to actually remove record.
+        '''
+
         rsize = self._getdbsize(self.ifp)
         if recnum >= rsize:
             if self.base_verbose:
@@ -754,6 +774,8 @@ class TwinCore(TwinCoreBase):
 
     def  del_rec_offs(self, recoffs):
 
+        ''' Delete record by file offset '''
+
         rsize = self.getsize(self.fp)
         if recoffs >= rsize:
             #print("Past end of data.");
@@ -773,6 +795,8 @@ class TwinCore(TwinCoreBase):
     # Check integrity
 
     def integrity_check(self, skip = 0):
+
+        ''' check multiple record integrity Skip number of records '''
 
         waitlock(self.lckname)
         ret = 0; cnt2 = 0
@@ -907,6 +931,8 @@ class TwinCore(TwinCoreBase):
 
     def  findrecpos(self, strx, limx = INT_MAX, skipx = 0):
 
+        ''' Find record, return array of positions '''
+
         waitlock(self.lckname)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         arr = []
@@ -967,7 +993,7 @@ class TwinCore(TwinCoreBase):
                 if strx2 in data:
                     #arr.append(self.get_key_offs(rec))
                     #arr.append(rec)
-                    arr.append(self.rec2arr(rec))
+                    arr.append(self._rec2arr(rec))
                     if len(arr) >= limx:
                         break
         dellock(self.lckname)
@@ -978,6 +1004,8 @@ class TwinCore(TwinCoreBase):
     # List all active records
 
     def  listall(self):
+
+        ''' List all active records. Return array id record indexes'''
 
         waitlock(self.lckname)
         keys = []; arr = []; cnt = 0
@@ -1007,9 +1035,7 @@ class TwinCore(TwinCoreBase):
                         keys.append(hhh)
                         # as we are going backwards
                         arr.append(rsize - cnt)
-                        print("found", hhh)
-
-
+                        #print("found", hhh)
             cnt += 1
 
         keys = []
@@ -1017,10 +1043,9 @@ class TwinCore(TwinCoreBase):
 
         return arr
 
-    # --------------------------------------------------------------------
-    # Search from the end, so latest comes first
-
     def  find_key(self, keyx, limx = 0xffffffff):
+
+        ''' Find record by key Search from the end, so latest comes first. '''
 
         waitlock(self.lckname)
 
@@ -1098,6 +1123,8 @@ class TwinCore(TwinCoreBase):
 
     def  del_rec_bykey(self, strx, maxdelrec = 0xffffffff, skip = 0, dirx = 0):
 
+        ''' Remove record by key. Remove maxdelrec occurances '''
+
         if self.pgdebug:
             print("del_rec_bykey()", strx)
 
@@ -1149,9 +1176,12 @@ class TwinCore(TwinCoreBase):
 
     def  save_data(self, arg2, arg3, replace = False):
 
-        ''' Append to the end of file. If replace flag is set try to overwrite
-            in place. If new record is larger, add it as ususal. The replaced record
-            is padded with spaces. This should not influence most ops. (like: int())
+        ''' Append to the end of file. If replace flag is set, try to overwrite
+            in place. If new record is larger, add it as ususal. If smaller,
+            the record is padded with spaces. This should not influence most ops.
+            (like: int())
+            This feature allows the database update wthout creating new records.
+            Useful for counters or dynamically changing data.
          '''
 
         if self.pgdebug > 0:
@@ -1262,6 +1292,8 @@ class TwinCore(TwinCoreBase):
         return curr
 
     def __del__(self):
+
+        ''' flush file handles and close files '''
 
         if self.pgdebug > 9:
             print("__del__ called.")

@@ -69,18 +69,19 @@ This&nbsp;class&nbsp;provides&nbsp;basic&nbsp;services&nbsp;to&nbsp;twincore<br>
 
 <dl><dt><a name="TwinCoreBase-getbuffint"><strong>getbuffint</strong></a>(self, offs)</dt><dd><tt>get&nbsp;an&nbsp;integer&nbsp;value&nbsp;from&nbsp;offset</tt></dd></dl>
 
-<dl><dt><a name="TwinCoreBase-getbuffstr"><strong>getbuffstr</strong></a>(self, offs, xlen)</dt></dl>
+<dl><dt><a name="TwinCoreBase-getbuffstr"><strong>getbuffstr</strong></a>(self, offs, xlen)</dt><dd><tt>Get&nbsp;sreing&nbsp;from&nbsp;buffer</tt></dd></dl>
 
 <dl><dt><a name="TwinCoreBase-getidxint"><strong>getidxint</strong></a>(self, offs)</dt><dd><tt>get&nbsp;an&nbsp;integer&nbsp;value&nbsp;from&nbsp;index&nbsp;offset</tt></dd></dl>
 
 <dl><dt><a name="TwinCoreBase-getsize"><strong>getsize</strong></a>(self, buffio)</dt><dd><tt>get&nbsp;the&nbsp;dabase&nbsp;file&nbsp;size</tt></dd></dl>
 
 <dl><dt><a name="TwinCoreBase-hash32"><strong>hash32</strong></a>(self, strx)</dt><dd><tt>Deliver&nbsp;a&nbsp;32&nbsp;bit&nbsp;hash&nbsp;of&nbsp;the&nbsp;passed&nbsp;entity.&nbsp;Re-written<br>
-to&nbsp;use&nbsp;sha&nbsp;and&nbsp;cut&nbsp;the&nbsp;result&nbsp;to&nbsp;size</tt></dd></dl>
+to&nbsp;use&nbsp;sha&nbsp;and&nbsp;cut&nbsp;the&nbsp;result&nbsp;to&nbsp;size<br>
+Replaced&nbsp;this&nbsp;with&nbsp;an&nbsp;external&nbsp;hash&nbsp;function&nbsp;for&nbsp;speed.</tt></dd></dl>
 
-<dl><dt><a name="TwinCoreBase-putbuffint"><strong>putbuffint</strong></a>(self, offs, val)</dt></dl>
+<dl><dt><a name="TwinCoreBase-putbuffint"><strong>putbuffint</strong></a>(self, offs, val)</dt><dd><tt>Write&nbsp;an&nbsp;in&nbsp;to&nbsp;buffer</tt></dd></dl>
 
-<dl><dt><a name="TwinCoreBase-putbuffstr"><strong>putbuffstr</strong></a>(self, offs, xstr)</dt></dl>
+<dl><dt><a name="TwinCoreBase-putbuffstr"><strong>putbuffstr</strong></a>(self, offs, xstr)</dt><dd><tt>Write&nbsp;a&nbsp;string&nbsp;to&nbsp;buffer</tt></dd></dl>
 
 <dl><dt><a name="TwinCoreBase-putidxint"><strong>putidxint</strong></a>(self, offs, val)</dt><dd><tt>put&nbsp;an&nbsp;integer&nbsp;value&nbsp;to&nbsp;offset</tt></dd></dl>
 
@@ -127,11 +128,13 @@ Test&nbsp;for&nbsp;stale&nbsp;lock;</tt></dd></dl>
 <strong>RECEND</strong> = b'RECE'<br>
 <strong>RECSEP</strong> = b'RECS'<br>
 <strong>RECSIG</strong> = b'RECB'<br>
+<strong>base</strong> = '/home/peterglen/pgpygtk/pydbase/pydbase'<br>
 <strong>base_integrity</strong> = 0<br>
 <strong>base_locktout</strong> = 20<br>
 <strong>base_pgdebug</strong> = 0<br>
 <strong>base_quiet</strong> = 0<br>
 <strong>base_showdel</strong> = 0<br>
+<strong>chain_locktout</strong> = 10<br>
 <strong>chain_pgdebug</strong> = 0<br>
 <strong>fhand</strong> = 0</td></tr></table>
 </body></html>

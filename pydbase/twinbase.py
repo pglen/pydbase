@@ -159,17 +159,20 @@ class TwinCoreBase():
         return struct.unpack("I", val)[0]
 
     def putbuffint(self, offs, val):
+        ''' Write an in to buffer '''
         #print("putbuffint", offs, val)
         self.fp.seek(offs, io.SEEK_SET)
         cc = struct.pack("I", val)
         self.fp.write(cc)
 
     def getbuffstr(self, offs, xlen):
+        ''' Get sreing from buffer '''
         self.fp.seek(offs, io.SEEK_SET)
         val = self.fp.read(xlen)
         return val
 
     def putbuffstr(self, offs, xstr):
+        ''' Write a string to buffer '''
         self.fp.seek(offs, io.SEEK_SET)
         val = self.fp.write(xstr)
 
