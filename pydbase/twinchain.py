@@ -71,7 +71,7 @@ class TwinChain(TwinCore):
         # Upper lock name
         self.ulockname = os.path.splitext(fname)[0] + ".ulock"
 
-        waitupperlock(self.ulockname)
+        waitlock(self.ulockname)
         super(TwinChain, self).__init__(fname, pgdebug)
 
         #print("TwinChain.init", self.fname, self.ulockname)
@@ -101,7 +101,7 @@ class TwinChain(TwinCore):
             encoded = self.packer.encode_data("", aaa)
             self.save_data(header, encoded)
 
-        delupperlock(self.ulockname)
+        dellock(self.ulockname)
 
     def _hashtohex(self, varx):
 
@@ -327,7 +327,7 @@ class TwinChain(TwinCore):
         if self.core_verbose > 0:
             print("Appendwith", header, datax)
 
-        waitupperlock(self.ulockname)
+        waitlock(self.ulockname)
 
         try:
             uuu = uuid.UUID(header)
@@ -335,7 +335,7 @@ class TwinChain(TwinCore):
             if self.core_verbose:
                 print("Header override must be a valid UUID string.")
 
-            delupperlock(self.ulockname)
+            dellock(self.ulockname)
             raise ValueError("Header override must be a valid UUID string.")
 
         self.old_dicx = {}
@@ -369,7 +369,7 @@ class TwinChain(TwinCore):
             bbb = self.packer.decode_data(encoded)
             print("Rec", bbb[0])
 
-        delupperlock(self.ulockname)
+        dellock(self.ulockname)
         return True
 
     def append(self, datax):

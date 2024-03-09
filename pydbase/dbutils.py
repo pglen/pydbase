@@ -4,12 +4,14 @@ import datetime, time, traceback
 
 import sys
 
-chain_pgdebug = 0
-chain_locktout = 10
+utils_pgdebug  = 0
+utils_locktout = 7
+
+locklevel = {}
 
 def set_pgdebug(level):
-    global chain_pgdebug
-    chain_pgdebug = level
+    global utils_pgdebug
+    utils_pgdebug = level
 
 # Class for ensuring that all file operations are atomic, treat
 # initialization like a standard call to 'open' that happens to be atomic.
@@ -123,60 +125,74 @@ def decode_data(self, encoded):
         bbb = ""
     return bbb
 
-def delupperlock(lockname):
+def dellock(lockname):
 
     ''' Lock removal;
         Test for stale lock;
     '''
 
-    if chain_pgdebug > 1:
-        print("Delupperlock", lockname)
+    if utils_pgdebug > 1:
+        print("Dellock", lockname)
 
     try:
         if os.path.isfile(lockname):
             os.unlink(lockname)
-    except:
-        pass
-        if chain_pgdebug > 1:
-            #print("Del upper lock failed", sys.exc_info())
-            put_exception("Del upperLock")
+            locklevel[lockname] -= 1
 
-def waitupperlock(lockname):
+    except:
+        if utils_pgdebug > 1:
+            #print("Del lock failed", sys.exc_info())
+            put_exception("Del Lock")
+
+
+def waitlock(lockname):
 
     ''' Wait for lock file to become available. '''
 
-    if chain_pgdebug > 1:
-        print("WaitUpperlock", lockname)
+    if utils_pgdebug > 1:
+        print("Waitlock", lockname)
 
     cnt = 0
     while True:
         if os.path.isfile(lockname):
             if cnt == 0:
-                #try:
-                #    fpx = open(lockname)
-                #    pid = int(fpx.read())
-                #    fpx.close()
-                #except:
-                #    print("Exception in lock test", sys.exc_info())
-               pass
+                buff = ""
+                # break in if not this process
+                try:
+                    fpx = open(lockname, "rb+")
+                    fcntl.lockf(fpx, fcntl.LOCK_EX)
+                    buff = fpx.read()
+                    pid = int(buff)
+                    fpx.close()
+
+                    #print(os.getpid())
+                    if os.getpid() == pid:
+                        dellock(lockname)
+                except:
+                    print("Exception in lock test", put_exception("Del Lock"))
+
             cnt += 1
             time.sleep(1)
-            if cnt > chain_locktout * 5:
+            if cnt > utils_locktout :
                 # Taking too long; break in
-                if chain_pgdebug > 1:
-                    print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
-                delupperlock(lockname)
+                if utils_pgdebug > 1:
+                    print("Lock held too long pid =", os.getpid(), cnt, lockname)
+                dellock(lockname)
                 break
         else:
             break
 
-    #if chain_pgdebug > 1:
-    #    print("Gotlock", lockname)
-
     # Finally, create lock
-    xfp = create(lockname)
-    xfp.write(str(os.getpid()).encode())
-    xfp.close()
+    try:
+        xfp = create(lockname)
+        fcntl.lockf(xfp, fcntl.LOCK_EX)
+        xfp.write(str(os.getpid()).encode())
+        xfp.close()
+        if lockname not in locklevel:
+            locklevel[lockname] = 0
+        locklevel[lockname] += 1
+    except:
+        print("Cannot create lock", lockname, sys.exc_info())
 
 # ------------------------------------------------------------------------
 # Simple file system based locking system
@@ -188,6 +204,7 @@ def create(fname, raisex = True):
     fp = None
     try:
         fp = open(fname, "wb")
+
     except:
         print("Cannot open / create ", fname, sys.exc_info())
         if raisex:

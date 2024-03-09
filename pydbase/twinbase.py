@@ -38,66 +38,6 @@ base_quiet      = 0
 base_integrity  = 0
 base_showdel    = 0
 
-def dellock(lockname):
-
-    ''' Lock removal;
-        Test for stale lock;
-    '''
-
-    if base_pgdebug > 1:
-        print("Dellock", lockname)
-
-    try:
-        if os.path.isfile(lockname):
-            os.unlink(lockname)
-    except:
-        if base_pgdebug > 1:
-            #print("Del lock failed", sys.exc_info())
-            put_exception("Del Lock")
-
-
-def waitlock(lockname):
-
-    ''' Wait for lock file to become available. '''
-
-    if base_pgdebug > 1:
-        print("Waitlock", lockname)
-
-    cnt = 0
-    while True:
-        if os.path.isfile(lockname):
-            if cnt == 0:
-                buff = ""
-                # break in if not this process
-                try:
-                    fpx = open(lockname)
-                    #fcntl.lockf(fpx, fcntl.LOCK_EX)
-                    buff = fpx.read()
-                    pid = int(buff)
-                    fpx.close()
-
-                    #print(os.getpid())
-                    if os.getpid() == pid:
-                        dellock(lockname)
-                except:
-                    print("Exception in lock test", put_exception("Del Lock"))
-
-            cnt += 1
-            time.sleep(1)
-            if cnt > base_locktout * 5:
-                # Taking too long; break in
-                if base_pgdebug > 1:
-                    print("Warn: main Lock held too long ... pid =", os.getpid(), cnt)
-                dellock(lockname)
-                break
-        else:
-            break
-
-    # Finally, create lock
-    xfp = create(lockname)
-    xfp.write(str(os.getpid()).encode())
-    xfp.close()
-
 class TwinCoreBase():
 
     ''' This class provides basic services to twincore  '''

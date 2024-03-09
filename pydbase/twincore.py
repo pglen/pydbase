@@ -1295,8 +1295,9 @@ class TwinCore(TwinCoreBase):
 
         ''' flush file handles and close files '''
 
-        if self.pgdebug > 9:
-            print("__del__ called.")
+        if hasattr(self, "pgdebug"):
+            if self.pgdebug > 9:
+                print("__del__ called.")
 
         #self.flush()
 

@@ -34,7 +34,7 @@ pipupload:
 	./pip-upload.py
 
 tests:
-	./pytests.sh
+	cd tests; pytest
 
 setup:
 	@python3 ./setup.py install
@@ -65,18 +65,20 @@ cleandata:
 	@rm -f pydbchain.ulock
 
 echo:
-	@echo Echoing: ${CHECK}
+	@echo Echoing: ${AUTOCHECK}
 
 # Auto Checkin
 ifeq ("$(AUTOCHECK)","")
 AUTOCHECK=autocheck
 endif
 
-DDD = $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
-#echo "Committing as $(DDD)"
 
 pgit:
 	git add .
+
+	DDD = $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
+	echo "Committing as $(DDD)"
+
 	git commit -m "$(DDD)"
 	git push
 	#git push local
