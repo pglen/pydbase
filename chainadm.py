@@ -159,7 +159,7 @@ def mainfunc():
         if errx:
             print("error on rec", cnt)
         else:
-            print("DB integrity checks out OK")
+            print("DB integrity on %d rec checks out OK" % sss)
 
     elif _c.getrec >= 0:
         sss = core.getdbsize()

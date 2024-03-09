@@ -126,7 +126,10 @@ def decode_data(self, encoded):
     return bbb
 
 # ------------------------------------------------------------------------
-# Simple file system based locking system
+# Simple file handle system based locking system.
+# Linux does not like file existance locks
+
+gl_fpx = None
 
 def dellock(lockname):
 
@@ -137,17 +140,16 @@ def dellock(lockname):
     if utils_pgdebug > 1:
         print("Dellock", lockname)
 
-    try:
-        if not os.path.isfile(lockname):
-            fpx = open(lockname, "wb+")
-        else:
-            fpx = open(lockname, "rb+")
-    except:
-        if utils_pgdebug > 1:
-            #print("Del lock failed", sys.exc_info())
-            put_exception("Del Lock")
+    global gl_fpx
+    if not gl_fpx:
+        try:
+            gl_fpx = open(lockname, "wb+", O_NONBLOCK)
+        except:
+            if utils_pgdebug > 1:
+                #print("Del lock failed", sys.exc_info())
+                put_exception("Del Lock")
 
-    fcntl.lockf(fpx, fcntl.LOCK_UN)
+    fcntl.lockf(gl_fpx, fcntl.LOCK_UN)
 
 
 def waitlock(lockname):
@@ -157,29 +159,25 @@ def waitlock(lockname):
     if utils_pgdebug > 1:
         print("Waitlock", lockname)
 
-    if not os.path.isfile(lockname):
-        fpx = open(lockname, "wb+")
-    else:
-        fpx = open(lockname, "rb+")
+    global gl_fpx
+    if not gl_fpx:
+        try:
+            gl_fpx = open(lockname, "wb+")
+        except:
+            if utils_pgdebug > 1:
+                #print("Create lock failed", sys.exc_info())
+                put_exception("Del Lock")
 
     cnt = 0
     while True:
-        if cnt == 0:
-            buff = ""
-            # break in if not this process
-            #try:
-            #    fcntl.lockf(fpx, fcntl.LOCK_EX)
-            #    buff = fpx.read()
-            #    pid = int(buff)
-            #    fpx.close()
-            #
-            #    #print(os.getpid())
-            #    if os.getpid() != pid:
-            #        dellock(lockname)
-            #except:
-            #    print("Exception in lock test", put_exception("Del Lock"))
         try:
-            buff = fpx.read()
+            #print("flock", fcntl.lockf(gl_fpx, fcntl.F_GETLK))
+            #print(os.lockf(gl_fpx, os.F_TEST, 0))
+            #ttt = time.time()
+            buff = gl_fpx.read()
+            gl_fpx.seek(0, os.SEEK_SET)
+            gl_fpx.write(buff)
+            #print("process read/write %.3f" % ((time.time() - ttt) * 1000), buff )
             break;
         except:
             print("waiting", sys.exc_info())
@@ -197,19 +195,26 @@ def waitlock(lockname):
 
     # Finally, create lock
     try:
-        if not os.path.isfile(lockname):
-            fpx = open(lockname, "wb+")
-        else:
-            fpx = open(lockname, "rb+")
-
-        fcntl.lockf(fpx, fcntl.LOCK_EX)
-        fpx.write(str(os.getpid()).encode())
-        fpx.close()
-        if lockname not in locklevel:
-            locklevel[lockname] = 0
-        locklevel[lockname] += 1
+        #gl_fpx.write(str(os.getpid()).encode())
+        fcntl.lockf(gl_fpx, fcntl.LOCK_EX)
+        #if lockname not in locklevel:
+        #    locklevel[lockname] = 0
+        #locklevel[lockname] += 1
     except:
         print("Cannot create lock", lockname, sys.exc_info())
+
+# break in if not this process
+#try:
+#    fcntl.lockf(fpx, fcntl.LOCK_EX)
+#    buff = fpx.read()
+#    pid = int(buff)
+#    fpx.close()
+#
+#    #print(os.getpid())
+#    if os.getpid() != pid:
+#        dellock(lockname)
+#except:
+#    print("Exception in lock test", put_exception("Del Lock"))
 
 def truncs(strx, num = 8):
 

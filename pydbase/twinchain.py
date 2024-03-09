@@ -141,19 +141,19 @@ class TwinChain(TwinCore):
 
     def _build_sumstr(self, aaa):
 
-        sumstr  = aaa['now']
-        sumstr += aaa['header']
-        sumstr += self._expand_dict(aaa['payload'])
+        sumstr  = aaa.get('now', "")
+        sumstr += aaa.get('header', "")
+        sumstr += self._expand_dict(aaa.get('payload', ""))
         #print("raw sumstr", sumstr)
         return sumstr
 
     def _build_backlink(self, dicold):
 
-        backlink  =  dicold["now"]
-        backlink +=  dicold["hash256"]
-        backlink += dicold["header"]
-        backlink += self._expand_dict(dicold["payload"])
-        backlink += dicold["backlink"]
+        backlink  =  dicold.get("now", "")
+        backlink +=  dicold.get("hash256", "")
+        backlink += dicold.get("header", "")
+        backlink += self._expand_dict(dicold.get("payload", ""))
+        backlink += dicold.get("backlink", "")
         #print("raw backlink", backlink)
         return backlink
 
