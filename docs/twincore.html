@@ -1,0 +1,3772 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>twincore API documentation</title>
+<meta name="description" content="!
+@mainpage …" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>twincore</code></h1>
+</header>
+<section id="section-intro">
+<p>!
+@mainpage</p>
+<pre><code>Database with two files. One for data, one for index;
+
+The reason for the 'twin' name is that two files are created.
+The first contains the data, the second contains the
+offsets (indexes) and hashes.
+
+The second file can be re-built easily from the first
+using the reindex option.
+
+Structure of the data:
+
+    32 byte header, starating with FILESIG;
+
+    4 bytes    4 bytes          4 bytes         Variable
+    ------------------------------------------------------------
+    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+        .
+        .
+
+    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+Deleted records are marked with RECSIG mutated from RECB to RECX
+
+New data is appended to the end, no duplicate filtering is done.
+Retrieval is searched from reverse, the latest record with this key
+is retrieved first.
+
+Verbosity:    (use the '-v' option multiple times)
+
+    0 =  no output
+    1 =  normal, some items printed, short record ;
+    2 =  more detail; full record (-vv)
+    3 =  more detail + damaged records (-vvv)
+
+Debug:    (use the '-d' option with number)
+
+    0 =  no output
+    1 =  normal, some items
+    2 =  more details
+
+History:
+
+    1.1         Tue 20.Feb.2024     Initial release
+    1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
+    1.4.0       Tue 27.Feb.2024     Addedd pgdebug
+    1.4.2       Wed 28.Feb.2024     Fixed multiple instances
+    1.4.3       Wed 28.Feb.2024     ChainAdm added
+    1.4.4       Fri 01.Mar.2024     Tests for chain functions
+    1.4.5       Fri 01.Mar.2024     Misc fixes
+    1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
+    1.4.7       Tue 05.Mar.2024     In place record update
+    1.4.8       Sat 09.Mar.2024     Added new locking mechanism
+</code></pre>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">#!/usr/bin/env python3
+
+&#39;&#39;&#39;!
+    @mainpage
+
+        Database with two files. One for data, one for index;
+
+        The reason for the &#39;twin&#39; name is that two files are created.
+        The first contains the data, the second contains the
+        offsets (indexes) and hashes.
+
+        The second file can be re-built easily from the first
+        using the reindex option.
+
+        Structure of the data:
+
+            32 byte header, starating with FILESIG;
+
+            4 bytes    4 bytes          4 bytes         Variable
+            ------------------------------------------------------------
+            RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+            RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+                .
+                .
+
+            RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+            RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+        Deleted records are marked with RECSIG mutated from RECB to RECX
+
+        New data is appended to the end, no duplicate filtering is done.
+        Retrieval is searched from reverse, the latest record with this key
+        is retrieved first.
+
+        Verbosity:    (use the &#39;-v&#39; option multiple times)
+
+            0 =  no output
+            1 =  normal, some items printed, short record ;
+            2 =  more detail; full record (-vv)
+            3 =  more detail + damaged records (-vvv)
+
+        Debug:    (use the &#39;-d&#39; option with number)
+
+            0 =  no output
+            1 =  normal, some items
+            2 =  more details
+
+        History:
+
+            1.1         Tue 20.Feb.2024     Initial release
+            1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
+            1.4.0       Tue 27.Feb.2024     Addedd pgdebug
+            1.4.2       Wed 28.Feb.2024     Fixed multiple instances
+            1.4.3       Wed 28.Feb.2024     ChainAdm added
+            1.4.4       Fri 01.Mar.2024     Tests for chain functions
+            1.4.5       Fri 01.Mar.2024     Misc fixes
+            1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
+            1.4.7       Tue 05.Mar.2024     In place record update
+            1.4.8       Sat 09.Mar.2024     Added new locking mechanism
+
+&#39;&#39;&#39;
+
+import  os, sys, getopt, signal, select, socket, time, struct
+import  random, stat, os.path, datetime, threading
+import  struct, io
+
+base = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(base, &#39;..&#39;, &#39;pydbase&#39;))
+
+from twinbase import *
+
+Version = &#34;1.4.8&#34;
+
+# ------------------------------------------------------------------------
+
+class TwinCore(TwinCoreBase):
+
+    &#39;&#39;&#39;
+
+     Data file and index file; protected by locks
+     The TWIN refers to separate files for data / index.
+
+    &#39;&#39;&#39;
+
+    def __init__(self, fname = &#34;pydbase.pydb&#34;, pgdebug = 0, devmode = 1):
+
+        self.cnt = 0
+        self.fname = fname
+        self.lckname  = os.path.splitext(self.fname)[0] + &#34;.lock&#34;
+        self.idxname  = os.path.splitext(self.fname)[0] + &#34;.pidx&#34;
+        self.pgdebug = pgdebug
+        self.base_verbose  = 0
+        self.devmode = devmode
+        self.lock = FileLock(self.lckname)
+
+        # Make sure only one process can use this
+        self.lock.waitlock() #self.lckname)
+
+        super(TwinCore, self).__init__(pgdebug)
+
+        #print(&#34;initializing core with&#34;, fname, pgdebug)
+        #self.pool = threading.BoundedSemaphore(value=1)
+
+        # It was informative at one point
+        if self.pgdebug &gt; 4:
+            pass
+            #print(&#34;fname:    &#34;, fname)
+            #print(&#34;idxname:  &#34;, self.idxname)
+            #print(&#34;lockname: &#34;, self.lckname)
+
+        self.lasterr = &#34;No Error&#34;
+
+        #print(&#34;Q pid&#34;, os.getpid())
+
+        #print(&#34;pid&#34;, os.getpid())
+        # Initial file creation
+        # Nuke false index
+        try:
+            if not os.path.isfile(self.fname):
+                #os.rename(self.idxname, self.idxname + &#34;.old&#34;)
+                os.remove(self.idxname)
+        except:
+            pass
+
+        self.fp = self.softcreate(self.fname)
+        self.ifp = self.softcreate(self.idxname)
+
+        buffsize = self.getsize(self.fp)
+        if buffsize &lt; HEADSIZE:
+            #print(&#34;initial padding&#34;)
+            self.create_data(self.fp)
+            #try:
+            #    # There was no file, delete index, if any
+            #    os.rename(self.idxname, self.idxname + &#34;.dangle&#34;)
+            #    #os.remove(self.idxname)
+            #except:
+            #    pass
+
+            #print(&#34;initial padding&#34;)
+            self.create_idx(self.ifp)
+        else:
+            # Initial index creation
+            #self.ifp = self.softcreate(self.idxname)
+            indexsize = self.getsize(self.ifp)
+
+            # See if valid index
+            if indexsize &lt; HEADSIZE:
+                self.create_idx(self.ifp)
+                # It was an existing data, new index needed
+                if self.base_verbose &gt; 0:
+                        print(&#34;Reindexing&#34;)
+                self.__reindex()
+
+        # Check
+        if  self.getbuffstr(0, 4) != FILESIG:
+            print(&#34;Invalid data signature&#34;)
+            self.lock.unlock()  #dellock(self.lckname)
+            raise  RuntimeError(&#34;Invalid database signature.&#34;)
+
+        #print(&#34;buffsize&#34;, buffsize, &#34;indexsize&#34;, indexsize)
+        self.lock.unlock() #dellock(self.lckname)
+
+    def version(self):
+        &#39;&#39;&#39; Return version sting. &#39;&#39;&#39;
+        return Version
+
+    def flush(self):
+
+        &#39;&#39;&#39; Flush files to disk. &#39;&#39;&#39;
+
+        if self.pgdebug &gt; 9:
+            print(&#34;Flushing&#34;, self.fp, self.ifp)
+
+        try:
+            if hasattr(self, &#34;fp&#34;):
+                if self.fp:
+                    self.fp.flush()
+            if hasattr(self, &#34;ifp&#34;):
+                if self.ifp:
+                    self.ifp.flush()
+        except:
+            print(&#34;Cannot flush files&#34;, sys.exc_info())
+
+    def getdbsize(self):
+
+        &#39;&#39;&#39; Return the DB size in records. This includes ALL records, including
+        deleted and damaged. This number can be used to iterate all records
+        in the database. Usually from end to beginning. &#39;&#39;&#39;
+
+        ret = self._getdbsize(self.ifp)
+        if not ret:
+            ret = 0
+        return ret
+
+    def _getdbsize(self, ifp):
+
+        &#39;&#39;&#39; Return number of records. Return total including deleted / damaged. &#39;&#39;&#39;
+
+        try:
+            #chash = self.getidxint(CURROFFS) - HEADSIZE
+            chash = self.getsize(ifp) - HEADSIZE
+            ret = int(chash / (2 * self.INTSIZE))
+        except:
+            ret = 0
+
+        return  ret
+
+    # --------------------------------------------------------------------
+    def _rec2arr(self, rec):
+
+        arr = []
+        sig = self.getbuffstr(rec, self.INTSIZE)
+
+        if sig == RECDEL:
+            return arr
+
+        if sig != RECSIG:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sig) &#39;%s&#39; at&#34; % sig, rec)
+            return arr
+
+        hash = self.getbuffint(rec+4)
+        blen = self.getbuffint(rec+8)
+        data = self.getbuffstr(rec + 12, blen)
+
+        if base_integrity:
+            ccc = self.hash32(data)
+            if self.base_verbose &gt; 1:
+                print(&#34;rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+            if hash != ccc:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Error on hash at rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+                return []
+
+        #print(&#34;%5d pos %5d&#34; % (cnt, rec), &#34;hash %8x&#34; % hash, &#34;ok&#34;, ok, &#34;len=&#34;, blen, end=&#34; &#34;)
+
+        endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
+        if endd != RECSEP:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sep) &#39;%s&#39; at&#34; % endd, rec)
+            return arr
+
+        rec2 = rec + 16 + blen;
+        hash2 = self.getbuffint(rec2)
+        blen2 = self.getbuffint(rec2+4)
+        data2 = self.getbuffstr(rec2+8, blen2)
+
+        if base_integrity:
+            ccc2 = self.hash32(data2)
+            if self.base_verbose &gt; 1:
+                print(&#34;rec&#34;, rec, &#34;hash2&#34;, hex(hash2), &#34;check2&#34;, hex(ccc2))
+            if hash2 != ccc2:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Error on hash at rec&#34;, rec, &#34;hash2&#34;, hex(hash2), &#34;check2&#34;, hex(ccc2))
+                return []
+
+        arr = [data, data2]
+        return arr
+
+    # -------------------------------------------------------------------
+    # Originator, dump single record
+
+    def  dump_rec(self, rec, cnt):
+
+        &#39;&#39;&#39; Print record to the screen. &#39;&#39;&#39;
+
+        cnt2 = 0
+        sig = self.getbuffstr(rec, self.INTSIZE)
+
+        if sig == RECDEL:
+            if base_showdel:
+                klen = self.getbuffint(rec+8)
+                kdata = self.getbuffstr(rec+12, klen)
+                rec2 = rec + 16 + klen;
+                blen = self.getbuffint(rec2+4)
+                data = self.getbuffstr(rec2+8, blen)
+
+                print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, truncs(data))
+            return cnt2
+
+        if sig != RECSIG:
+            if self.base_verbose &gt; 1:
+                print(&#34; Damaged data (sig) &#39;%s&#39; at&#34; % sig, rec)
+            return cnt2
+
+        hash = self.getbuffint(rec+4)
+        blen = self.getbuffint(rec+8)
+
+        if blen &lt; 0:
+            print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
+            return cnt2
+
+        data = self.getbuffstr(rec+12, blen)
+        if base_integrity:
+            ccc = self.hash32(data)
+            if self.base_verbose &gt; 1:
+                print(&#34;rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+            if hash != ccc:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Error on hash at rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+                return []
+
+        endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
+        if endd != RECSEP:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sep) &#39;%s&#39; at&#34; % endd, rec)
+            return cnt2
+
+        rec2 = rec + 16 + blen;
+        hash2 = self.getbuffint(rec2)
+        blen2 = self.getbuffint(rec2+4)
+
+        if blen2 &lt; 0:
+            print(&#34;Invalid data length %d at %d&#34; % (blen2, rec))
+            return cnt2
+
+        data2 = self.getbuffstr(rec2+8, blen2)
+        if base_integrity:
+            ccc2 = self.hash32(data2)
+            if self.base_verbose &gt; 1:
+                print(&#34;rec&#34;, rec, &#34;hash2&#34;, hex(hash), &#34;check2&#34;, hex(ccc))
+            if hash2 != ccc2:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Error on hash at rec&#34;, rec, &#34;hash2&#34;, hex(hash), &#34;check2&#34;, hex(ccc))
+                return []
+
+        if self.base_verbose &gt; 2:
+            print(&#34;%-5d pos %5d&#34; % (cnt, rec), &#34;%8x&#34; % hash, &#34;len&#34;, blen, data,
+                                                        &#34;%8x&#34; % hash2,&#34;len&#34;, blen2, data2)
+
+        elif self.base_verbose &gt; 1:
+            print(&#34;%-5d pos %5d&#34; % (cnt, rec), &#34;%8x&#34; % hash, &#34;len&#34;, blen, data,
+                                                        &#34;%8x&#34; % hash2,&#34;len&#34;, blen2, data2)
+        elif self.base_verbose:
+            print(&#34;%-5d pos %5d&#34; % (cnt, rec),  data, data2)
+        else:
+            print(&#34;%-5d pos %5d&#34; % (cnt, rec), &#34;Data:&#34;, truncs(data, 18), &#34;Data2:&#34;, truncs(data2, 18))
+
+        cnt2 += 1
+        return cnt2
+
+    def  check_rec(self, rec, cnt2):
+
+        &#39;&#39;&#39; Check record. Verbose to the screen. Return number of errors.&#39;&#39;&#39;
+
+        ret = 0
+        sig = self.getbuffstr(rec, self.INTSIZE)
+
+        # Do not check deleted, say OK
+        if sig == RECDEL:
+            if self.base_verbose &gt; 1:
+                print(&#34; Deleted data &#39;%s&#39; at %d (%d)&#34; % (sig, rec, cnt2))
+            ret = 1
+            return ret
+
+        if sig != RECSIG:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sig) &#39;%s&#39; at %d (%d)&#34; % (sig, rec, cnt2))
+            #if self.base_verbose &gt; 1:
+            #    print(&#34;Data&#34;, data)
+
+            return ret
+
+        hash = self.getbuffint(rec+4)
+        blen = self.getbuffint(rec+8)
+
+        if blen &lt;= 0:
+            if self.base_verbose &gt; 1:
+                print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
+            return ret
+
+        data = self.getbuffstr(rec+12, blen)
+        ccc = self.hash32(data)
+        if hash != ccc:
+            if self.base_verbose &gt; 1:
+                print(&#34;Data&#34;, data)
+            elif self.base_verbose &gt; 0:
+                print(&#34;Error on hash at rec&#34;, rec, cnt2, &#34;hash&#34;,
+                                            hex(hash), &#34;check&#34;, hex(ccc))
+
+            return ret
+
+        endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
+        if endd != RECSEP:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sep) &#39;%s&#39; at %d %d %d&#34; % (endd, rec, cnt2))
+            return ret
+
+        rec2 = rec + 16 + blen;
+        hash2 = self.getbuffint(rec2)
+        blen2 = self.getbuffint(rec2+4)
+
+        if blen2 &lt; 0:
+            if self.base_verbose &gt; 1:
+                print(&#34;Invalid data length2 %d at %d&#34; % (blen2, rec))
+            return ret
+
+        data2 = self.getbuffstr(rec2+8, blen2)
+        ccc2 = self.hash32(data2)
+        if hash2 != ccc2:
+            if self.base_verbose &gt; 1:
+                print(&#34;Data&#34;, data, &#34;Data2&#34;, data2)
+            elif self.base_verbose &gt; 0:
+                print(&#34;Error on hash2 at rec&#34;, rec, cnt2, &#34;hash2&#34;,
+                                        hex(hash2), &#34;check2&#34;, hex(ccc2))
+
+            return ret
+
+        if self.base_verbose &gt; 2:
+            print(&#34;Record at %d (%d) OK.&#34; % (rec, cnt2))
+
+        ret += 1
+        return ret
+
+    # --------------------------------------------------------------------
+    # Internal; no locking
+
+    def  __dump_data(self, lim = INT_MAX, skip = 0, dirx = 0):
+
+        if self.pgdebug:
+            print(&#34;dump_data()&#34;, &#34;lim =&#34;, hex(lim), &#34;skip=&#34;, skip, &#34;dirx =&#34;, dirx)
+
+        &#39;&#39;&#39; Put all data to screen worker function. &#39;&#39;&#39;
+
+        cnt = skip; cnt2 = 0
+        curr =  chash = HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        # Direction sensitivity
+        if dirx:
+            rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+        else:
+            rrr = range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2)
+
+        for aa in rrr:
+            rec = self.getidxint(aa)
+            #print(aa, rec)
+            if not base_quiet:
+                cnt2 += 1
+                ret = self.dump_rec(rec, cnt)
+                if ret:
+                    cnt += 1
+                    if cnt &gt;= lim:
+                        break
+
+    def  dump_data(self, lim = INT_MAX, skip = 0):
+
+        &#39;&#39;&#39; Put all data to screen. &#39;&#39;&#39;
+
+        self.__dump_data(lim, skip, 1)
+
+    def  revdump_data(self, lim, skip = 0):
+
+        &#39;&#39;&#39; Put all data to screen in reverse order. &#39;&#39;&#39;
+
+        self.__dump_data(lim, skip)
+
+    def  reindex(self):
+
+        &#39;&#39;&#39; Re create index file. &#39;&#39;&#39;
+
+        self.lock.waitlock() #self.lckname)
+        ret = self.__reindex()
+        self.lock.unlock    #dellock(self.lckname)
+        return ret
+
+    # --------------------------------------------------------------------
+
+    def  __reindex(self):
+
+        &#39;&#39;&#39; Recover index. Make sure the DB in not in session.  &#39;&#39;&#39;
+
+        ret = 0
+
+        #curr = self.getbuffint(CURROFFS) - HEADSIZE
+        curr =  self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        reidx = os.path.splitext(self.fname)[0]  + &#34;_tmp_&#34; + &#34;.pidx&#34;
+        tempifp = self.softcreate(reidx)
+        self.create_idx(tempifp)
+        dlen = self.getsize(self.fp)
+
+        if self.base_verbose &gt; 2:
+           print(&#34;curr&#34;, curr, &#34;dlen&#34;, dlen)
+
+        aa =  HEADSIZE
+        while 1:
+            if aa &gt;= dlen:
+                break
+
+            sig = self.getbuffstr(aa, self.INTSIZE)
+            # Check if sig is correct
+            if sig != RECSIG:
+                print(&#34;Invalid sig .. resync needed&#34;)
+                raise
+
+            #print(&#34;reind&#34;, aa)
+
+            try:
+                hhh2 = self.getbuffint(aa + 4)
+                lenx = self.getbuffint(aa + 8)
+                if lenx &lt; 0:
+                    print(&#34;Invalid key length&#34;)
+                sep =  self.getbuffstr(aa + 12 + lenx, self.INTSIZE)
+                len2 =  self.getbuffint(aa + 20 + lenx)
+                if len2 &lt; 0:
+                    print(&#34;Invalid record length&#34;)
+            except:
+                print(&#34;in reindex&#34;, sys.exc_info())
+
+            if self.base_verbose == 1:
+                print(aa, &#34;sig&#34;, sig, &#34;hhh2&#34;, hex(hhh2), &#34;len&#34;, lenx, \
+                    &#34;sep&#34;, sep, &#34;len2&#34;, len2)
+            if self.base_verbose &gt; 1:
+                data =  self.getbuffstr(aa + 12, lenx)
+                data2 =  self.getbuffstr(aa + 24 + lenx, len2)
+                print(aa, &#34;sig&#34;, sig, &#34;data&#34;, data, &#34;data2&#34;, data2)
+
+            # Update / Append index
+            #hashpos = self._getint(tempifp, CURROFFS)
+            hashpos =  HEADSIZE  + self._getdbsize(tempifp) * self.INTSIZE * 2
+
+            self._putint(tempifp, hashpos, aa)
+            self._putint(tempifp, hashpos + self.INTSIZE, hhh2)
+
+            # This is a shame .. did not flush to file immidiately
+            tempifp.flush()
+
+            #self._putint(tempifp, hashpos, self.fp.tell())
+
+            # This is dependent on the database structure
+            aa += lenx + len2 + 24
+            ret += 1
+
+        # Make it go out of scope
+        self.fp.flush()
+        self.ifp.flush();
+        self.ifp.close()
+        tempifp.flush();
+        tempifp.close()
+
+        # Now move files
+        try:
+            os.remove(self.idxname)
+        except:
+            pass
+
+        #print(&#34;rename&#34;, reidx, &#34;-&gt;&#34;, self.idxname)
+        os.rename(reidx, self.idxname)
+
+        # Activate new index
+        self.ifp = self.softcreate(self.idxname)
+        return ret
+
+    def __save_error(self, rec, vacerrfp):
+
+        vacerrfp.write(b&#34;Err at %8d\n&#34; % rec)
+
+        try:
+            ddd = self.getbuffstr(rec, 100)
+        except:
+            pass
+
+        # Find next valid record, print up to that
+        found = 0
+        for aa in range(len(ddd)):
+            if ddd[aa:aa+4] == RECSIG:
+                found = True
+                #print(&#34;found:&#34;, ddd[:aa+4])
+                vacerrfp.write(ddd[:aa])
+                break
+        if not found:
+            vacerrfp.write(ddd)
+
+    # ----------------------------------------------------------------
+
+    def  vacuum(self):
+
+        &#39;&#39;&#39;
+            Remove all deleted data. Reindex.
+            The db is locked while the vacuum is in operation, but
+            make sure the DB in not in session, and no pending
+            operations are present (like find / retrieve cycle).
+        &#39;&#39;&#39;
+
+        self.lock.waitlock() #self.lckname)
+        ret = self._vacuum()
+        self.lock.unlock()  #dellock(self.lckname)
+        return ret
+
+    def  _vacuum(self):
+
+        vacname = os.path.splitext(self.fname)[0] + &#34;_vac_&#34; + &#34;.pydb&#34;
+        vacerr  = os.path.splitext(self.fname)[0] +  &#34;.perr&#34;
+        vacidx = os.path.splitext(vacname)[0]  + &#34;.pidx&#34;
+
+        if self.pgdebug &gt; 4:
+            print(&#34;vacname&#34;, vacname)
+            print(&#34;vacidx&#34;, vacidx)
+            print(&#34;vacerr&#34;, vacerr)
+
+        ret = 0; vac = 0
+
+        # Open for append
+        vacerrfp = self.softcreate(vacerr, False)
+        vacerrfp.seek(0, os.SEEK_END)
+
+        try:
+            # Make sure they are empty
+            os.remove(vacname)
+            os.remove(vacidx)
+        except:
+            pass
+
+        # It is used to raise the scope so vacuumed DB closes
+        if 1:
+            vacdb = TwinCore(vacname)
+            vacdb.lock.waitlock()
+
+            skip = 0; cnt = 0
+            chash =  self._getdbsize(self.ifp) * self.INTSIZE * 2
+            rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash + HEADSIZE, self.INTSIZE * 2)
+            for aa in rrr:
+                rec = self.getidxint(aa)
+                sig = self.getbuffstr(rec, self.INTSIZE)
+                if sig == RECDEL:
+                    ret += 1
+                    vac += 1
+                    if self.pgdebug &gt; 1:
+                        print(&#34;deleted&#34;, rec)
+                elif sig != RECSIG:
+                    if self.base_verbose:
+                        print(&#34;Detected error at %d&#34; % rec)
+                    ret += 1
+                    self.__save_error(rec, vacerrfp)
+                else:
+                    global base_integrity
+                    tmpi = base_integrity
+                    base_integrity = True
+                    arr = self.get_rec_offs(rec)
+                    base_integrity = tmpi
+
+                    if self.pgdebug &gt; 1:
+                        print(cnt, &#34;vac rec&#34;, rec, arr)
+
+                    if len(arr) &gt; 1:
+                        hhh2 = self.hash32(arr[0])
+                        hhh3 = self.hash32(arr[1])
+                        vacdb.__save_data(hhh2, arr[0], hhh3, arr[1])
+                        #vac += 1
+                    else:
+                        # This could be from empty bacause of hash error
+                        self.__save_error(rec, vacerrfp)
+                        if self.pgdebug &gt; 0:
+                            print(&#34;Error on vac: %d&#34; % rec)
+                cnt += 1
+
+            vacdb.unlock()  #dellock(vacdb.lckname)
+
+            # if vacerr is empty
+            try:
+                if os.stat(vacerr).st_size == 0:
+                    #print(&#34;Vac error empty&#34;)
+                    os.remove(vacerr)
+            except:
+                print(&#34;vacerr&#34;, sys.exc_info())
+
+        self.lock.unlock()  #dellock(self.lckname)
+
+        # Any vacummed?
+        if vac &gt; 0:
+            # Make it go out of scope
+            self.fp.flush(); self.ifp.flush()
+            self.fp.close(); self.ifp.close()
+
+            # Now move files
+            try:
+                os.remove(self.fname);  os.remove(self.idxname)
+            except:
+                pass
+
+            if self.pgdebug &gt; 1:
+                print(&#34;rename&#34;, vacname, &#34;-&gt;&#34;, self.fname)
+                print(&#34;rename&#34;, vacidx, &#34;-&gt;&#34;, self.idxname)
+
+            os.rename(vacname, self.fname)
+            os.rename(vacidx, self.idxname)
+
+            self.lock.waitlock() #self.lckname)
+            self.fp = self.softcreate(self.fname)
+            self.ifp = self.softcreate(self.idxname)
+            self.lock.unlock()  #dellock(self.lckname)
+
+        else:
+            # Just remove non vacuumed files
+            if self.pgdebug &gt; 1:
+                print(&#34;deleted&#34;, vacname, vacidx)
+            try:
+                os.remove(vacname)
+                os.remove(vacidx)
+            except:
+                pass
+
+        #print(&#34;ended vacuum&#34;)
+        return ret, vac
+
+    def  get_rec(self, recnum):
+
+        &#39;&#39;&#39; Get record from database; recnum is a zero based record counter. &#39;&#39;&#39;
+
+        if self.pgdebug:
+            print(&#34;getrec()&#34;, recnum)
+
+        rsize = self._getdbsize(self.ifp)
+        if recnum &gt;= rsize:
+            #print(&#34;Past end of data.&#34;);
+            raise  RuntimeError( \
+                    &#34;Past end of Data. Asking for %d while max is 0 .. %d records.&#34; \
+                                     % (recnum, rsize-1) )
+            return []
+
+        chash = self.getidxint(CURROFFS)
+        #print(&#34;chash&#34;, chash)
+        offs = self.getidxint(HEADSIZE + recnum * self.INTSIZE * 2)
+
+        #print(&#34;offs&#34;, offs)
+        return self._rec2arr(offs)
+
+    def  get_rec_offs(self, recoffs):
+
+        &#39;&#39;&#39; Return record by offset. &#39;&#39;&#39;
+
+        rsize = self.getsize(self.fp)
+        if recoffs &gt;= rsize:
+            #print(&#34;Past end of data.&#34;);
+            raise  RuntimeError( \
+                    &#34;Past end of File. Asking for offset %d file size is %d.&#34; \
+                                     % (recoffs, rsize) )
+            return []
+
+        sig = self.getbuffstr(recoffs, self.INTSIZE)
+        if sig == RECDEL:
+            if self.base_verbose:
+                print(&#34;Deleted record.&#34;)
+            return []
+        if sig != RECSIG:
+            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            return []
+        #print(&#34;recoffs&#34;, recoffs)
+        return self._rec2arr(recoffs)
+
+    def  get_key_offs(self, recoffs):
+
+        &#39;&#39;&#39; Get key by offset. &#39;&#39;&#39;
+
+        rsize = self.getsize(self.fp)
+        if recoffs &gt;= rsize:
+            #print(&#34;Past end of data.&#34;);
+            raise  RuntimeError( \
+                    &#34;Past end of File. Asking for offset %d file size is %d.&#34; \
+                                     % (recoffs, rsize) )
+            return []
+
+        sig = self.getbuffstr(recoffs, self.INTSIZE)
+        if sig == RECDEL:
+            if self.base_verbose:
+                print(&#34;Deleted record.&#34;)
+            return []
+        if sig != RECSIG:
+            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            return []
+        #print(&#34;recoffs&#34;, recoffs)
+        return self._rec2arr(recoffs)[0]
+
+    def  del_rec(self, recnum):
+
+        &#39;&#39;&#39; Delete by record number.
+            Deleted record is marked as deleted but not removed.
+            Deleted records are ignored in further operations.
+            Use &#39;vacuum&#39; to actually remove record.
+        &#39;&#39;&#39;
+
+        rsize = self._getdbsize(self.ifp)
+        if recnum &gt;= rsize:
+            if self.base_verbose:
+                print(&#34;Past end of data.&#34;);
+            return False
+        chash = self.getidxint(CURROFFS)
+        #print(&#34;chash&#34;, chash)
+        offs = self.getidxint(HEADSIZE + recnum * self.INTSIZE * 2)
+        #print(&#34;offs&#34;, offs)
+        old = self.getbuffstr(offs, self.INTSIZE)
+        if old == RECDEL:
+            if self.base_verbose:
+                print(&#34;Record at %d already deleted.&#34; % offs);
+            return False
+
+        self.putbuffstr(offs, RECDEL)
+        return True
+
+    def  del_rec_offs(self, recoffs):
+
+        &#39;&#39;&#39; Delete record by file offset. &#39;&#39;&#39;
+
+        rsize = self.getsize(self.fp)
+        if recoffs &gt;= rsize:
+            #print(&#34;Past end of data.&#34;);
+            raise  RuntimeError( \
+                    &#34;Past end of File. Asking for offset %d file size is %d.&#34; \
+                                     % (recoffs, rsize) )
+            return False
+
+        sig = self.getbuffstr(recoffs, self.INTSIZE)
+        if sig != RECSIG  and sig != RECDEL:
+            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            return False
+
+        self.putbuffstr(recoffs, RECDEL)
+        return True
+
+    # Check integrity
+
+    def integrity_check(self, skip = 0, count = 0xffffffff):
+
+        &#39;&#39;&#39; Check record integrity for &#39;count&#39; records.
+            Skip number of records.
+        &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+        ret = 0; cnt2 = 0; cnt3 = 0;
+        #chash = self.getidxint(CURROFFS)        #;print(&#34;chash&#34;, chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        # Direction sensitivity
+        rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+        for aa in rrr:
+            rec = self.getidxint(aa)
+            #print(aa, rec)
+            ret += self.check_rec(rec, cnt2)
+            cnt2 += 1
+            cnt3 += 1
+            if cnt3 &gt;= count:
+                break
+        self.lock.unlock() #dellock(self.lckname)
+        return ret, cnt2
+
+    def  retrieve(self, strx, limx = 1):
+
+        &#39;&#39;&#39; Retrive in reverse, limit it. &#39;&#39;&#39;
+
+        if type(strx) != type(b&#34;&#34;):
+            strx = strx.encode(errors=&#39;strict&#39;)
+
+        hhhh = self.hash32(strx)
+        if self.pgdebug &gt; 2:
+            print(&#34;strx&#34;, strx, hhhh)
+
+        #chash = self.getidxint(CURROFFS)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        #;print(&#34;chash&#34;, chash)
+        arr = []
+
+        self.lock.waitlock() #(self.lckname)
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if self.base_verbose &gt; 3:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                hhh = self.getbuffint(rec+4)
+                if hhh == hhhh:
+                    arr.append(self.get_rec_offs(rec))
+                    if len(arr) &gt;= limx:
+                        break
+        self.lock.unlock()  #dellock(self.lckname)
+
+        return arr
+
+    # Return record offset
+
+    def  _recoffset(self, strx, limx = INT_MAX, skipx = 0):
+
+        #chash = self.getidxint(CURROFFS)            #;print(&#34;chash&#34;, chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        rec = 0; blen = 0; data = &#34;&#34;
+        arr = []
+        if type(strx) != type(b&#34;&#34;):
+            strx2 = strx.encode(errors=&#39;strict&#39;);
+        else:
+            strx2 = strx
+
+        #print(&#34;_recoffset&#34;, strx2)
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                keyz = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 1:
+                    print(&#34;_recoffset&#34;, keyz)
+                if strx2 == keyz:
+                    sig = self.getbuffstr(rec + 16 + blen,  self.INTSIZE)
+                    xlen = self.getbuffint(rec + 20 + blen)
+                    data = self.getbuffstr(rec + 24 + blen, xlen)
+                    #print(&#34;rec offset&#34;, rec + 12,  &#34;key:&#34;, keyz, &#34;data:&#34;, data)
+                    break       # Only the last one
+        return rec, rec+24 + blen, len(data)
+
+    def  findrec(self, strx, limx = INT_MAX, skipx = 0):
+
+        &#39;&#39;&#39; Find by string matching substring. &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+
+        #chash = self.getidxint(CURROFFS)            #;print(&#34;chash&#34;, chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        arr = []
+        strx2 = strx.encode(errors=&#39;strict&#39;);
+
+        #print(&#34;findrec&#34;, strx2)
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 1:
+                    print(&#34;find&#34;, data)
+                #if str(strx2) in str(data):
+                if strx2 in data:
+                    arr.append(self.get_key_offs(rec))
+                    #arr.append(rec)
+
+                    if len(arr) &gt;= limx:
+                        break
+        self.lock.unlock()  #dellock(self.lckname)
+
+        return arr
+
+    def  findrecpos(self, strx, limx = INT_MAX, skipx = 0):
+
+        &#39;&#39;&#39; Find record, return array of positions. &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        arr = []
+        if type(strx) != type(b&#34;&#34;):
+            strx = strx.encode(errors=&#39;strict&#39;);
+
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 1:
+                    print(&#34;frecpos&#34;, data)
+                if strx == data:
+                    arr.append(rec)
+                    if len(arr) &gt;= limx:
+                        break
+
+        self.lock.unlock()  #dellock(self.lckname)
+
+        return arr
+
+    def  findrec(self, strx, limx = INT_MAX, skipx = 0):
+
+        &#39;&#39;&#39; Find by string matching substring. &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        arr = []
+        if type(strx) != type(b&#34;&#34;):
+            strx2 = strx.encode(errors=&#39;strict&#39;);
+
+        #print(&#34;findrec&#34;, strx2)
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 1:
+                    print(&#34;find&#34;, data)
+                #if str(strx2) in str(data):
+                if strx2 in data:
+                    #arr.append(self.get_key_offs(rec))
+                    #arr.append(rec)
+                    arr.append(self._rec2arr(rec))
+                    if len(arr) &gt;= limx:
+                        break
+        self.lock.unlock()    #dellock(self.lckname)
+
+        return arr
+
+    # --------------------------------------------------------------------
+    # List all active records
+
+    def  listall(self):
+
+        &#39;&#39;&#39; List all active records. Return array id record indexes. &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+        keys = []; arr = []; cnt = 0
+
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        maxrec = chash - self.INTSIZE * 2
+        rsize = self._getdbsize(self.ifp) - 1
+
+        rrr =  range(maxrec,
+                HEADSIZE - self.INTSIZE * 2, -self.INTSIZE * 2)
+        for aa in rrr:
+            rec = self.getidxint(aa)
+
+            #print(&#34; Scanning at %d %d&#34; % (rec, cnt))
+
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if 1: #base_showdel:
+                    print(&#34;Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if 1: #self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                    hhh = self.getbuffint(rec+4)
+                    print(&#34; Good data &#39;%s&#39; at&#34; % sig, rec, hhh)
+                    if hhh not in keys:
+                        keys.append(hhh)
+                        # as we are going backwards
+                        arr.append(rsize - cnt)
+                        #print(&#34;found&#34;, hhh)
+            cnt += 1
+
+        keys = []
+        self.lock.unlock()  #dellock()self.lckname)
+
+        return arr
+
+    def  find_key(self, keyx, limx = 0xffffffff):
+
+        &#39;&#39;&#39; Find record by key Search from the end, so latest comes first. &#39;&#39;&#39;
+
+        self.lock.waitlock()   #self.lckname)
+
+        skip = 0; arr = []; cnt = 0
+        try:
+            arg2e = keyx.encode()
+        except:
+            arg2e = keyx
+
+        hhhh = self.hash32(arg2e)
+        #print(&#34;hashx&#34;, &#34;&#39;&#34; + hashx + &#34;&#39;&#34;, hex(hhhh), arg2e)
+
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        rrr =  range(chash - self.INTSIZE * 2,
+                HEADSIZE - self.INTSIZE * 2, -self.INTSIZE * 2)
+        for aa in rrr:
+            rec = self.getidxint(aa)
+            #print(&#34; Scanning at %d %d&#34; % (rec, cnt))
+
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34;Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                hhh = self.getbuffint(rec+4)
+                if hhh == hhhh:
+                    if len(arr) &gt;= limx - 1:
+                        arr.append([&#34;More data ...&#34;,])
+                        break
+                    arr.append(rec)
+                else:
+                    pass
+                    #print(&#34;no match&#34;, hex(hhh))
+
+            cnt += 1
+        self.lock.unlock()  #dellock()self.lckname)
+
+        return arr
+
+
+    def  del_data(self, hash, skip = 1):
+
+        &#39;&#39;&#39; Delete data by hash. &#39;&#39;&#39;
+
+        cnt = skip
+        hhhh = int(hash, 16)                #;print(&#34;hash&#34;, hash, hhhh)
+        curr = self.getbuffint(CURROFFS)    #;print(&#34;curr&#34;, curr)
+        chash = self.getidxint(CURROFFS)    #;print(&#34;chash&#34;, chash)
+
+        arr = []
+        for aa in range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+
+            # Optional check
+            #sig = self.getbuffstr(rec, self.INTSIZE)
+            #if sig != RECSIG:
+            #    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+
+            #blen = self.getbuffint(rec+8)
+            #print(&#34;data &#39;%s&#39; at&#34; % sig, rec, &#34;blen&#34;, blen)
+
+            hhh = self.getbuffint(rec+4)
+            if hash == hhh:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Would delete&#34;, hhh)
+
+            self.putbuffstr(rec, RECDEL)
+
+            cnt += 1
+
+        return arr
+
+    def  del_rec_bykey(self, strx, maxdelrec = 0xffffffff, skip = 0, dirx = 0):
+
+        &#39;&#39;&#39; Remove record by key. Remove maxdelrec occurances.
+
+                    Input:
+                        strx            key to remove
+                        maxdelrex       maximum number of records to delete
+                        skip            start scanning from offset
+                        dirx            False for scanning down, True for up
+                    Return:
+                        count of records removed
+
+            &#39;&#39;&#39;
+
+        if self.pgdebug:
+            print(&#34;del_rec_bykey()&#34;, strx)
+
+        &#39;&#39;&#39; Delete records by key string; needs bin str, converted
+            automatically on entry.
+        &#39;&#39;&#39;
+
+        if type(strx) != type(b&#34;&#34;):
+            strx = strx.encode()
+
+        if self.base_verbose &gt; 1:
+            print(&#34;Start delete &#34;, strx, &#34;skip&#34;, skip)
+
+        cnt = 0; cnt3 = 0
+        #chash = self.getidxint(CURROFFS)    #;print(&#34;chash&#34;, chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        # Direction sensitivity
+        if dirx:
+            rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+        else:
+            rrr = range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2)
+
+        #for aa in range(HEADSIZE, chash, self.INTSIZE * 2):
+        for aa in rrr:
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 2:
+                    print(&#34;del iterate recs&#34;, cnt3, data, strx)
+
+                if strx == data:
+                    if self.base_verbose &gt; 0:
+                        print(&#34;Deleting&#34;, cnt3, aa, data)
+                    self.putbuffstr(rec, RECDEL)
+                    cnt += 1
+                    if cnt &gt;= maxdelrec:
+                        break
+            cnt3 += 1
+        return cnt
+
+    def  save_data(self, header, datax, replace = False):
+
+        &#39;&#39;&#39; Append to the end of file. If replace flag is set, try to overwrite
+            in place. If new record is larger, add it as ususal. If smaller,
+            the record is padded with spaces. This should not influence most ops.
+            (like: int())
+            This feature allows the database update wthout creating new records.
+            Useful for counters or dynamically changing data.
+
+                    Input:
+                        header     Header
+                        datax      Data
+
+                     Return:
+                        The offset of saved data
+            &#39;&#39;&#39;
+
+        if self.pgdebug &gt; 0:
+            print(&#34;Save_data()&#34;, header, datax)
+
+        self.lock.waitlock()   #self.lckname)
+        ret = 0
+        was = False
+        # Put new data in place
+        if replace:
+            if type(datax) != type(b&#34;&#34;):
+                mrep2 = datax.encode()
+            else:
+                mrep2 = datax
+
+            rrr = self._recoffset(header, 1)
+            if rrr[2]:
+                #print(&#34;Replace rec&#34;, hex(rrr[0]), &#34;len:&#34;, rrr[1])
+                if len(mrep2) &lt;= rrr[2]:
+                    #print(&#34;Fit&#34;)
+                    padded = mrep2 + b&#39; &#39; * (rrr[1] - len(mrep2))
+                    #print(&#34;Padded&#34;, padded)
+                    ccc = self.hash32(padded)
+                    self.putbuffint(rrr[1] - 8, ccc)
+                    #print(&#34;ccc&#34;, hex(ccc))
+                    self.putbuffstr(rrr[1], padded)
+                    was = True
+                    # This was helpful ... but more systematic approach is needed
+                    self.fp.flush()
+                    self.ifp.flush()
+                    ret =  rrr[0]
+        if not was:
+            ret = self._save_data2(header, datax)
+
+        self.lock.unlock()  #dellock()self.lckname)
+
+        return ret
+
+    # --------------------------------------------------------------------
+    # Save data to database file
+
+    def  _save_data2(self, arg2, arg3):
+
+        # Prepare all args, if cannot encode, use original
+        if type(arg2) != type(b&#34;&#34;):
+            arg2 = arg2.encode()
+        if type(arg3) != type(b&#34;&#34;):
+            arg3 = arg3.encode()
+
+        if self.pgdebug &gt; 1:
+            print(&#34;args&#34;, arg2, &#34;arg3&#34;, arg3)
+
+        hhh2 = self.hash32(arg2)
+        hhh3 = self.hash32(arg3)
+
+        if self.pgdebug &gt; 1:
+            print(&#34;_save_data2 hhh2&#34;, hhh2, &#34;hhh3&#34;, hhh3)
+
+        ret = self.__save_data(hhh2, arg2, hhh3, arg3)
+
+        return ret
+
+    def __save_data(self, hhh2, arg2e, hhh3, arg3e):
+
+        # Update / Append data
+
+        # Building array added some efficiency
+        arr = []
+        arr.append(RECSIG)
+        arr.append(struct.pack(&#34;I&#34;, hhh2))
+        arr.append(struct.pack(&#34;I&#34;, len(arg2e)))
+        arr.append(arg2e)
+        arr.append(RECSEP)
+        arr.append(struct.pack(&#34;I&#34;, hhh3))
+        arr.append(struct.pack(&#34;I&#34;, len(arg3e)))
+        arr.append(arg3e)
+        tmp = b&#34;&#34;.join(arr)
+
+        #print(tmp)
+        # The pre - assemple to string added 20% efficiency
+
+        #curr = self.getbuffint(CURROFFS)
+        curr =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        #print(&#34;curr&#34;, curr)
+
+        self.fp.seek(0, os.SEEK_END)
+        dcurr = self.fp.tell()
+
+        self.fp.write(tmp)
+
+        # This allowed corruption of the data string
+        # Update lenght
+        #self.putbuffint(CURROFFS, self.fp.tell()) #// - dlink + DATA_LIM)
+        #self.fp.seek(curr)
+        #print(&#34;hashpos&#34;, hashpos)
+
+        # Update / Append index
+        if self.pgdebug &gt; 1:
+            print(&#34;__save_data idx&#34;, dcurr)
+
+        self.putidxint(curr, dcurr)
+        self.putidxint(curr + self.INTSIZE, hhh2)
+        #self.putidxint(CURROFFS, self.ifp.tell())
+
+        self.fp.flush()
+        self.ifp.flush()
+
+        return curr
+
+    def __del__(self):
+
+        &#39;&#39;&#39; flush file handles and close files. &#39;&#39;&#39;
+
+        if hasattr(self, &#34;pgdebug&#34;):
+            if self.pgdebug &gt; 9:
+                print(&#34;__del__ called.&#34;)
+
+        #self.flush()
+
+        if hasattr(self, &#34;fp&#34;):
+                if self.fp:
+                    self.fp.flush()
+                    self.fp.close()
+
+        if hasattr(self, &#34;ifp&#34;):
+                if self.ifp:
+                    self.ifp.flush()
+                    self.ifp.close()
+
+# EOF</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="twincore.TwinCore"><code class="flex name class">
+<span>class <span class="ident">TwinCore</span></span>
+<span>(</span><span>fname='pydbase.pydb', pgdebug=0, devmode=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Data file and index file; protected by locks
+The TWIN refers to separate files for data / index.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TwinCore(TwinCoreBase):
+
+    &#39;&#39;&#39;
+
+     Data file and index file; protected by locks
+     The TWIN refers to separate files for data / index.
+
+    &#39;&#39;&#39;
+
+    def __init__(self, fname = &#34;pydbase.pydb&#34;, pgdebug = 0, devmode = 1):
+
+        self.cnt = 0
+        self.fname = fname
+        self.lckname  = os.path.splitext(self.fname)[0] + &#34;.lock&#34;
+        self.idxname  = os.path.splitext(self.fname)[0] + &#34;.pidx&#34;
+        self.pgdebug = pgdebug
+        self.base_verbose  = 0
+        self.devmode = devmode
+        self.lock = FileLock(self.lckname)
+
+        # Make sure only one process can use this
+        self.lock.waitlock() #self.lckname)
+
+        super(TwinCore, self).__init__(pgdebug)
+
+        #print(&#34;initializing core with&#34;, fname, pgdebug)
+        #self.pool = threading.BoundedSemaphore(value=1)
+
+        # It was informative at one point
+        if self.pgdebug &gt; 4:
+            pass
+            #print(&#34;fname:    &#34;, fname)
+            #print(&#34;idxname:  &#34;, self.idxname)
+            #print(&#34;lockname: &#34;, self.lckname)
+
+        self.lasterr = &#34;No Error&#34;
+
+        #print(&#34;Q pid&#34;, os.getpid())
+
+        #print(&#34;pid&#34;, os.getpid())
+        # Initial file creation
+        # Nuke false index
+        try:
+            if not os.path.isfile(self.fname):
+                #os.rename(self.idxname, self.idxname + &#34;.old&#34;)
+                os.remove(self.idxname)
+        except:
+            pass
+
+        self.fp = self.softcreate(self.fname)
+        self.ifp = self.softcreate(self.idxname)
+
+        buffsize = self.getsize(self.fp)
+        if buffsize &lt; HEADSIZE:
+            #print(&#34;initial padding&#34;)
+            self.create_data(self.fp)
+            #try:
+            #    # There was no file, delete index, if any
+            #    os.rename(self.idxname, self.idxname + &#34;.dangle&#34;)
+            #    #os.remove(self.idxname)
+            #except:
+            #    pass
+
+            #print(&#34;initial padding&#34;)
+            self.create_idx(self.ifp)
+        else:
+            # Initial index creation
+            #self.ifp = self.softcreate(self.idxname)
+            indexsize = self.getsize(self.ifp)
+
+            # See if valid index
+            if indexsize &lt; HEADSIZE:
+                self.create_idx(self.ifp)
+                # It was an existing data, new index needed
+                if self.base_verbose &gt; 0:
+                        print(&#34;Reindexing&#34;)
+                self.__reindex()
+
+        # Check
+        if  self.getbuffstr(0, 4) != FILESIG:
+            print(&#34;Invalid data signature&#34;)
+            self.lock.unlock()  #dellock(self.lckname)
+            raise  RuntimeError(&#34;Invalid database signature.&#34;)
+
+        #print(&#34;buffsize&#34;, buffsize, &#34;indexsize&#34;, indexsize)
+        self.lock.unlock() #dellock(self.lckname)
+
+    def version(self):
+        &#39;&#39;&#39; Return version sting. &#39;&#39;&#39;
+        return Version
+
+    def flush(self):
+
+        &#39;&#39;&#39; Flush files to disk. &#39;&#39;&#39;
+
+        if self.pgdebug &gt; 9:
+            print(&#34;Flushing&#34;, self.fp, self.ifp)
+
+        try:
+            if hasattr(self, &#34;fp&#34;):
+                if self.fp:
+                    self.fp.flush()
+            if hasattr(self, &#34;ifp&#34;):
+                if self.ifp:
+                    self.ifp.flush()
+        except:
+            print(&#34;Cannot flush files&#34;, sys.exc_info())
+
+    def getdbsize(self):
+
+        &#39;&#39;&#39; Return the DB size in records. This includes ALL records, including
+        deleted and damaged. This number can be used to iterate all records
+        in the database. Usually from end to beginning. &#39;&#39;&#39;
+
+        ret = self._getdbsize(self.ifp)
+        if not ret:
+            ret = 0
+        return ret
+
+    def _getdbsize(self, ifp):
+
+        &#39;&#39;&#39; Return number of records. Return total including deleted / damaged. &#39;&#39;&#39;
+
+        try:
+            #chash = self.getidxint(CURROFFS) - HEADSIZE
+            chash = self.getsize(ifp) - HEADSIZE
+            ret = int(chash / (2 * self.INTSIZE))
+        except:
+            ret = 0
+
+        return  ret
+
+    # --------------------------------------------------------------------
+    def _rec2arr(self, rec):
+
+        arr = []
+        sig = self.getbuffstr(rec, self.INTSIZE)
+
+        if sig == RECDEL:
+            return arr
+
+        if sig != RECSIG:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sig) &#39;%s&#39; at&#34; % sig, rec)
+            return arr
+
+        hash = self.getbuffint(rec+4)
+        blen = self.getbuffint(rec+8)
+        data = self.getbuffstr(rec + 12, blen)
+
+        if base_integrity:
+            ccc = self.hash32(data)
+            if self.base_verbose &gt; 1:
+                print(&#34;rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+            if hash != ccc:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Error on hash at rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+                return []
+
+        #print(&#34;%5d pos %5d&#34; % (cnt, rec), &#34;hash %8x&#34; % hash, &#34;ok&#34;, ok, &#34;len=&#34;, blen, end=&#34; &#34;)
+
+        endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
+        if endd != RECSEP:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sep) &#39;%s&#39; at&#34; % endd, rec)
+            return arr
+
+        rec2 = rec + 16 + blen;
+        hash2 = self.getbuffint(rec2)
+        blen2 = self.getbuffint(rec2+4)
+        data2 = self.getbuffstr(rec2+8, blen2)
+
+        if base_integrity:
+            ccc2 = self.hash32(data2)
+            if self.base_verbose &gt; 1:
+                print(&#34;rec&#34;, rec, &#34;hash2&#34;, hex(hash2), &#34;check2&#34;, hex(ccc2))
+            if hash2 != ccc2:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Error on hash at rec&#34;, rec, &#34;hash2&#34;, hex(hash2), &#34;check2&#34;, hex(ccc2))
+                return []
+
+        arr = [data, data2]
+        return arr
+
+    # -------------------------------------------------------------------
+    # Originator, dump single record
+
+    def  dump_rec(self, rec, cnt):
+
+        &#39;&#39;&#39; Print record to the screen. &#39;&#39;&#39;
+
+        cnt2 = 0
+        sig = self.getbuffstr(rec, self.INTSIZE)
+
+        if sig == RECDEL:
+            if base_showdel:
+                klen = self.getbuffint(rec+8)
+                kdata = self.getbuffstr(rec+12, klen)
+                rec2 = rec + 16 + klen;
+                blen = self.getbuffint(rec2+4)
+                data = self.getbuffstr(rec2+8, blen)
+
+                print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, truncs(data))
+            return cnt2
+
+        if sig != RECSIG:
+            if self.base_verbose &gt; 1:
+                print(&#34; Damaged data (sig) &#39;%s&#39; at&#34; % sig, rec)
+            return cnt2
+
+        hash = self.getbuffint(rec+4)
+        blen = self.getbuffint(rec+8)
+
+        if blen &lt; 0:
+            print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
+            return cnt2
+
+        data = self.getbuffstr(rec+12, blen)
+        if base_integrity:
+            ccc = self.hash32(data)
+            if self.base_verbose &gt; 1:
+                print(&#34;rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+            if hash != ccc:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Error on hash at rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+                return []
+
+        endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
+        if endd != RECSEP:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sep) &#39;%s&#39; at&#34; % endd, rec)
+            return cnt2
+
+        rec2 = rec + 16 + blen;
+        hash2 = self.getbuffint(rec2)
+        blen2 = self.getbuffint(rec2+4)
+
+        if blen2 &lt; 0:
+            print(&#34;Invalid data length %d at %d&#34; % (blen2, rec))
+            return cnt2
+
+        data2 = self.getbuffstr(rec2+8, blen2)
+        if base_integrity:
+            ccc2 = self.hash32(data2)
+            if self.base_verbose &gt; 1:
+                print(&#34;rec&#34;, rec, &#34;hash2&#34;, hex(hash), &#34;check2&#34;, hex(ccc))
+            if hash2 != ccc2:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Error on hash at rec&#34;, rec, &#34;hash2&#34;, hex(hash), &#34;check2&#34;, hex(ccc))
+                return []
+
+        if self.base_verbose &gt; 2:
+            print(&#34;%-5d pos %5d&#34; % (cnt, rec), &#34;%8x&#34; % hash, &#34;len&#34;, blen, data,
+                                                        &#34;%8x&#34; % hash2,&#34;len&#34;, blen2, data2)
+
+        elif self.base_verbose &gt; 1:
+            print(&#34;%-5d pos %5d&#34; % (cnt, rec), &#34;%8x&#34; % hash, &#34;len&#34;, blen, data,
+                                                        &#34;%8x&#34; % hash2,&#34;len&#34;, blen2, data2)
+        elif self.base_verbose:
+            print(&#34;%-5d pos %5d&#34; % (cnt, rec),  data, data2)
+        else:
+            print(&#34;%-5d pos %5d&#34; % (cnt, rec), &#34;Data:&#34;, truncs(data, 18), &#34;Data2:&#34;, truncs(data2, 18))
+
+        cnt2 += 1
+        return cnt2
+
+    def  check_rec(self, rec, cnt2):
+
+        &#39;&#39;&#39; Check record. Verbose to the screen. Return number of errors.&#39;&#39;&#39;
+
+        ret = 0
+        sig = self.getbuffstr(rec, self.INTSIZE)
+
+        # Do not check deleted, say OK
+        if sig == RECDEL:
+            if self.base_verbose &gt; 1:
+                print(&#34; Deleted data &#39;%s&#39; at %d (%d)&#34; % (sig, rec, cnt2))
+            ret = 1
+            return ret
+
+        if sig != RECSIG:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sig) &#39;%s&#39; at %d (%d)&#34; % (sig, rec, cnt2))
+            #if self.base_verbose &gt; 1:
+            #    print(&#34;Data&#34;, data)
+
+            return ret
+
+        hash = self.getbuffint(rec+4)
+        blen = self.getbuffint(rec+8)
+
+        if blen &lt;= 0:
+            if self.base_verbose &gt; 1:
+                print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
+            return ret
+
+        data = self.getbuffstr(rec+12, blen)
+        ccc = self.hash32(data)
+        if hash != ccc:
+            if self.base_verbose &gt; 1:
+                print(&#34;Data&#34;, data)
+            elif self.base_verbose &gt; 0:
+                print(&#34;Error on hash at rec&#34;, rec, cnt2, &#34;hash&#34;,
+                                            hex(hash), &#34;check&#34;, hex(ccc))
+
+            return ret
+
+        endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
+        if endd != RECSEP:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data (sep) &#39;%s&#39; at %d %d %d&#34; % (endd, rec, cnt2))
+            return ret
+
+        rec2 = rec + 16 + blen;
+        hash2 = self.getbuffint(rec2)
+        blen2 = self.getbuffint(rec2+4)
+
+        if blen2 &lt; 0:
+            if self.base_verbose &gt; 1:
+                print(&#34;Invalid data length2 %d at %d&#34; % (blen2, rec))
+            return ret
+
+        data2 = self.getbuffstr(rec2+8, blen2)
+        ccc2 = self.hash32(data2)
+        if hash2 != ccc2:
+            if self.base_verbose &gt; 1:
+                print(&#34;Data&#34;, data, &#34;Data2&#34;, data2)
+            elif self.base_verbose &gt; 0:
+                print(&#34;Error on hash2 at rec&#34;, rec, cnt2, &#34;hash2&#34;,
+                                        hex(hash2), &#34;check2&#34;, hex(ccc2))
+
+            return ret
+
+        if self.base_verbose &gt; 2:
+            print(&#34;Record at %d (%d) OK.&#34; % (rec, cnt2))
+
+        ret += 1
+        return ret
+
+    # --------------------------------------------------------------------
+    # Internal; no locking
+
+    def  __dump_data(self, lim = INT_MAX, skip = 0, dirx = 0):
+
+        if self.pgdebug:
+            print(&#34;dump_data()&#34;, &#34;lim =&#34;, hex(lim), &#34;skip=&#34;, skip, &#34;dirx =&#34;, dirx)
+
+        &#39;&#39;&#39; Put all data to screen worker function. &#39;&#39;&#39;
+
+        cnt = skip; cnt2 = 0
+        curr =  chash = HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        # Direction sensitivity
+        if dirx:
+            rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+        else:
+            rrr = range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2)
+
+        for aa in rrr:
+            rec = self.getidxint(aa)
+            #print(aa, rec)
+            if not base_quiet:
+                cnt2 += 1
+                ret = self.dump_rec(rec, cnt)
+                if ret:
+                    cnt += 1
+                    if cnt &gt;= lim:
+                        break
+
+    def  dump_data(self, lim = INT_MAX, skip = 0):
+
+        &#39;&#39;&#39; Put all data to screen. &#39;&#39;&#39;
+
+        self.__dump_data(lim, skip, 1)
+
+    def  revdump_data(self, lim, skip = 0):
+
+        &#39;&#39;&#39; Put all data to screen in reverse order. &#39;&#39;&#39;
+
+        self.__dump_data(lim, skip)
+
+    def  reindex(self):
+
+        &#39;&#39;&#39; Re create index file. &#39;&#39;&#39;
+
+        self.lock.waitlock() #self.lckname)
+        ret = self.__reindex()
+        self.lock.unlock    #dellock(self.lckname)
+        return ret
+
+    # --------------------------------------------------------------------
+
+    def  __reindex(self):
+
+        &#39;&#39;&#39; Recover index. Make sure the DB in not in session.  &#39;&#39;&#39;
+
+        ret = 0
+
+        #curr = self.getbuffint(CURROFFS) - HEADSIZE
+        curr =  self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        reidx = os.path.splitext(self.fname)[0]  + &#34;_tmp_&#34; + &#34;.pidx&#34;
+        tempifp = self.softcreate(reidx)
+        self.create_idx(tempifp)
+        dlen = self.getsize(self.fp)
+
+        if self.base_verbose &gt; 2:
+           print(&#34;curr&#34;, curr, &#34;dlen&#34;, dlen)
+
+        aa =  HEADSIZE
+        while 1:
+            if aa &gt;= dlen:
+                break
+
+            sig = self.getbuffstr(aa, self.INTSIZE)
+            # Check if sig is correct
+            if sig != RECSIG:
+                print(&#34;Invalid sig .. resync needed&#34;)
+                raise
+
+            #print(&#34;reind&#34;, aa)
+
+            try:
+                hhh2 = self.getbuffint(aa + 4)
+                lenx = self.getbuffint(aa + 8)
+                if lenx &lt; 0:
+                    print(&#34;Invalid key length&#34;)
+                sep =  self.getbuffstr(aa + 12 + lenx, self.INTSIZE)
+                len2 =  self.getbuffint(aa + 20 + lenx)
+                if len2 &lt; 0:
+                    print(&#34;Invalid record length&#34;)
+            except:
+                print(&#34;in reindex&#34;, sys.exc_info())
+
+            if self.base_verbose == 1:
+                print(aa, &#34;sig&#34;, sig, &#34;hhh2&#34;, hex(hhh2), &#34;len&#34;, lenx, \
+                    &#34;sep&#34;, sep, &#34;len2&#34;, len2)
+            if self.base_verbose &gt; 1:
+                data =  self.getbuffstr(aa + 12, lenx)
+                data2 =  self.getbuffstr(aa + 24 + lenx, len2)
+                print(aa, &#34;sig&#34;, sig, &#34;data&#34;, data, &#34;data2&#34;, data2)
+
+            # Update / Append index
+            #hashpos = self._getint(tempifp, CURROFFS)
+            hashpos =  HEADSIZE  + self._getdbsize(tempifp) * self.INTSIZE * 2
+
+            self._putint(tempifp, hashpos, aa)
+            self._putint(tempifp, hashpos + self.INTSIZE, hhh2)
+
+            # This is a shame .. did not flush to file immidiately
+            tempifp.flush()
+
+            #self._putint(tempifp, hashpos, self.fp.tell())
+
+            # This is dependent on the database structure
+            aa += lenx + len2 + 24
+            ret += 1
+
+        # Make it go out of scope
+        self.fp.flush()
+        self.ifp.flush();
+        self.ifp.close()
+        tempifp.flush();
+        tempifp.close()
+
+        # Now move files
+        try:
+            os.remove(self.idxname)
+        except:
+            pass
+
+        #print(&#34;rename&#34;, reidx, &#34;-&gt;&#34;, self.idxname)
+        os.rename(reidx, self.idxname)
+
+        # Activate new index
+        self.ifp = self.softcreate(self.idxname)
+        return ret
+
+    def __save_error(self, rec, vacerrfp):
+
+        vacerrfp.write(b&#34;Err at %8d\n&#34; % rec)
+
+        try:
+            ddd = self.getbuffstr(rec, 100)
+        except:
+            pass
+
+        # Find next valid record, print up to that
+        found = 0
+        for aa in range(len(ddd)):
+            if ddd[aa:aa+4] == RECSIG:
+                found = True
+                #print(&#34;found:&#34;, ddd[:aa+4])
+                vacerrfp.write(ddd[:aa])
+                break
+        if not found:
+            vacerrfp.write(ddd)
+
+    # ----------------------------------------------------------------
+
+    def  vacuum(self):
+
+        &#39;&#39;&#39;
+            Remove all deleted data. Reindex.
+            The db is locked while the vacuum is in operation, but
+            make sure the DB in not in session, and no pending
+            operations are present (like find / retrieve cycle).
+        &#39;&#39;&#39;
+
+        self.lock.waitlock() #self.lckname)
+        ret = self._vacuum()
+        self.lock.unlock()  #dellock(self.lckname)
+        return ret
+
+    def  _vacuum(self):
+
+        vacname = os.path.splitext(self.fname)[0] + &#34;_vac_&#34; + &#34;.pydb&#34;
+        vacerr  = os.path.splitext(self.fname)[0] +  &#34;.perr&#34;
+        vacidx = os.path.splitext(vacname)[0]  + &#34;.pidx&#34;
+
+        if self.pgdebug &gt; 4:
+            print(&#34;vacname&#34;, vacname)
+            print(&#34;vacidx&#34;, vacidx)
+            print(&#34;vacerr&#34;, vacerr)
+
+        ret = 0; vac = 0
+
+        # Open for append
+        vacerrfp = self.softcreate(vacerr, False)
+        vacerrfp.seek(0, os.SEEK_END)
+
+        try:
+            # Make sure they are empty
+            os.remove(vacname)
+            os.remove(vacidx)
+        except:
+            pass
+
+        # It is used to raise the scope so vacuumed DB closes
+        if 1:
+            vacdb = TwinCore(vacname)
+            vacdb.lock.waitlock()
+
+            skip = 0; cnt = 0
+            chash =  self._getdbsize(self.ifp) * self.INTSIZE * 2
+            rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash + HEADSIZE, self.INTSIZE * 2)
+            for aa in rrr:
+                rec = self.getidxint(aa)
+                sig = self.getbuffstr(rec, self.INTSIZE)
+                if sig == RECDEL:
+                    ret += 1
+                    vac += 1
+                    if self.pgdebug &gt; 1:
+                        print(&#34;deleted&#34;, rec)
+                elif sig != RECSIG:
+                    if self.base_verbose:
+                        print(&#34;Detected error at %d&#34; % rec)
+                    ret += 1
+                    self.__save_error(rec, vacerrfp)
+                else:
+                    global base_integrity
+                    tmpi = base_integrity
+                    base_integrity = True
+                    arr = self.get_rec_offs(rec)
+                    base_integrity = tmpi
+
+                    if self.pgdebug &gt; 1:
+                        print(cnt, &#34;vac rec&#34;, rec, arr)
+
+                    if len(arr) &gt; 1:
+                        hhh2 = self.hash32(arr[0])
+                        hhh3 = self.hash32(arr[1])
+                        vacdb.__save_data(hhh2, arr[0], hhh3, arr[1])
+                        #vac += 1
+                    else:
+                        # This could be from empty bacause of hash error
+                        self.__save_error(rec, vacerrfp)
+                        if self.pgdebug &gt; 0:
+                            print(&#34;Error on vac: %d&#34; % rec)
+                cnt += 1
+
+            vacdb.unlock()  #dellock(vacdb.lckname)
+
+            # if vacerr is empty
+            try:
+                if os.stat(vacerr).st_size == 0:
+                    #print(&#34;Vac error empty&#34;)
+                    os.remove(vacerr)
+            except:
+                print(&#34;vacerr&#34;, sys.exc_info())
+
+        self.lock.unlock()  #dellock(self.lckname)
+
+        # Any vacummed?
+        if vac &gt; 0:
+            # Make it go out of scope
+            self.fp.flush(); self.ifp.flush()
+            self.fp.close(); self.ifp.close()
+
+            # Now move files
+            try:
+                os.remove(self.fname);  os.remove(self.idxname)
+            except:
+                pass
+
+            if self.pgdebug &gt; 1:
+                print(&#34;rename&#34;, vacname, &#34;-&gt;&#34;, self.fname)
+                print(&#34;rename&#34;, vacidx, &#34;-&gt;&#34;, self.idxname)
+
+            os.rename(vacname, self.fname)
+            os.rename(vacidx, self.idxname)
+
+            self.lock.waitlock() #self.lckname)
+            self.fp = self.softcreate(self.fname)
+            self.ifp = self.softcreate(self.idxname)
+            self.lock.unlock()  #dellock(self.lckname)
+
+        else:
+            # Just remove non vacuumed files
+            if self.pgdebug &gt; 1:
+                print(&#34;deleted&#34;, vacname, vacidx)
+            try:
+                os.remove(vacname)
+                os.remove(vacidx)
+            except:
+                pass
+
+        #print(&#34;ended vacuum&#34;)
+        return ret, vac
+
+    def  get_rec(self, recnum):
+
+        &#39;&#39;&#39; Get record from database; recnum is a zero based record counter. &#39;&#39;&#39;
+
+        if self.pgdebug:
+            print(&#34;getrec()&#34;, recnum)
+
+        rsize = self._getdbsize(self.ifp)
+        if recnum &gt;= rsize:
+            #print(&#34;Past end of data.&#34;);
+            raise  RuntimeError( \
+                    &#34;Past end of Data. Asking for %d while max is 0 .. %d records.&#34; \
+                                     % (recnum, rsize-1) )
+            return []
+
+        chash = self.getidxint(CURROFFS)
+        #print(&#34;chash&#34;, chash)
+        offs = self.getidxint(HEADSIZE + recnum * self.INTSIZE * 2)
+
+        #print(&#34;offs&#34;, offs)
+        return self._rec2arr(offs)
+
+    def  get_rec_offs(self, recoffs):
+
+        &#39;&#39;&#39; Return record by offset. &#39;&#39;&#39;
+
+        rsize = self.getsize(self.fp)
+        if recoffs &gt;= rsize:
+            #print(&#34;Past end of data.&#34;);
+            raise  RuntimeError( \
+                    &#34;Past end of File. Asking for offset %d file size is %d.&#34; \
+                                     % (recoffs, rsize) )
+            return []
+
+        sig = self.getbuffstr(recoffs, self.INTSIZE)
+        if sig == RECDEL:
+            if self.base_verbose:
+                print(&#34;Deleted record.&#34;)
+            return []
+        if sig != RECSIG:
+            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            return []
+        #print(&#34;recoffs&#34;, recoffs)
+        return self._rec2arr(recoffs)
+
+    def  get_key_offs(self, recoffs):
+
+        &#39;&#39;&#39; Get key by offset. &#39;&#39;&#39;
+
+        rsize = self.getsize(self.fp)
+        if recoffs &gt;= rsize:
+            #print(&#34;Past end of data.&#34;);
+            raise  RuntimeError( \
+                    &#34;Past end of File. Asking for offset %d file size is %d.&#34; \
+                                     % (recoffs, rsize) )
+            return []
+
+        sig = self.getbuffstr(recoffs, self.INTSIZE)
+        if sig == RECDEL:
+            if self.base_verbose:
+                print(&#34;Deleted record.&#34;)
+            return []
+        if sig != RECSIG:
+            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            return []
+        #print(&#34;recoffs&#34;, recoffs)
+        return self._rec2arr(recoffs)[0]
+
+    def  del_rec(self, recnum):
+
+        &#39;&#39;&#39; Delete by record number.
+            Deleted record is marked as deleted but not removed.
+            Deleted records are ignored in further operations.
+            Use &#39;vacuum&#39; to actually remove record.
+        &#39;&#39;&#39;
+
+        rsize = self._getdbsize(self.ifp)
+        if recnum &gt;= rsize:
+            if self.base_verbose:
+                print(&#34;Past end of data.&#34;);
+            return False
+        chash = self.getidxint(CURROFFS)
+        #print(&#34;chash&#34;, chash)
+        offs = self.getidxint(HEADSIZE + recnum * self.INTSIZE * 2)
+        #print(&#34;offs&#34;, offs)
+        old = self.getbuffstr(offs, self.INTSIZE)
+        if old == RECDEL:
+            if self.base_verbose:
+                print(&#34;Record at %d already deleted.&#34; % offs);
+            return False
+
+        self.putbuffstr(offs, RECDEL)
+        return True
+
+    def  del_rec_offs(self, recoffs):
+
+        &#39;&#39;&#39; Delete record by file offset. &#39;&#39;&#39;
+
+        rsize = self.getsize(self.fp)
+        if recoffs &gt;= rsize:
+            #print(&#34;Past end of data.&#34;);
+            raise  RuntimeError( \
+                    &#34;Past end of File. Asking for offset %d file size is %d.&#34; \
+                                     % (recoffs, rsize) )
+            return False
+
+        sig = self.getbuffstr(recoffs, self.INTSIZE)
+        if sig != RECSIG  and sig != RECDEL:
+            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            return False
+
+        self.putbuffstr(recoffs, RECDEL)
+        return True
+
+    # Check integrity
+
+    def integrity_check(self, skip = 0, count = 0xffffffff):
+
+        &#39;&#39;&#39; Check record integrity for &#39;count&#39; records.
+            Skip number of records.
+        &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+        ret = 0; cnt2 = 0; cnt3 = 0;
+        #chash = self.getidxint(CURROFFS)        #;print(&#34;chash&#34;, chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        # Direction sensitivity
+        rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+        for aa in rrr:
+            rec = self.getidxint(aa)
+            #print(aa, rec)
+            ret += self.check_rec(rec, cnt2)
+            cnt2 += 1
+            cnt3 += 1
+            if cnt3 &gt;= count:
+                break
+        self.lock.unlock() #dellock(self.lckname)
+        return ret, cnt2
+
+    def  retrieve(self, strx, limx = 1):
+
+        &#39;&#39;&#39; Retrive in reverse, limit it. &#39;&#39;&#39;
+
+        if type(strx) != type(b&#34;&#34;):
+            strx = strx.encode(errors=&#39;strict&#39;)
+
+        hhhh = self.hash32(strx)
+        if self.pgdebug &gt; 2:
+            print(&#34;strx&#34;, strx, hhhh)
+
+        #chash = self.getidxint(CURROFFS)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        #;print(&#34;chash&#34;, chash)
+        arr = []
+
+        self.lock.waitlock() #(self.lckname)
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if self.base_verbose &gt; 3:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                hhh = self.getbuffint(rec+4)
+                if hhh == hhhh:
+                    arr.append(self.get_rec_offs(rec))
+                    if len(arr) &gt;= limx:
+                        break
+        self.lock.unlock()  #dellock(self.lckname)
+
+        return arr
+
+    # Return record offset
+
+    def  _recoffset(self, strx, limx = INT_MAX, skipx = 0):
+
+        #chash = self.getidxint(CURROFFS)            #;print(&#34;chash&#34;, chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        rec = 0; blen = 0; data = &#34;&#34;
+        arr = []
+        if type(strx) != type(b&#34;&#34;):
+            strx2 = strx.encode(errors=&#39;strict&#39;);
+        else:
+            strx2 = strx
+
+        #print(&#34;_recoffset&#34;, strx2)
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                keyz = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 1:
+                    print(&#34;_recoffset&#34;, keyz)
+                if strx2 == keyz:
+                    sig = self.getbuffstr(rec + 16 + blen,  self.INTSIZE)
+                    xlen = self.getbuffint(rec + 20 + blen)
+                    data = self.getbuffstr(rec + 24 + blen, xlen)
+                    #print(&#34;rec offset&#34;, rec + 12,  &#34;key:&#34;, keyz, &#34;data:&#34;, data)
+                    break       # Only the last one
+        return rec, rec+24 + blen, len(data)
+
+    def  findrec(self, strx, limx = INT_MAX, skipx = 0):
+
+        &#39;&#39;&#39; Find by string matching substring. &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+
+        #chash = self.getidxint(CURROFFS)            #;print(&#34;chash&#34;, chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        arr = []
+        strx2 = strx.encode(errors=&#39;strict&#39;);
+
+        #print(&#34;findrec&#34;, strx2)
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 1:
+                    print(&#34;find&#34;, data)
+                #if str(strx2) in str(data):
+                if strx2 in data:
+                    arr.append(self.get_key_offs(rec))
+                    #arr.append(rec)
+
+                    if len(arr) &gt;= limx:
+                        break
+        self.lock.unlock()  #dellock(self.lckname)
+
+        return arr
+
+    def  findrecpos(self, strx, limx = INT_MAX, skipx = 0):
+
+        &#39;&#39;&#39; Find record, return array of positions. &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        arr = []
+        if type(strx) != type(b&#34;&#34;):
+            strx = strx.encode(errors=&#39;strict&#39;);
+
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 1:
+                    print(&#34;frecpos&#34;, data)
+                if strx == data:
+                    arr.append(rec)
+                    if len(arr) &gt;= limx:
+                        break
+
+        self.lock.unlock()  #dellock(self.lckname)
+
+        return arr
+
+    def  findrec(self, strx, limx = INT_MAX, skipx = 0):
+
+        &#39;&#39;&#39; Find by string matching substring. &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        arr = []
+        if type(strx) != type(b&#34;&#34;):
+            strx2 = strx.encode(errors=&#39;strict&#39;);
+
+        #print(&#34;findrec&#34;, strx2)
+
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 1:
+                    print(&#34;find&#34;, data)
+                #if str(strx2) in str(data):
+                if strx2 in data:
+                    #arr.append(self.get_key_offs(rec))
+                    #arr.append(rec)
+                    arr.append(self._rec2arr(rec))
+                    if len(arr) &gt;= limx:
+                        break
+        self.lock.unlock()    #dellock(self.lckname)
+
+        return arr
+
+    # --------------------------------------------------------------------
+    # List all active records
+
+    def  listall(self):
+
+        &#39;&#39;&#39; List all active records. Return array id record indexes. &#39;&#39;&#39;
+
+        self.lock.waitlock()    #(self.lckname)
+        keys = []; arr = []; cnt = 0
+
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        maxrec = chash - self.INTSIZE * 2
+        rsize = self._getdbsize(self.ifp) - 1
+
+        rrr =  range(maxrec,
+                HEADSIZE - self.INTSIZE * 2, -self.INTSIZE * 2)
+        for aa in rrr:
+            rec = self.getidxint(aa)
+
+            #print(&#34; Scanning at %d %d&#34; % (rec, cnt))
+
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if 1: #base_showdel:
+                    print(&#34;Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if 1: #self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                    hhh = self.getbuffint(rec+4)
+                    print(&#34; Good data &#39;%s&#39; at&#34; % sig, rec, hhh)
+                    if hhh not in keys:
+                        keys.append(hhh)
+                        # as we are going backwards
+                        arr.append(rsize - cnt)
+                        #print(&#34;found&#34;, hhh)
+            cnt += 1
+
+        keys = []
+        self.lock.unlock()  #dellock()self.lckname)
+
+        return arr
+
+    def  find_key(self, keyx, limx = 0xffffffff):
+
+        &#39;&#39;&#39; Find record by key Search from the end, so latest comes first. &#39;&#39;&#39;
+
+        self.lock.waitlock()   #self.lckname)
+
+        skip = 0; arr = []; cnt = 0
+        try:
+            arg2e = keyx.encode()
+        except:
+            arg2e = keyx
+
+        hhhh = self.hash32(arg2e)
+        #print(&#34;hashx&#34;, &#34;&#39;&#34; + hashx + &#34;&#39;&#34;, hex(hhhh), arg2e)
+
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        rrr =  range(chash - self.INTSIZE * 2,
+                HEADSIZE - self.INTSIZE * 2, -self.INTSIZE * 2)
+        for aa in rrr:
+            rec = self.getidxint(aa)
+            #print(&#34; Scanning at %d %d&#34; % (rec, cnt))
+
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34;Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                hhh = self.getbuffint(rec+4)
+                if hhh == hhhh:
+                    if len(arr) &gt;= limx - 1:
+                        arr.append([&#34;More data ...&#34;,])
+                        break
+                    arr.append(rec)
+                else:
+                    pass
+                    #print(&#34;no match&#34;, hex(hhh))
+
+            cnt += 1
+        self.lock.unlock()  #dellock()self.lckname)
+
+        return arr
+
+
+    def  del_data(self, hash, skip = 1):
+
+        &#39;&#39;&#39; Delete data by hash. &#39;&#39;&#39;
+
+        cnt = skip
+        hhhh = int(hash, 16)                #;print(&#34;hash&#34;, hash, hhhh)
+        curr = self.getbuffint(CURROFFS)    #;print(&#34;curr&#34;, curr)
+        chash = self.getidxint(CURROFFS)    #;print(&#34;chash&#34;, chash)
+
+        arr = []
+        for aa in range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+
+            # Optional check
+            #sig = self.getbuffstr(rec, self.INTSIZE)
+            #if sig != RECSIG:
+            #    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+
+            #blen = self.getbuffint(rec+8)
+            #print(&#34;data &#39;%s&#39; at&#34; % sig, rec, &#34;blen&#34;, blen)
+
+            hhh = self.getbuffint(rec+4)
+            if hash == hhh:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Would delete&#34;, hhh)
+
+            self.putbuffstr(rec, RECDEL)
+
+            cnt += 1
+
+        return arr
+
+    def  del_rec_bykey(self, strx, maxdelrec = 0xffffffff, skip = 0, dirx = 0):
+
+        &#39;&#39;&#39; Remove record by key. Remove maxdelrec occurances.
+
+                    Input:
+                        strx            key to remove
+                        maxdelrex       maximum number of records to delete
+                        skip            start scanning from offset
+                        dirx            False for scanning down, True for up
+                    Return:
+                        count of records removed
+
+            &#39;&#39;&#39;
+
+        if self.pgdebug:
+            print(&#34;del_rec_bykey()&#34;, strx)
+
+        &#39;&#39;&#39; Delete records by key string; needs bin str, converted
+            automatically on entry.
+        &#39;&#39;&#39;
+
+        if type(strx) != type(b&#34;&#34;):
+            strx = strx.encode()
+
+        if self.base_verbose &gt; 1:
+            print(&#34;Start delete &#34;, strx, &#34;skip&#34;, skip)
+
+        cnt = 0; cnt3 = 0
+        #chash = self.getidxint(CURROFFS)    #;print(&#34;chash&#34;, chash)
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+        # Direction sensitivity
+        if dirx:
+            rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+        else:
+            rrr = range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2)
+
+        #for aa in range(HEADSIZE, chash, self.INTSIZE * 2):
+        for aa in rrr:
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if base_showdel:
+                    print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+            elif sig != RECSIG:
+                if self.base_verbose &gt; 0:
+                    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.base_verbose &gt; 2:
+                    print(&#34;del iterate recs&#34;, cnt3, data, strx)
+
+                if strx == data:
+                    if self.base_verbose &gt; 0:
+                        print(&#34;Deleting&#34;, cnt3, aa, data)
+                    self.putbuffstr(rec, RECDEL)
+                    cnt += 1
+                    if cnt &gt;= maxdelrec:
+                        break
+            cnt3 += 1
+        return cnt
+
+    def  save_data(self, header, datax, replace = False):
+
+        &#39;&#39;&#39; Append to the end of file. If replace flag is set, try to overwrite
+            in place. If new record is larger, add it as ususal. If smaller,
+            the record is padded with spaces. This should not influence most ops.
+            (like: int())
+            This feature allows the database update wthout creating new records.
+            Useful for counters or dynamically changing data.
+
+                    Input:
+                        header     Header
+                        datax      Data
+
+                     Return:
+                        The offset of saved data
+            &#39;&#39;&#39;
+
+        if self.pgdebug &gt; 0:
+            print(&#34;Save_data()&#34;, header, datax)
+
+        self.lock.waitlock()   #self.lckname)
+        ret = 0
+        was = False
+        # Put new data in place
+        if replace:
+            if type(datax) != type(b&#34;&#34;):
+                mrep2 = datax.encode()
+            else:
+                mrep2 = datax
+
+            rrr = self._recoffset(header, 1)
+            if rrr[2]:
+                #print(&#34;Replace rec&#34;, hex(rrr[0]), &#34;len:&#34;, rrr[1])
+                if len(mrep2) &lt;= rrr[2]:
+                    #print(&#34;Fit&#34;)
+                    padded = mrep2 + b&#39; &#39; * (rrr[1] - len(mrep2))
+                    #print(&#34;Padded&#34;, padded)
+                    ccc = self.hash32(padded)
+                    self.putbuffint(rrr[1] - 8, ccc)
+                    #print(&#34;ccc&#34;, hex(ccc))
+                    self.putbuffstr(rrr[1], padded)
+                    was = True
+                    # This was helpful ... but more systematic approach is needed
+                    self.fp.flush()
+                    self.ifp.flush()
+                    ret =  rrr[0]
+        if not was:
+            ret = self._save_data2(header, datax)
+
+        self.lock.unlock()  #dellock()self.lckname)
+
+        return ret
+
+    # --------------------------------------------------------------------
+    # Save data to database file
+
+    def  _save_data2(self, arg2, arg3):
+
+        # Prepare all args, if cannot encode, use original
+        if type(arg2) != type(b&#34;&#34;):
+            arg2 = arg2.encode()
+        if type(arg3) != type(b&#34;&#34;):
+            arg3 = arg3.encode()
+
+        if self.pgdebug &gt; 1:
+            print(&#34;args&#34;, arg2, &#34;arg3&#34;, arg3)
+
+        hhh2 = self.hash32(arg2)
+        hhh3 = self.hash32(arg3)
+
+        if self.pgdebug &gt; 1:
+            print(&#34;_save_data2 hhh2&#34;, hhh2, &#34;hhh3&#34;, hhh3)
+
+        ret = self.__save_data(hhh2, arg2, hhh3, arg3)
+
+        return ret
+
+    def __save_data(self, hhh2, arg2e, hhh3, arg3e):
+
+        # Update / Append data
+
+        # Building array added some efficiency
+        arr = []
+        arr.append(RECSIG)
+        arr.append(struct.pack(&#34;I&#34;, hhh2))
+        arr.append(struct.pack(&#34;I&#34;, len(arg2e)))
+        arr.append(arg2e)
+        arr.append(RECSEP)
+        arr.append(struct.pack(&#34;I&#34;, hhh3))
+        arr.append(struct.pack(&#34;I&#34;, len(arg3e)))
+        arr.append(arg3e)
+        tmp = b&#34;&#34;.join(arr)
+
+        #print(tmp)
+        # The pre - assemple to string added 20% efficiency
+
+        #curr = self.getbuffint(CURROFFS)
+        curr =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        #print(&#34;curr&#34;, curr)
+
+        self.fp.seek(0, os.SEEK_END)
+        dcurr = self.fp.tell()
+
+        self.fp.write(tmp)
+
+        # This allowed corruption of the data string
+        # Update lenght
+        #self.putbuffint(CURROFFS, self.fp.tell()) #// - dlink + DATA_LIM)
+        #self.fp.seek(curr)
+        #print(&#34;hashpos&#34;, hashpos)
+
+        # Update / Append index
+        if self.pgdebug &gt; 1:
+            print(&#34;__save_data idx&#34;, dcurr)
+
+        self.putidxint(curr, dcurr)
+        self.putidxint(curr + self.INTSIZE, hhh2)
+        #self.putidxint(CURROFFS, self.ifp.tell())
+
+        self.fp.flush()
+        self.ifp.flush()
+
+        return curr
+
+    def __del__(self):
+
+        &#39;&#39;&#39; flush file handles and close files. &#39;&#39;&#39;
+
+        if hasattr(self, &#34;pgdebug&#34;):
+            if self.pgdebug &gt; 9:
+                print(&#34;__del__ called.&#34;)
+
+        #self.flush()
+
+        if hasattr(self, &#34;fp&#34;):
+                if self.fp:
+                    self.fp.flush()
+                    self.fp.close()
+
+        if hasattr(self, &#34;ifp&#34;):
+                if self.ifp:
+                    self.ifp.flush()
+                    self.ifp.close()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>twinbase.TwinCoreBase</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="twincore.TwinCore.check_rec"><code class="name flex">
+<span>def <span class="ident">check_rec</span></span>(<span>self, rec, cnt2)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check record. Verbose to the screen. Return number of errors.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  check_rec(self, rec, cnt2):
+
+    &#39;&#39;&#39; Check record. Verbose to the screen. Return number of errors.&#39;&#39;&#39;
+
+    ret = 0
+    sig = self.getbuffstr(rec, self.INTSIZE)
+
+    # Do not check deleted, say OK
+    if sig == RECDEL:
+        if self.base_verbose &gt; 1:
+            print(&#34; Deleted data &#39;%s&#39; at %d (%d)&#34; % (sig, rec, cnt2))
+        ret = 1
+        return ret
+
+    if sig != RECSIG:
+        if self.base_verbose &gt; 0:
+            print(&#34; Damaged data (sig) &#39;%s&#39; at %d (%d)&#34; % (sig, rec, cnt2))
+        #if self.base_verbose &gt; 1:
+        #    print(&#34;Data&#34;, data)
+
+        return ret
+
+    hash = self.getbuffint(rec+4)
+    blen = self.getbuffint(rec+8)
+
+    if blen &lt;= 0:
+        if self.base_verbose &gt; 1:
+            print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
+        return ret
+
+    data = self.getbuffstr(rec+12, blen)
+    ccc = self.hash32(data)
+    if hash != ccc:
+        if self.base_verbose &gt; 1:
+            print(&#34;Data&#34;, data)
+        elif self.base_verbose &gt; 0:
+            print(&#34;Error on hash at rec&#34;, rec, cnt2, &#34;hash&#34;,
+                                        hex(hash), &#34;check&#34;, hex(ccc))
+
+        return ret
+
+    endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
+    if endd != RECSEP:
+        if self.base_verbose &gt; 0:
+            print(&#34; Damaged data (sep) &#39;%s&#39; at %d %d %d&#34; % (endd, rec, cnt2))
+        return ret
+
+    rec2 = rec + 16 + blen;
+    hash2 = self.getbuffint(rec2)
+    blen2 = self.getbuffint(rec2+4)
+
+    if blen2 &lt; 0:
+        if self.base_verbose &gt; 1:
+            print(&#34;Invalid data length2 %d at %d&#34; % (blen2, rec))
+        return ret
+
+    data2 = self.getbuffstr(rec2+8, blen2)
+    ccc2 = self.hash32(data2)
+    if hash2 != ccc2:
+        if self.base_verbose &gt; 1:
+            print(&#34;Data&#34;, data, &#34;Data2&#34;, data2)
+        elif self.base_verbose &gt; 0:
+            print(&#34;Error on hash2 at rec&#34;, rec, cnt2, &#34;hash2&#34;,
+                                    hex(hash2), &#34;check2&#34;, hex(ccc2))
+
+        return ret
+
+    if self.base_verbose &gt; 2:
+        print(&#34;Record at %d (%d) OK.&#34; % (rec, cnt2))
+
+    ret += 1
+    return ret</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.del_data"><code class="name flex">
+<span>def <span class="ident">del_data</span></span>(<span>self, hash, skip=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete data by hash.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  del_data(self, hash, skip = 1):
+
+    &#39;&#39;&#39; Delete data by hash. &#39;&#39;&#39;
+
+    cnt = skip
+    hhhh = int(hash, 16)                #;print(&#34;hash&#34;, hash, hhhh)
+    curr = self.getbuffint(CURROFFS)    #;print(&#34;curr&#34;, curr)
+    chash = self.getidxint(CURROFFS)    #;print(&#34;chash&#34;, chash)
+
+    arr = []
+    for aa in range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        rec = self.getidxint(aa)
+
+        # Optional check
+        #sig = self.getbuffstr(rec, self.INTSIZE)
+        #if sig != RECSIG:
+        #    print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+
+        #blen = self.getbuffint(rec+8)
+        #print(&#34;data &#39;%s&#39; at&#34; % sig, rec, &#34;blen&#34;, blen)
+
+        hhh = self.getbuffint(rec+4)
+        if hash == hhh:
+            if self.base_verbose &gt; 0:
+                print(&#34;Would delete&#34;, hhh)
+
+        self.putbuffstr(rec, RECDEL)
+
+        cnt += 1
+
+    return arr</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.del_rec"><code class="name flex">
+<span>def <span class="ident">del_rec</span></span>(<span>self, recnum)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete by record number.
+Deleted record is marked as deleted but not removed.
+Deleted records are ignored in further operations.
+Use 'vacuum' to actually remove record.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  del_rec(self, recnum):
+
+    &#39;&#39;&#39; Delete by record number.
+        Deleted record is marked as deleted but not removed.
+        Deleted records are ignored in further operations.
+        Use &#39;vacuum&#39; to actually remove record.
+    &#39;&#39;&#39;
+
+    rsize = self._getdbsize(self.ifp)
+    if recnum &gt;= rsize:
+        if self.base_verbose:
+            print(&#34;Past end of data.&#34;);
+        return False
+    chash = self.getidxint(CURROFFS)
+    #print(&#34;chash&#34;, chash)
+    offs = self.getidxint(HEADSIZE + recnum * self.INTSIZE * 2)
+    #print(&#34;offs&#34;, offs)
+    old = self.getbuffstr(offs, self.INTSIZE)
+    if old == RECDEL:
+        if self.base_verbose:
+            print(&#34;Record at %d already deleted.&#34; % offs);
+        return False
+
+    self.putbuffstr(offs, RECDEL)
+    return True</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.del_rec_bykey"><code class="name flex">
+<span>def <span class="ident">del_rec_bykey</span></span>(<span>self, strx, maxdelrec=4294967295, skip=0, dirx=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remove record by key. Remove maxdelrec occurances.</p>
+<h2 id="input">Input</h2>
+<p>strx
+key to remove
+maxdelrex
+maximum number of records to delete
+skip
+start scanning from offset
+dirx
+False for scanning down, True for up</p>
+<h2 id="return">Return</h2>
+<p>count of records removed</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  del_rec_bykey(self, strx, maxdelrec = 0xffffffff, skip = 0, dirx = 0):
+
+    &#39;&#39;&#39; Remove record by key. Remove maxdelrec occurances.
+
+                Input:
+                    strx            key to remove
+                    maxdelrex       maximum number of records to delete
+                    skip            start scanning from offset
+                    dirx            False for scanning down, True for up
+                Return:
+                    count of records removed
+
+        &#39;&#39;&#39;
+
+    if self.pgdebug:
+        print(&#34;del_rec_bykey()&#34;, strx)
+
+    &#39;&#39;&#39; Delete records by key string; needs bin str, converted
+        automatically on entry.
+    &#39;&#39;&#39;
+
+    if type(strx) != type(b&#34;&#34;):
+        strx = strx.encode()
+
+    if self.base_verbose &gt; 1:
+        print(&#34;Start delete &#34;, strx, &#34;skip&#34;, skip)
+
+    cnt = 0; cnt3 = 0
+    #chash = self.getidxint(CURROFFS)    #;print(&#34;chash&#34;, chash)
+    chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+    # Direction sensitivity
+    if dirx:
+        rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+    else:
+        rrr = range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2)
+
+    #for aa in range(HEADSIZE, chash, self.INTSIZE * 2):
+    for aa in rrr:
+        rec = self.getidxint(aa)
+        sig = self.getbuffstr(rec, self.INTSIZE)
+        if sig == RECDEL:
+            if base_showdel:
+                print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+        elif sig != RECSIG:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+        else:
+            blen = self.getbuffint(rec+8)
+            data = self.getbuffstr(rec + 12, blen)
+            if self.base_verbose &gt; 2:
+                print(&#34;del iterate recs&#34;, cnt3, data, strx)
+
+            if strx == data:
+                if self.base_verbose &gt; 0:
+                    print(&#34;Deleting&#34;, cnt3, aa, data)
+                self.putbuffstr(rec, RECDEL)
+                cnt += 1
+                if cnt &gt;= maxdelrec:
+                    break
+        cnt3 += 1
+    return cnt</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.del_rec_offs"><code class="name flex">
+<span>def <span class="ident">del_rec_offs</span></span>(<span>self, recoffs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete record by file offset.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  del_rec_offs(self, recoffs):
+
+    &#39;&#39;&#39; Delete record by file offset. &#39;&#39;&#39;
+
+    rsize = self.getsize(self.fp)
+    if recoffs &gt;= rsize:
+        #print(&#34;Past end of data.&#34;);
+        raise  RuntimeError( \
+                &#34;Past end of File. Asking for offset %d file size is %d.&#34; \
+                                 % (recoffs, rsize) )
+        return False
+
+    sig = self.getbuffstr(recoffs, self.INTSIZE)
+    if sig != RECSIG  and sig != RECDEL:
+        print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+        return False
+
+    self.putbuffstr(recoffs, RECDEL)
+    return True</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.dump_data"><code class="name flex">
+<span>def <span class="ident">dump_data</span></span>(<span>self, lim=4294967295, skip=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Put all data to screen.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  dump_data(self, lim = INT_MAX, skip = 0):
+
+    &#39;&#39;&#39; Put all data to screen. &#39;&#39;&#39;
+
+    self.__dump_data(lim, skip, 1)</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.dump_rec"><code class="name flex">
+<span>def <span class="ident">dump_rec</span></span>(<span>self, rec, cnt)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print record to the screen.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  dump_rec(self, rec, cnt):
+
+    &#39;&#39;&#39; Print record to the screen. &#39;&#39;&#39;
+
+    cnt2 = 0
+    sig = self.getbuffstr(rec, self.INTSIZE)
+
+    if sig == RECDEL:
+        if base_showdel:
+            klen = self.getbuffint(rec+8)
+            kdata = self.getbuffstr(rec+12, klen)
+            rec2 = rec + 16 + klen;
+            blen = self.getbuffint(rec2+4)
+            data = self.getbuffstr(rec2+8, blen)
+
+            print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, truncs(data))
+        return cnt2
+
+    if sig != RECSIG:
+        if self.base_verbose &gt; 1:
+            print(&#34; Damaged data (sig) &#39;%s&#39; at&#34; % sig, rec)
+        return cnt2
+
+    hash = self.getbuffint(rec+4)
+    blen = self.getbuffint(rec+8)
+
+    if blen &lt; 0:
+        print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
+        return cnt2
+
+    data = self.getbuffstr(rec+12, blen)
+    if base_integrity:
+        ccc = self.hash32(data)
+        if self.base_verbose &gt; 1:
+            print(&#34;rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+        if hash != ccc:
+            if self.base_verbose &gt; 0:
+                print(&#34;Error on hash at rec&#34;, rec, &#34;hash&#34;, hex(hash), &#34;check&#34;, hex(ccc))
+            return []
+
+    endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
+    if endd != RECSEP:
+        if self.base_verbose &gt; 0:
+            print(&#34; Damaged data (sep) &#39;%s&#39; at&#34; % endd, rec)
+        return cnt2
+
+    rec2 = rec + 16 + blen;
+    hash2 = self.getbuffint(rec2)
+    blen2 = self.getbuffint(rec2+4)
+
+    if blen2 &lt; 0:
+        print(&#34;Invalid data length %d at %d&#34; % (blen2, rec))
+        return cnt2
+
+    data2 = self.getbuffstr(rec2+8, blen2)
+    if base_integrity:
+        ccc2 = self.hash32(data2)
+        if self.base_verbose &gt; 1:
+            print(&#34;rec&#34;, rec, &#34;hash2&#34;, hex(hash), &#34;check2&#34;, hex(ccc))
+        if hash2 != ccc2:
+            if self.base_verbose &gt; 0:
+                print(&#34;Error on hash at rec&#34;, rec, &#34;hash2&#34;, hex(hash), &#34;check2&#34;, hex(ccc))
+            return []
+
+    if self.base_verbose &gt; 2:
+        print(&#34;%-5d pos %5d&#34; % (cnt, rec), &#34;%8x&#34; % hash, &#34;len&#34;, blen, data,
+                                                    &#34;%8x&#34; % hash2,&#34;len&#34;, blen2, data2)
+
+    elif self.base_verbose &gt; 1:
+        print(&#34;%-5d pos %5d&#34; % (cnt, rec), &#34;%8x&#34; % hash, &#34;len&#34;, blen, data,
+                                                    &#34;%8x&#34; % hash2,&#34;len&#34;, blen2, data2)
+    elif self.base_verbose:
+        print(&#34;%-5d pos %5d&#34; % (cnt, rec),  data, data2)
+    else:
+        print(&#34;%-5d pos %5d&#34; % (cnt, rec), &#34;Data:&#34;, truncs(data, 18), &#34;Data2:&#34;, truncs(data2, 18))
+
+    cnt2 += 1
+    return cnt2</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.find_key"><code class="name flex">
+<span>def <span class="ident">find_key</span></span>(<span>self, keyx, limx=4294967295)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find record by key Search from the end, so latest comes first.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  find_key(self, keyx, limx = 0xffffffff):
+
+    &#39;&#39;&#39; Find record by key Search from the end, so latest comes first. &#39;&#39;&#39;
+
+    self.lock.waitlock()   #self.lckname)
+
+    skip = 0; arr = []; cnt = 0
+    try:
+        arg2e = keyx.encode()
+    except:
+        arg2e = keyx
+
+    hhhh = self.hash32(arg2e)
+    #print(&#34;hashx&#34;, &#34;&#39;&#34; + hashx + &#34;&#39;&#34;, hex(hhhh), arg2e)
+
+    chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+    rrr =  range(chash - self.INTSIZE * 2,
+            HEADSIZE - self.INTSIZE * 2, -self.INTSIZE * 2)
+    for aa in rrr:
+        rec = self.getidxint(aa)
+        #print(&#34; Scanning at %d %d&#34; % (rec, cnt))
+
+        sig = self.getbuffstr(rec, self.INTSIZE)
+        if sig == RECDEL:
+            if base_showdel:
+                print(&#34;Deleted record &#39;%s&#39; at&#34; % sig, rec)
+        elif sig != RECSIG:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+        else:
+            hhh = self.getbuffint(rec+4)
+            if hhh == hhhh:
+                if len(arr) &gt;= limx - 1:
+                    arr.append([&#34;More data ...&#34;,])
+                    break
+                arr.append(rec)
+            else:
+                pass
+                #print(&#34;no match&#34;, hex(hhh))
+
+        cnt += 1
+    self.lock.unlock()  #dellock()self.lckname)
+
+    return arr</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.findrec"><code class="name flex">
+<span>def <span class="ident">findrec</span></span>(<span>self, strx, limx=4294967295, skipx=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find by string matching substring.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  findrec(self, strx, limx = INT_MAX, skipx = 0):
+
+    &#39;&#39;&#39; Find by string matching substring. &#39;&#39;&#39;
+
+    self.lock.waitlock()    #(self.lckname)
+    chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+    arr = []
+    if type(strx) != type(b&#34;&#34;):
+        strx2 = strx.encode(errors=&#39;strict&#39;);
+
+    #print(&#34;findrec&#34;, strx2)
+
+    #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+    for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+        rec = self.getidxint(aa)
+        sig = self.getbuffstr(rec, self.INTSIZE)
+        if sig == RECDEL:
+            if base_showdel:
+                print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+        elif sig != RECSIG:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+        else:
+            blen = self.getbuffint(rec+8)
+            data = self.getbuffstr(rec + 12, blen)
+            if self.base_verbose &gt; 1:
+                print(&#34;find&#34;, data)
+            #if str(strx2) in str(data):
+            if strx2 in data:
+                #arr.append(self.get_key_offs(rec))
+                #arr.append(rec)
+                arr.append(self._rec2arr(rec))
+                if len(arr) &gt;= limx:
+                    break
+    self.lock.unlock()    #dellock(self.lckname)
+
+    return arr</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.findrecpos"><code class="name flex">
+<span>def <span class="ident">findrecpos</span></span>(<span>self, strx, limx=4294967295, skipx=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find record, return array of positions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  findrecpos(self, strx, limx = INT_MAX, skipx = 0):
+
+    &#39;&#39;&#39; Find record, return array of positions. &#39;&#39;&#39;
+
+    self.lock.waitlock()    #(self.lckname)
+    chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+    arr = []
+    if type(strx) != type(b&#34;&#34;):
+        strx = strx.encode(errors=&#39;strict&#39;);
+
+    for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+        rec = self.getidxint(aa)
+        sig = self.getbuffstr(rec, self.INTSIZE)
+        if sig == RECDEL:
+            if base_showdel:
+                print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+        elif sig != RECSIG:
+            if self.base_verbose &gt; 0:
+                print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+        else:
+            blen = self.getbuffint(rec+8)
+            data = self.getbuffstr(rec + 12, blen)
+            if self.base_verbose &gt; 1:
+                print(&#34;frecpos&#34;, data)
+            if strx == data:
+                arr.append(rec)
+                if len(arr) &gt;= limx:
+                    break
+
+    self.lock.unlock()  #dellock(self.lckname)
+
+    return arr</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.flush"><code class="name flex">
+<span>def <span class="ident">flush</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Flush files to disk.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def flush(self):
+
+    &#39;&#39;&#39; Flush files to disk. &#39;&#39;&#39;
+
+    if self.pgdebug &gt; 9:
+        print(&#34;Flushing&#34;, self.fp, self.ifp)
+
+    try:
+        if hasattr(self, &#34;fp&#34;):
+            if self.fp:
+                self.fp.flush()
+        if hasattr(self, &#34;ifp&#34;):
+            if self.ifp:
+                self.ifp.flush()
+    except:
+        print(&#34;Cannot flush files&#34;, sys.exc_info())</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.get_key_offs"><code class="name flex">
+<span>def <span class="ident">get_key_offs</span></span>(<span>self, recoffs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get key by offset.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  get_key_offs(self, recoffs):
+
+    &#39;&#39;&#39; Get key by offset. &#39;&#39;&#39;
+
+    rsize = self.getsize(self.fp)
+    if recoffs &gt;= rsize:
+        #print(&#34;Past end of data.&#34;);
+        raise  RuntimeError( \
+                &#34;Past end of File. Asking for offset %d file size is %d.&#34; \
+                                 % (recoffs, rsize) )
+        return []
+
+    sig = self.getbuffstr(recoffs, self.INTSIZE)
+    if sig == RECDEL:
+        if self.base_verbose:
+            print(&#34;Deleted record.&#34;)
+        return []
+    if sig != RECSIG:
+        print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+        return []
+    #print(&#34;recoffs&#34;, recoffs)
+    return self._rec2arr(recoffs)[0]</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.get_rec"><code class="name flex">
+<span>def <span class="ident">get_rec</span></span>(<span>self, recnum)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get record from database; recnum is a zero based record counter.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  get_rec(self, recnum):
+
+    &#39;&#39;&#39; Get record from database; recnum is a zero based record counter. &#39;&#39;&#39;
+
+    if self.pgdebug:
+        print(&#34;getrec()&#34;, recnum)
+
+    rsize = self._getdbsize(self.ifp)
+    if recnum &gt;= rsize:
+        #print(&#34;Past end of data.&#34;);
+        raise  RuntimeError( \
+                &#34;Past end of Data. Asking for %d while max is 0 .. %d records.&#34; \
+                                 % (recnum, rsize-1) )
+        return []
+
+    chash = self.getidxint(CURROFFS)
+    #print(&#34;chash&#34;, chash)
+    offs = self.getidxint(HEADSIZE + recnum * self.INTSIZE * 2)
+
+    #print(&#34;offs&#34;, offs)
+    return self._rec2arr(offs)</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.get_rec_offs"><code class="name flex">
+<span>def <span class="ident">get_rec_offs</span></span>(<span>self, recoffs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return record by offset.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  get_rec_offs(self, recoffs):
+
+    &#39;&#39;&#39; Return record by offset. &#39;&#39;&#39;
+
+    rsize = self.getsize(self.fp)
+    if recoffs &gt;= rsize:
+        #print(&#34;Past end of data.&#34;);
+        raise  RuntimeError( \
+                &#34;Past end of File. Asking for offset %d file size is %d.&#34; \
+                                 % (recoffs, rsize) )
+        return []
+
+    sig = self.getbuffstr(recoffs, self.INTSIZE)
+    if sig == RECDEL:
+        if self.base_verbose:
+            print(&#34;Deleted record.&#34;)
+        return []
+    if sig != RECSIG:
+        print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+        return []
+    #print(&#34;recoffs&#34;, recoffs)
+    return self._rec2arr(recoffs)</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.getdbsize"><code class="name flex">
+<span>def <span class="ident">getdbsize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the DB size in records. This includes ALL records, including
+deleted and damaged. This number can be used to iterate all records
+in the database. Usually from end to beginning.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getdbsize(self):
+
+    &#39;&#39;&#39; Return the DB size in records. This includes ALL records, including
+    deleted and damaged. This number can be used to iterate all records
+    in the database. Usually from end to beginning. &#39;&#39;&#39;
+
+    ret = self._getdbsize(self.ifp)
+    if not ret:
+        ret = 0
+    return ret</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.integrity_check"><code class="name flex">
+<span>def <span class="ident">integrity_check</span></span>(<span>self, skip=0, count=4294967295)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check record integrity for 'count' records.
+Skip number of records.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def integrity_check(self, skip = 0, count = 0xffffffff):
+
+    &#39;&#39;&#39; Check record integrity for &#39;count&#39; records.
+        Skip number of records.
+    &#39;&#39;&#39;
+
+    self.lock.waitlock()    #(self.lckname)
+    ret = 0; cnt2 = 0; cnt3 = 0;
+    #chash = self.getidxint(CURROFFS)        #;print(&#34;chash&#34;, chash)
+    chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+    # Direction sensitivity
+    rrr = range(HEADSIZE + skip * self.INTSIZE * 2, chash, self.INTSIZE * 2)
+    for aa in rrr:
+        rec = self.getidxint(aa)
+        #print(aa, rec)
+        ret += self.check_rec(rec, cnt2)
+        cnt2 += 1
+        cnt3 += 1
+        if cnt3 &gt;= count:
+            break
+    self.lock.unlock() #dellock(self.lckname)
+    return ret, cnt2</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.listall"><code class="name flex">
+<span>def <span class="ident">listall</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>List all active records. Return array id record indexes.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  listall(self):
+
+    &#39;&#39;&#39; List all active records. Return array id record indexes. &#39;&#39;&#39;
+
+    self.lock.waitlock()    #(self.lckname)
+    keys = []; arr = []; cnt = 0
+
+    chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+    maxrec = chash - self.INTSIZE * 2
+    rsize = self._getdbsize(self.ifp) - 1
+
+    rrr =  range(maxrec,
+            HEADSIZE - self.INTSIZE * 2, -self.INTSIZE * 2)
+    for aa in rrr:
+        rec = self.getidxint(aa)
+
+        #print(&#34; Scanning at %d %d&#34; % (rec, cnt))
+
+        sig = self.getbuffstr(rec, self.INTSIZE)
+        if sig == RECDEL:
+            if 1: #base_showdel:
+                print(&#34;Deleted record &#39;%s&#39; at&#34; % sig, rec)
+        elif sig != RECSIG:
+            if 1: #self.base_verbose &gt; 0:
+                print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+        else:
+                hhh = self.getbuffint(rec+4)
+                print(&#34; Good data &#39;%s&#39; at&#34; % sig, rec, hhh)
+                if hhh not in keys:
+                    keys.append(hhh)
+                    # as we are going backwards
+                    arr.append(rsize - cnt)
+                    #print(&#34;found&#34;, hhh)
+        cnt += 1
+
+    keys = []
+    self.lock.unlock()  #dellock()self.lckname)
+
+    return arr</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.reindex"><code class="name flex">
+<span>def <span class="ident">reindex</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Re create index file.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  reindex(self):
+
+    &#39;&#39;&#39; Re create index file. &#39;&#39;&#39;
+
+    self.lock.waitlock() #self.lckname)
+    ret = self.__reindex()
+    self.lock.unlock    #dellock(self.lckname)
+    return ret</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.retrieve"><code class="name flex">
+<span>def <span class="ident">retrieve</span></span>(<span>self, strx, limx=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrive in reverse, limit it.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  retrieve(self, strx, limx = 1):
+
+    &#39;&#39;&#39; Retrive in reverse, limit it. &#39;&#39;&#39;
+
+    if type(strx) != type(b&#34;&#34;):
+        strx = strx.encode(errors=&#39;strict&#39;)
+
+    hhhh = self.hash32(strx)
+    if self.pgdebug &gt; 2:
+        print(&#34;strx&#34;, strx, hhhh)
+
+    #chash = self.getidxint(CURROFFS)
+    chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+
+    #;print(&#34;chash&#34;, chash)
+    arr = []
+
+    self.lock.waitlock() #(self.lckname)
+
+    #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+    for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+        rec = self.getidxint(aa)
+        sig = self.getbuffstr(rec, self.INTSIZE)
+        if sig == RECDEL:
+            if self.base_verbose &gt; 3:
+                print(&#34; Deleted record &#39;%s&#39; at&#34; % sig, rec)
+        elif sig != RECSIG:
+            if self.base_verbose:
+                print(&#34; Damaged data &#39;%s&#39; at&#34; % sig, rec)
+        else:
+            hhh = self.getbuffint(rec+4)
+            if hhh == hhhh:
+                arr.append(self.get_rec_offs(rec))
+                if len(arr) &gt;= limx:
+                    break
+    self.lock.unlock()  #dellock(self.lckname)
+
+    return arr</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.revdump_data"><code class="name flex">
+<span>def <span class="ident">revdump_data</span></span>(<span>self, lim, skip=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Put all data to screen in reverse order.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  revdump_data(self, lim, skip = 0):
+
+    &#39;&#39;&#39; Put all data to screen in reverse order. &#39;&#39;&#39;
+
+    self.__dump_data(lim, skip)</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.save_data"><code class="name flex">
+<span>def <span class="ident">save_data</span></span>(<span>self, header, datax, replace=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Append to the end of file. If replace flag is set, try to overwrite
+in place. If new record is larger, add it as ususal. If smaller,
+the record is padded with spaces. This should not influence most ops.
+(like: int())
+This feature allows the database update wthout creating new records.
+Useful for counters or dynamically changing data.</p>
+<pre><code>    Input:
+        header     Header
+        datax      Data
+
+     Return:
+        The offset of saved data
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  save_data(self, header, datax, replace = False):
+
+    &#39;&#39;&#39; Append to the end of file. If replace flag is set, try to overwrite
+        in place. If new record is larger, add it as ususal. If smaller,
+        the record is padded with spaces. This should not influence most ops.
+        (like: int())
+        This feature allows the database update wthout creating new records.
+        Useful for counters or dynamically changing data.
+
+                Input:
+                    header     Header
+                    datax      Data
+
+                 Return:
+                    The offset of saved data
+        &#39;&#39;&#39;
+
+    if self.pgdebug &gt; 0:
+        print(&#34;Save_data()&#34;, header, datax)
+
+    self.lock.waitlock()   #self.lckname)
+    ret = 0
+    was = False
+    # Put new data in place
+    if replace:
+        if type(datax) != type(b&#34;&#34;):
+            mrep2 = datax.encode()
+        else:
+            mrep2 = datax
+
+        rrr = self._recoffset(header, 1)
+        if rrr[2]:
+            #print(&#34;Replace rec&#34;, hex(rrr[0]), &#34;len:&#34;, rrr[1])
+            if len(mrep2) &lt;= rrr[2]:
+                #print(&#34;Fit&#34;)
+                padded = mrep2 + b&#39; &#39; * (rrr[1] - len(mrep2))
+                #print(&#34;Padded&#34;, padded)
+                ccc = self.hash32(padded)
+                self.putbuffint(rrr[1] - 8, ccc)
+                #print(&#34;ccc&#34;, hex(ccc))
+                self.putbuffstr(rrr[1], padded)
+                was = True
+                # This was helpful ... but more systematic approach is needed
+                self.fp.flush()
+                self.ifp.flush()
+                ret =  rrr[0]
+    if not was:
+        ret = self._save_data2(header, datax)
+
+    self.lock.unlock()  #dellock()self.lckname)
+
+    return ret</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.vacuum"><code class="name flex">
+<span>def <span class="ident">vacuum</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remove all deleted data. Reindex.
+The db is locked while the vacuum is in operation, but
+make sure the DB in not in session, and no pending
+operations are present (like find / retrieve cycle).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def  vacuum(self):
+
+    &#39;&#39;&#39;
+        Remove all deleted data. Reindex.
+        The db is locked while the vacuum is in operation, but
+        make sure the DB in not in session, and no pending
+        operations are present (like find / retrieve cycle).
+    &#39;&#39;&#39;
+
+    self.lock.waitlock() #self.lckname)
+    ret = self._vacuum()
+    self.lock.unlock()  #dellock(self.lckname)
+    return ret</code></pre>
+</details>
+</dd>
+<dt id="twincore.TwinCore.version"><code class="name flex">
+<span>def <span class="ident">version</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return version sting.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def version(self):
+    &#39;&#39;&#39; Return version sting. &#39;&#39;&#39;
+    return Version</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="twincore.TwinCore" href="#twincore.TwinCore">TwinCore</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twincore.TwinCore.check_rec" href="#twincore.TwinCore.check_rec">check_rec</a></code></li>
+<li><code><a title="twincore.TwinCore.del_data" href="#twincore.TwinCore.del_data">del_data</a></code></li>
+<li><code><a title="twincore.TwinCore.del_rec" href="#twincore.TwinCore.del_rec">del_rec</a></code></li>
+<li><code><a title="twincore.TwinCore.del_rec_bykey" href="#twincore.TwinCore.del_rec_bykey">del_rec_bykey</a></code></li>
+<li><code><a title="twincore.TwinCore.del_rec_offs" href="#twincore.TwinCore.del_rec_offs">del_rec_offs</a></code></li>
+<li><code><a title="twincore.TwinCore.dump_data" href="#twincore.TwinCore.dump_data">dump_data</a></code></li>
+<li><code><a title="twincore.TwinCore.dump_rec" href="#twincore.TwinCore.dump_rec">dump_rec</a></code></li>
+<li><code><a title="twincore.TwinCore.find_key" href="#twincore.TwinCore.find_key">find_key</a></code></li>
+<li><code><a title="twincore.TwinCore.findrec" href="#twincore.TwinCore.findrec">findrec</a></code></li>
+<li><code><a title="twincore.TwinCore.findrecpos" href="#twincore.TwinCore.findrecpos">findrecpos</a></code></li>
+<li><code><a title="twincore.TwinCore.flush" href="#twincore.TwinCore.flush">flush</a></code></li>
+<li><code><a title="twincore.TwinCore.get_key_offs" href="#twincore.TwinCore.get_key_offs">get_key_offs</a></code></li>
+<li><code><a title="twincore.TwinCore.get_rec" href="#twincore.TwinCore.get_rec">get_rec</a></code></li>
+<li><code><a title="twincore.TwinCore.get_rec_offs" href="#twincore.TwinCore.get_rec_offs">get_rec_offs</a></code></li>
+<li><code><a title="twincore.TwinCore.getdbsize" href="#twincore.TwinCore.getdbsize">getdbsize</a></code></li>
+<li><code><a title="twincore.TwinCore.integrity_check" href="#twincore.TwinCore.integrity_check">integrity_check</a></code></li>
+<li><code><a title="twincore.TwinCore.listall" href="#twincore.TwinCore.listall">listall</a></code></li>
+<li><code><a title="twincore.TwinCore.reindex" href="#twincore.TwinCore.reindex">reindex</a></code></li>
+<li><code><a title="twincore.TwinCore.retrieve" href="#twincore.TwinCore.retrieve">retrieve</a></code></li>
+<li><code><a title="twincore.TwinCore.revdump_data" href="#twincore.TwinCore.revdump_data">revdump_data</a></code></li>
+<li><code><a title="twincore.TwinCore.save_data" href="#twincore.TwinCore.save_data">save_data</a></code></li>
+<li><code><a title="twincore.TwinCore.vacuum" href="#twincore.TwinCore.vacuum">vacuum</a></code></li>
+<li><code><a title="twincore.TwinCore.version" href="#twincore.TwinCore.version">version</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

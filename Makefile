@@ -8,12 +8,12 @@
 #  OTHER DEALINGS IN THE SOFTWARE.
 #
 
-.PHONY:  doc clean echo tests
+.PHONY:  doc clean echo tests docs doc
 
 PROG=pydbase
 
 all:
-	@echo "Targets: clean cleandata tests pipupload"
+	@echo "Targets: clean cleandata tests pipupload docs"
 	@echo "Type 'make help' for a list of targets"
 
 help:
@@ -31,7 +31,7 @@ help:
 
 pipupload:
 	./pip-build.py
-	./pip-upload.py
+	./pip-upload.sh
 
 tests:
 	cd tests; pytest
@@ -42,10 +42,10 @@ setup:
 build:
 	@python3 ./setup.py build
 
-remove:
-	@python3 ./setup.py install --record files.txt
-	xargs rm -rf < files.txt
-	@rm -f files.txt
+#remove:
+#	@python3 ./setup.py install --record files.txt
+#	xargs rm -rf < files.txt
+#	@rm -f files.txt
 
 clean:
 	@rm -f *.pyc
@@ -92,9 +92,12 @@ git:
 	git push
 	#git push local
 
-doc:
-	@pdoc --logo image.png  \
-                -o doc `find . -maxdepth 2 -name  \*.py`
+docs:
+	@pdoc  --force --html -o docs pydbase/twinchain.py
+	@pdoc  --force --html -o docs pydbase/twincore.py
+	@pdoc  --force --html -o docs pydbase/twinbase.py
+	@pdoc  --force --html -o docs chainadm.py
+	@pdoc  --force --html -o docs dbaseadm.py
 
 doxy:
 	doxygen

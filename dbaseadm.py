@@ -58,6 +58,7 @@ allstr  =    " " + \
 
 def randstr(lenx):
 
+    ''' Deliver a random string for testing '''
     strx = ""
     for aa in range(lenx):
         ridx = random.randint(0, len(allstr)-1)
@@ -66,6 +67,8 @@ def randstr(lenx):
     return strx
 
 def help():
+    ''' Program usage information '''
+
     pname = os.path.split(sys.argv[0])[1]
     print("Usage: %s [options] [arg_key arg_data]" %  pname)
     print("   -h         Help (this screen)   -|-  -E         Replace record in place")

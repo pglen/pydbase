@@ -44,6 +44,9 @@ class _c():
     getby = ""  ;   getoffs = ""
 
 def help():
+
+    ''' Deliver program usage information '''
+
     print("Usage: %s [options]" % os.path.split(sys.argv[0])[1])
     print("   Options: -a  data   append data to the end of chain")
     print("            -g recnum  get record")
@@ -141,7 +144,13 @@ def mainfunc():
         if aa[0] == "-i":
             _c.integx = True
 
+    execfunc()
+
     #print("Use: pychain.py -h to see options and help")
+
+def execfunc():
+
+    ''' Execute individual function from command line '''
 
     # Create our database
     core = twinchain.TwinChain(_c.deffile, _c.pgdebug, _c.verbose)

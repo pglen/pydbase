@@ -5,27 +5,27 @@
 
     # Twinchain
 
-    Block chain layer on top of twincore.
+        Block chain layer on top of twincore.
 
-        prev     curr
-            record
-    |   Time Now    |   Time  Now    |  Time Now     |
-    |   hash256   | |    hash256   | |   hash256   | |
-    |   Header    | |    Header    | |   Header    | |
-    |   Payload   | |    Payload   | |   Payload   | |
-    |   Backlink  | |    Backlink  | |   Backlink  | |
-                  |----->---|      |---->---|     |------ ...
+            prev     curr
+                record
+        |   Time Now    |   Time  Now    |  Time Now     |
+        |   hash256   | |    hash256   | |   hash256   | |
+        |   Header    | |    Header    | |   Header    | |
+        |   Payload   | |    Payload   | |   Payload   | |
+        |   Backlink  | |    Backlink  | |   Backlink  | |
+                      |----->---|      |---->---|     |------ ...
 
-    The sum of fields saved to the next backlink.
+        The sum of fields saved to the next backlink.
 
-    History:
+        History:
 
-        0.0.0       Tue 20.Feb.2024     Initial release
-        0.0.0       Sun 26.Mar.2023     More features
-        1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
-        1.4.0       Tue 27.Feb.2024     Addedd pgdebug
-        1.4.2       Wed 28.Feb.2024     Fixed multiple instances
-        1.4.3       Wed 28.Feb.2024     ChainAdm added
+            0.0.0       Tue 20.Feb.2024     Initial release
+            0.0.0       Sun 26.Mar.2023     More features
+            1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
+            1.4.0       Tue 27.Feb.2024     Addedd pgdebug
+            1.4.2       Wed 28.Feb.2024     Fixed multiple instances
+            1.4.3       Wed 28.Feb.2024     ChainAdm added
 
 '''
 
@@ -70,8 +70,9 @@ class TwinChain(TwinCore):
 
         # Upper lock name
         self.ulockname = os.path.splitext(fname)[0] + ".ulock"
+        self.lock = FileLock(self.ulockname)
 
-        waitlock(self.ulockname)
+        self.lock.waitlock()    #(self.ulockname)
         super(TwinChain, self).__init__(fname, pgdebug)
 
         #print("TwinChain.init", self.fname, self.ulockname)
@@ -101,7 +102,7 @@ class TwinChain(TwinCore):
             encoded = self.packer.encode_data("", aaa)
             self.save_data(header, encoded)
 
-        dellock(self.ulockname)
+        self.lock.unlock() #self.ulockname)
 
     def _hashtohex(self, varx):
 
@@ -327,7 +328,7 @@ class TwinChain(TwinCore):
         if self.core_verbose > 0:
             print("Appendwith", header, datax)
 
-        waitlock(self.ulockname)
+        self.lock.waitlock()    #self.ulockname)
 
         try:
             uuu = uuid.UUID(header)
@@ -335,7 +336,7 @@ class TwinChain(TwinCore):
             if self.core_verbose:
                 print("Header override must be a valid UUID string.")
 
-            dellock(self.ulockname)
+            self.lock.unlock() #self.ulockname)
             raise ValueError("Header override must be a valid UUID string.")
 
         self.old_dicx = {}
@@ -369,7 +370,7 @@ class TwinChain(TwinCore):
             bbb = self.packer.decode_data(encoded)
             print("Rec", bbb[0])
 
-        dellock(self.ulockname)
+        self.lock.unlock() #self.ulockname)
         return True
 
     def append(self, datax):
