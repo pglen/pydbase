@@ -76,9 +76,8 @@ endif
 pgit:
 	git add .
 
-	DDD = $(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
+	DDD=$(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
 	echo "Committing as $(DDD)"
-
 	git commit -m "$(DDD)"
 	git push
 	#git push local
