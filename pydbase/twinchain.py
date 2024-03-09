@@ -381,8 +381,6 @@ class TwinChain(TwinCore):
 
         # Get last data from db
         sss = self.getdbsize()
-        #print("sss", sss)
-
         if not sss:
             raise ValueError("Invalid database, must have at least one record.")
 

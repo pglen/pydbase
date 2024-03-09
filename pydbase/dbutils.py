@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import datetime, time, traceback
+import datetime, time, traceback, multiprocessing
 
 import sys
 
@@ -125,6 +125,9 @@ def decode_data(self, encoded):
         bbb = ""
     return bbb
 
+# ------------------------------------------------------------------------
+# Simple file system based locking system
+
 def dellock(lockname):
 
     ''' Lock removal;
@@ -135,14 +138,16 @@ def dellock(lockname):
         print("Dellock", lockname)
 
     try:
-        if os.path.isfile(lockname):
-            os.unlink(lockname)
-            locklevel[lockname] -= 1
-
+        if not os.path.isfile(lockname):
+            fpx = open(lockname, "wb+")
+        else:
+            fpx = open(lockname, "rb+")
     except:
         if utils_pgdebug > 1:
             #print("Del lock failed", sys.exc_info())
             put_exception("Del Lock")
+
+    fcntl.lockf(fpx, fcntl.LOCK_UN)
 
 
 def waitlock(lockname):
@@ -152,64 +157,59 @@ def waitlock(lockname):
     if utils_pgdebug > 1:
         print("Waitlock", lockname)
 
+    if not os.path.isfile(lockname):
+        fpx = open(lockname, "wb+")
+    else:
+        fpx = open(lockname, "rb+")
+
     cnt = 0
     while True:
-        if os.path.isfile(lockname):
-            if cnt == 0:
-                buff = ""
-                # break in if not this process
-                try:
-                    fpx = open(lockname, "rb+")
-                    fcntl.lockf(fpx, fcntl.LOCK_EX)
-                    buff = fpx.read()
-                    pid = int(buff)
-                    fpx.close()
+        if cnt == 0:
+            buff = ""
+            # break in if not this process
+            #try:
+            #    fcntl.lockf(fpx, fcntl.LOCK_EX)
+            #    buff = fpx.read()
+            #    pid = int(buff)
+            #    fpx.close()
+            #
+            #    #print(os.getpid())
+            #    if os.getpid() != pid:
+            #        dellock(lockname)
+            #except:
+            #    print("Exception in lock test", put_exception("Del Lock"))
+        try:
+            buff = fpx.read()
+            break;
+        except:
+            print("waiting", sys.exc_info())
+            pass
 
-                    #print(os.getpid())
-                    if os.getpid() == pid:
-                        dellock(lockname)
-                except:
-                    print("Exception in lock test", put_exception("Del Lock"))
+        cnt += 1
+        time.sleep(1)
 
-            cnt += 1
-            time.sleep(1)
-            if cnt > utils_locktout :
-                # Taking too long; break in
-                if utils_pgdebug > 1:
-                    print("Lock held too long pid =", os.getpid(), cnt, lockname)
-                dellock(lockname)
-                break
-        else:
+        if cnt > utils_locktout :
+            # Taking too long; break in
+            if utils_pgdebug > 1:
+                print("Lock held too long pid =", os.getpid(), cnt, lockname)
+            dellock(lockname)
             break
 
     # Finally, create lock
     try:
-        xfp = create(lockname)
-        fcntl.lockf(xfp, fcntl.LOCK_EX)
-        xfp.write(str(os.getpid()).encode())
-        xfp.close()
+        if not os.path.isfile(lockname):
+            fpx = open(lockname, "wb+")
+        else:
+            fpx = open(lockname, "rb+")
+
+        fcntl.lockf(fpx, fcntl.LOCK_EX)
+        fpx.write(str(os.getpid()).encode())
+        fpx.close()
         if lockname not in locklevel:
             locklevel[lockname] = 0
         locklevel[lockname] += 1
     except:
         print("Cannot create lock", lockname, sys.exc_info())
-
-# ------------------------------------------------------------------------
-# Simple file system based locking system
-
-def create(fname, raisex = True):
-
-    ''' Open for read / write. Create if needed. '''
-
-    fp = None
-    try:
-        fp = open(fname, "wb")
-
-    except:
-        print("Cannot open / create ", fname, sys.exc_info())
-        if raisex:
-            raise
-    return fp
 
 def truncs(strx, num = 8):
 

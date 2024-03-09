@@ -72,14 +72,18 @@ ifeq ("$(AUTOCHECK)","")
 AUTOCHECK=autocheck
 endif
 
+#echo $(bash 'read -p "Commit Message: " commit ; echo ${commit}')
 
-pgit:
-	git add .
+promptx:
+	echo aaaa
+	echo `echo sss`
+	echo "Committing as ${commit}"
 
-	DDD=$(shell bash -c 'read -p "Commit Message: " commit; echo $$commit')
-	echo "Committing as $(DDD)"
-	git commit -m "$(DDD)"
-	git push
+pgit: promptx
+	echo "in pgit" ${DDD}
+	#git add .
+	#git commit -m "$(DDD)"
+	#git push
 	#git push local
 
 git:
