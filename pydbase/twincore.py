@@ -62,7 +62,7 @@ sys.path.append(os.path.join(base, '..', 'pydbase'))
 
 from twinbase import *
 
-version = "1.0 dev"
+Version = "1.4.8"
 
 # ------------------------------------------------------------------------
 
@@ -151,6 +151,9 @@ class TwinCore(TwinCoreBase):
 
         #print("buffsize", buffsize, "indexsize", indexsize)
         dellock(self.lckname)
+
+    def version(self):
+        return Version
 
     def flush(self):
 

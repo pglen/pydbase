@@ -335,6 +335,7 @@ It is recommended that one produces a fixed record size for consistent results.
     1.4.5       Fri 01.Mar.2024     Misc fixes
     1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
     1.4.7       Tue 05.Mar.2024     In place record update
+    1.4.8       Sat 09.Mar.2024     Added new locking mechanism
 
 ## Errata
 
