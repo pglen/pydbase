@@ -36,7 +36,6 @@ def teardown_module(module):
     """ teardown any state that was previously setup with a setup_module
     method.
     """
-
     try:
         # No dangling data
         os.remove(fname)
@@ -48,7 +47,6 @@ def teardown_module(module):
         pass
 
     #assert 0
-
 
 def test_bindata(capsys):
 

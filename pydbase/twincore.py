@@ -482,7 +482,7 @@ class TwinCore(TwinCoreBase):
 
         self.lock.waitlock() #self.lckname)
         ret = self.__reindex()
-        self.lock.unlock    #dellock(self.lckname)
+        self.lock.unlock()    #dellock(self.lckname)
         return ret
 
     # --------------------------------------------------------------------
@@ -553,13 +553,14 @@ class TwinCore(TwinCoreBase):
             aa += lenx + len2 + 24
             ret += 1
 
+        tempifp.flush()
+        tempifp.close()
+
         # Make it go out of scope
         self.fp.flush()
-        self.fp.close()
-        self.ifp.flush();
-        self.ifp.close()
-        tempifp.flush();
-        tempifp.close()
+        #self.fp.close()
+        self.ifp.flush()
+        #self.ifp.close()
 
         # Now move files
         try:
@@ -1269,7 +1270,7 @@ class TwinCore(TwinCoreBase):
 
             rrr = self._recoffset(header, 1)
             arr = self.get_rec_byoffs(rrr[0])
-            print(arr)
+            #print(arr)
             if arr:
                 #print("Replace rec", arr[1], "len:", arr[1])
                 if len(mrep2) <= len(arr[1]):
@@ -1354,8 +1355,8 @@ class TwinCore(TwinCoreBase):
         self.putidxint(curr + self.INTSIZE, hhh2)
         #self.putidxint(CURROFFS, self.ifp.tell())
 
-        #self.fp.flush()
-        #self.ifp.flush()
+        self.fp.flush()
+        self.ifp.flush()
 
         return curr
 

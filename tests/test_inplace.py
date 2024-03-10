@@ -50,7 +50,7 @@ def test_getoffs():
     #print(ret)
     assert ret == 64
 
-    ret4 = core.get_rec_offs(ret)
+    ret4 = core.get_rec_byoffs(ret)
     #print(ret4)
     assert ret4 == [b'11111', b'333  ']
 

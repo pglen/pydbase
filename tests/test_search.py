@@ -48,7 +48,7 @@ def test_search():
     strx = "1111"
     ret = core.find_key(strx)
     assert ret == [32]
-    arr = core.get_rec_offs(ret[0])
+    arr = core.get_rec_byoffs(ret[0])
     assert arr == [b"1111", b"2222"]
 
 def test_search2():
@@ -56,9 +56,9 @@ def test_search2():
     strx = "11111"
     ret = core.find_key(strx)
     assert ret == [98, 64]
-    arr = core.get_rec_offs(ret[0])
+    arr = core.get_rec_byoffs(ret[0])
     assert arr == [b"11111", b"22222"]
-    arr = core.get_rec_offs(ret[1])
+    arr = core.get_rec_byoffs(ret[1])
     assert arr == [b"11111", b"22222"]
 
 # EOF

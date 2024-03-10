@@ -48,14 +48,14 @@ def test_getoffs():
 
     ret = core.findrecpos('1111', 1)
     assert ret == [32]
-    ddd = core.get_rec_offs(ret[0])
+    ddd = core.get_rec_byoffs(ret[0])
     assert ddd == [b'1111', b'2222']
 
 def test_getoffs2():
 
     ret = core.findrecpos('11111', 1)
     assert ret == [64]
-    ddd = core.get_rec_offs(ret[0])
+    ddd = core.get_rec_byoffs(ret[0])
     assert ddd == [b'11111', b'22222']
 
 # EOF
