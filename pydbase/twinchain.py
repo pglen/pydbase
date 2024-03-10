@@ -185,12 +185,14 @@ class TwinChain(TwinCore):
         ''' Return the payload on record number '''
 
         arr = self.get_rec(recnum)
+        if not arr:
+            return []
         try:
             decoded = self.packer.decode_data(arr[1])
             #print("decoded", decoded)
         except:
-            print("Cannot decode", recnum, sys.exc_info())
-            return "Bad record"
+            print("Cannot decode record at", recnum, recnum, sys.exc_info())
+            raise
         dic = self._get_fields(decoded[0])
 
         if self.core_verbose > 2:
@@ -252,11 +254,18 @@ class TwinChain(TwinCore):
 
     def get_header(self, recnum):
 
-        ''' Get header of record '''
+        ''' Get the header of record. '''
 
+        if self.pgdebug > 5:
+            print("get_header()", recnum)
         arr = self.get_rec(recnum)
+        if not arr:
+            if self.pgdebug > 5:
+                print("get_header(): empty/deleted record", recnum)
+            return []
+
         if self.core_verbose > 1:
-            print("arr[0]", arr[0])
+            print("arr", arr)
             uuu = uuid.UUID(arr[0].decode())
             ddd = str(uuid2date(uuu))
             print("header", arr[0])

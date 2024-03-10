@@ -422,10 +422,11 @@ class TwinCore(TwinCoreBase):
 
     def  __dump_data(self, lim = INT_MAX, skip = 0, dirx = 0):
 
-        if self.pgdebug:
-            print("dump_data()", "lim =", hex(lim), "skip=", skip, "dirx =", dirx)
-
         ''' Put all data to screen worker function. '''
+
+        #if self.pgdebug:
+        #    print("dump_data()", "lim =", hex(lim), "skip=", skip, "dirx =", dirx)
+
 
         cnt = skip; cnt2 = 0
         curr =  chash = HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
@@ -438,10 +439,16 @@ class TwinCore(TwinCoreBase):
 
         for aa in rrr:
             rec = self.getidxint(aa)
+
             #print(aa, rec)
             if not base_quiet:
                 cnt2 += 1
                 ret = self.dump_rec(rec, cnt)
+
+                if not ret:
+                    if self.pgdebug > 5:
+                        print("Deleted / empty record at", cnt)
+
                 if ret:
                     cnt += 1
                     if cnt >= lim:
