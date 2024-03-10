@@ -80,7 +80,9 @@ class   FileLock():
         try:
             self.fpx = open(lockname, "wb+")
         except:
-            print("Cannot create lock file")
+            if utils_pgdebug > 1:
+                print("Cannot create lock file")
+            raise
 
     def waitlock(self):
         if utils_pgdebug > 1:

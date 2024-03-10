@@ -264,8 +264,13 @@ class TwinCore(TwinCoreBase):
 
         ''' Print record to the screen. '''
 
+        if self.pgdebug > 1:
+            print("Dump Rec at", rec)
+
         cnt2 = 0
         sig = self.getbuffstr(rec, self.INTSIZE)
+        if self.pgdebug > 5:
+            print("Sig ", sig, "at", rec)
 
         if sig == RECDEL:
             if base_showdel:
@@ -654,7 +659,7 @@ class TwinCore(TwinCoreBase):
                             print("Error on vac: %d" % rec)
                 cnt += 1
 
-            vacdb.unlock()  #dellock(vacdb.lckname)
+            vacdb.lock.unlock()  #dellock(vacdb.lckname)
 
             # if vacerr is empty
             try:

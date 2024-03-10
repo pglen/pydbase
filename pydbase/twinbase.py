@@ -167,7 +167,8 @@ class TwinCoreBase():
                 fcntl.lockf(fp, fcntl.LOCK_EX)
             except:
                 #print("Deleting lock", self.lckname)
-                dellock(self.lckname)
+                #dellock(self.lckname)
+                self.lock.unlock()  #dellock(self.lckname)
                 print("Cannot open / create ", "'" + fname + "'", sys.exc_info())
                 if raisex:
                     raise
