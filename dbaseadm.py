@@ -299,7 +299,7 @@ def mainfunc():
     elif _m.sizex:
         print("Database size:", core.getdbsize())
     elif _m.offsx:
-        ddd = core.get_rec_offs(int(_m.offsx))
+        ddd = core.get_rec_byoffs(int(_m.offsx))
         print(ddd)
     elif _m.delx:
         ddd = core.del_rec_offs(int(_m.delx))

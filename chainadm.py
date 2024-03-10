@@ -220,7 +220,8 @@ def execfunc():
             ddd = ""
             if  _c.datex:
                 ddd = dbutils.uuid2date(uuid.UUID(ppp[0]))
-            print(cnt, hhh, ddd, ppp)
+            if hhh:
+                print(cnt, hhh, ddd, ppp)
             cnt = cnt + 1
 
     elif _c.append:

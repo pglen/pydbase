@@ -262,6 +262,9 @@ class TwinChain(TwinCore):
         if not arr:
             if self.pgdebug > 5:
                 print("get_header(): empty/deleted record", recnum)
+
+            if self.core_verbose > 1:
+                print("get_header(): empty/deleted record", recnum)
             return []
 
         if self.core_verbose > 1:

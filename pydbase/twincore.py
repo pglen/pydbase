@@ -555,6 +555,7 @@ class TwinCore(TwinCoreBase):
 
         # Make it go out of scope
         self.fp.flush()
+        self.fp.close()
         self.ifp.flush();
         self.ifp.close()
         tempifp.flush();
@@ -658,7 +659,7 @@ class TwinCore(TwinCoreBase):
                     global base_integrity
                     tmpi = base_integrity
                     base_integrity = True
-                    arr = self.get_rec_offs(rec)
+                    arr = self.get_rec_byoffs(rec)
                     base_integrity = tmpi
 
                     if self.pgdebug > 1:
@@ -747,7 +748,7 @@ class TwinCore(TwinCoreBase):
         #print("offs", offs)
         return self._rec2arr(offs)
 
-    def  get_rec_offs(self, recoffs):
+    def  get_rec_byoffs(self, recoffs):
 
         ''' Return record by offset. '''
 
@@ -896,7 +897,7 @@ class TwinCore(TwinCoreBase):
             else:
                 hhh = self.getbuffint(rec+4)
                 if hhh == hhhh:
-                    arr.append(self.get_rec_offs(rec))
+                    arr.append(self.get_rec_byoffs(rec))
                     if len(arr) >= limx:
                         break
         self.lock.unlock()  #dellock(self.lckname)
@@ -1267,20 +1268,18 @@ class TwinCore(TwinCoreBase):
                 mrep2 = datax
 
             rrr = self._recoffset(header, 1)
-            if rrr[2]:
-                #print("Replace rec", hex(rrr[0]), "len:", rrr[1])
-                if len(mrep2) <= rrr[2]:
-                    #print("Fit")
-                    padded = mrep2 + b' ' * (rrr[1] - len(mrep2))
-                    #print("Padded", padded)
+            arr = self.get_rec_byoffs(rrr[0])
+            print(arr)
+            if arr:
+                #print("Replace rec", arr[1], "len:", arr[1])
+                if len(mrep2) <= len(arr[1]):
+                    padded = mrep2 + b' ' * (len(arr[1]) - len(mrep2) )
+                    #print("Padded", b"'" + padded + b"'")
                     ccc = self.hash32(padded)
                     self.putbuffint(rrr[1] - 8, ccc)
                     #print("ccc", hex(ccc))
                     self.putbuffstr(rrr[1], padded)
                     was = True
-                    # This was helpful ... but more systematic approach is needed
-                    self.fp.flush()
-                    self.ifp.flush()
                     ret =  rrr[0]
         if not was:
             ret = self._save_data2(header, datax)
@@ -1301,7 +1300,7 @@ class TwinCore(TwinCoreBase):
             arg3 = arg3.encode()
 
         if self.pgdebug > 1:
-            print("args", arg2, "arg3", arg3)
+            print("Save_data2() args", arg2, "arg3", arg3)
 
         hhh2 = self.hash32(arg2)
         hhh3 = self.hash32(arg3)
@@ -1355,8 +1354,8 @@ class TwinCore(TwinCoreBase):
         self.putidxint(curr + self.INTSIZE, hhh2)
         #self.putidxint(CURROFFS, self.ifp.tell())
 
-        self.fp.flush()
-        self.ifp.flush()
+        #self.fp.flush()
+        #self.ifp.flush()
 
         return curr
 
