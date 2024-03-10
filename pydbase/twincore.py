@@ -279,8 +279,18 @@ class TwinCore(TwinCoreBase):
                 rec2 = rec + 16 + klen;
                 blen = self.getbuffint(rec2+4)
                 data = self.getbuffstr(rec2+8, blen)
-
                 print(" Del at", rec, "key:", kdata, "data:", truncs(data))
+            if self.base_verbose > 1:
+                klen = self.getbuffint(rec+8)
+                kdata = self.getbuffstr(rec+12, klen)
+                rec2 = rec + 16 + klen;
+                blen = self.getbuffint(rec2+4)
+                data = self.getbuffstr(rec2+8, blen)
+                if self.base_verbose > 2:
+                    print(" Del at", rec, "key:", kdata, "data:", data)
+                else:
+                    print(" Del at", rec, "key:", kdata, "data:", truncs(data))
+
             return cnt2
 
         if sig != RECSIG:
@@ -316,7 +326,8 @@ class TwinCore(TwinCoreBase):
         blen2 = self.getbuffint(rec2+4)
 
         if blen2 < 0:
-            print("Invalid data length %d at %d" % (blen2, rec))
+            if self.base_verbose > 1:
+                print("Invalid data length %d at %d" % (blen2, rec))
             return cnt2
 
         data2 = self.getbuffstr(rec2+8, blen2)
@@ -426,7 +437,6 @@ class TwinCore(TwinCoreBase):
 
         #if self.pgdebug:
         #    print("dump_data()", "lim =", hex(lim), "skip=", skip, "dirx =", dirx)
-
 
         cnt = skip; cnt2 = 0
         curr =  chash = HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
