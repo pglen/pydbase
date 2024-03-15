@@ -327,7 +327,7 @@ def mainfunc():
     elif _m.sizex:
         print(&#34;Database size:&#34;, core.getdbsize())
     elif _m.offsx:
-        ddd = core.get_rec_offs(int(_m.offsx))
+        ddd = core.get_rec_byoffs(int(_m.offsx))
         print(ddd)
     elif _m.delx:
         ddd = core.del_rec_offs(int(_m.delx))
@@ -632,7 +632,7 @@ if __name__ == &#34;__main__&#34;:
     elif _m.sizex:
         print(&#34;Database size:&#34;, core.getdbsize())
     elif _m.offsx:
-        ddd = core.get_rec_offs(int(_m.offsx))
+        ddd = core.get_rec_byoffs(int(_m.offsx))
         print(ddd)
     elif _m.delx:
         ddd = core.del_rec_offs(int(_m.delx))

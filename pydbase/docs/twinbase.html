@@ -198,7 +198,8 @@ class TwinCoreBase():
                 fcntl.lockf(fp, fcntl.LOCK_EX)
             except:
                 #print(&#34;Deleting lock&#34;, self.lckname)
-                dellock(self.lckname)
+                #dellock(self.lckname)
+                self.lock.unlock()  #dellock(self.lckname)
                 print(&#34;Cannot open / create &#34;, &#34;&#39;&#34; + fname + &#34;&#39;&#34;, sys.exc_info())
                 if raisex:
                     raise
@@ -400,7 +401,8 @@ class TwinCoreBase():
                 fcntl.lockf(fp, fcntl.LOCK_EX)
             except:
                 #print(&#34;Deleting lock&#34;, self.lckname)
-                dellock(self.lckname)
+                #dellock(self.lckname)
+                self.lock.unlock()  #dellock(self.lckname)
                 print(&#34;Cannot open / create &#34;, &#34;&#39;&#34; + fname + &#34;&#39;&#34;, sys.exc_info())
                 if raisex:
                     raise
@@ -701,7 +703,8 @@ Replaced this with an external hash function for speed.</p></div>
             fcntl.lockf(fp, fcntl.LOCK_EX)
         except:
             #print(&#34;Deleting lock&#34;, self.lckname)
-            dellock(self.lckname)
+            #dellock(self.lckname)
+            self.lock.unlock()  #dellock(self.lckname)
             print(&#34;Cannot open / create &#34;, &#34;&#39;&#34; + fname + &#34;&#39;&#34;, sys.exc_info())
             if raisex:
                 raise

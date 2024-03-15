@@ -1,4 +1,5 @@
 import setuptools
+import os, sys
 
 descx = '''
         It is an insanely simple database. Fast. If all you need is a key / value
@@ -19,14 +20,22 @@ classx = [
           'Topic :: Databases',
         ]
 
-#includex = ["pydbase/"]
+includex = ["*", "pydbase/", ]
+versionx = "1.4.9"
+
+doclist = []; droot = "pydbase/docs/"
+doclistx = os.listdir(droot)
+for aa in doclistx:
+    doclist.append(droot + aa)
+#print(doclist)
+#sys.exit()
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="pydbase",
-    version="1.4.8",
+    version=versionx,
     author="Peter Glen",
     author_email="peterglen99@gmail.com",
     description="High speed database with key / data in python.",
@@ -39,12 +48,10 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     include_package_data=True,
-    #packages=setuptools.find_packages(include=includex),
-    packages = ["pydbase",],
+    packages=setuptools.find_packages(include=includex),
     scripts = ['dbaseadm.py', 'chainadm.py'],
     py_modules = ["pyvpacker",],
-    #package_dir = {'': '.'},
-
+    package_data = {"docs" : doclist},
     python_requires='>=3',
     entry_points={
         'console_scripts': [ "dbaseadm=dbaseadm:mainfunc",

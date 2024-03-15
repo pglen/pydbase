@@ -350,8 +350,13 @@ class TwinCore(TwinCoreBase):
 
         &#39;&#39;&#39; Print record to the screen. &#39;&#39;&#39;
 
+        if self.pgdebug &gt; 1:
+            print(&#34;Dump Rec at&#34;, rec)
+
         cnt2 = 0
         sig = self.getbuffstr(rec, self.INTSIZE)
+        if self.pgdebug &gt; 5:
+            print(&#34;Sig &#34;, sig, &#34;at&#34;, rec)
 
         if sig == RECDEL:
             if base_showdel:
@@ -360,8 +365,18 @@ class TwinCore(TwinCoreBase):
                 rec2 = rec + 16 + klen;
                 blen = self.getbuffint(rec2+4)
                 data = self.getbuffstr(rec2+8, blen)
-
                 print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, truncs(data))
+            if self.base_verbose &gt; 1:
+                klen = self.getbuffint(rec+8)
+                kdata = self.getbuffstr(rec+12, klen)
+                rec2 = rec + 16 + klen;
+                blen = self.getbuffint(rec2+4)
+                data = self.getbuffstr(rec2+8, blen)
+                if self.base_verbose &gt; 2:
+                    print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, data)
+                else:
+                    print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, truncs(data))
+
             return cnt2
 
         if sig != RECSIG:
@@ -397,7 +412,8 @@ class TwinCore(TwinCoreBase):
         blen2 = self.getbuffint(rec2+4)
 
         if blen2 &lt; 0:
-            print(&#34;Invalid data length %d at %d&#34; % (blen2, rec))
+            if self.base_verbose &gt; 1:
+                print(&#34;Invalid data length %d at %d&#34; % (blen2, rec))
             return cnt2
 
         data2 = self.getbuffstr(rec2+8, blen2)
@@ -503,10 +519,10 @@ class TwinCore(TwinCoreBase):
 
     def  __dump_data(self, lim = INT_MAX, skip = 0, dirx = 0):
 
-        if self.pgdebug:
-            print(&#34;dump_data()&#34;, &#34;lim =&#34;, hex(lim), &#34;skip=&#34;, skip, &#34;dirx =&#34;, dirx)
-
         &#39;&#39;&#39; Put all data to screen worker function. &#39;&#39;&#39;
+
+        #if self.pgdebug:
+        #    print(&#34;dump_data()&#34;, &#34;lim =&#34;, hex(lim), &#34;skip=&#34;, skip, &#34;dirx =&#34;, dirx)
 
         cnt = skip; cnt2 = 0
         curr =  chash = HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
@@ -519,10 +535,16 @@ class TwinCore(TwinCoreBase):
 
         for aa in rrr:
             rec = self.getidxint(aa)
+
             #print(aa, rec)
             if not base_quiet:
                 cnt2 += 1
                 ret = self.dump_rec(rec, cnt)
+
+                if not ret:
+                    if self.pgdebug &gt; 5:
+                        print(&#34;Deleted / empty record at&#34;, cnt)
+
                 if ret:
                     cnt += 1
                     if cnt &gt;= lim:
@@ -546,7 +568,7 @@ class TwinCore(TwinCoreBase):
 
         self.lock.waitlock() #self.lckname)
         ret = self.__reindex()
-        self.lock.unlock    #dellock(self.lckname)
+        self.lock.unlock()    #dellock(self.lckname)
         return ret
 
     # --------------------------------------------------------------------
@@ -617,12 +639,14 @@ class TwinCore(TwinCoreBase):
             aa += lenx + len2 + 24
             ret += 1
 
+        tempifp.flush()
+        tempifp.close()
+
         # Make it go out of scope
         self.fp.flush()
-        self.ifp.flush();
-        self.ifp.close()
-        tempifp.flush();
-        tempifp.close()
+        #self.fp.close()
+        self.ifp.flush()
+        #self.ifp.close()
 
         # Now move files
         try:
@@ -722,7 +746,7 @@ class TwinCore(TwinCoreBase):
                     global base_integrity
                     tmpi = base_integrity
                     base_integrity = True
-                    arr = self.get_rec_offs(rec)
+                    arr = self.get_rec_byoffs(rec)
                     base_integrity = tmpi
 
                     if self.pgdebug &gt; 1:
@@ -740,7 +764,7 @@ class TwinCore(TwinCoreBase):
                             print(&#34;Error on vac: %d&#34; % rec)
                 cnt += 1
 
-            vacdb.unlock()  #dellock(vacdb.lckname)
+            vacdb.lock.unlock()  #dellock(vacdb.lckname)
 
             # if vacerr is empty
             try:
@@ -811,7 +835,7 @@ class TwinCore(TwinCoreBase):
         #print(&#34;offs&#34;, offs)
         return self._rec2arr(offs)
 
-    def  get_rec_offs(self, recoffs):
+    def  get_rec_byoffs(self, recoffs):
 
         &#39;&#39;&#39; Return record by offset. &#39;&#39;&#39;
 
@@ -960,7 +984,7 @@ class TwinCore(TwinCoreBase):
             else:
                 hhh = self.getbuffint(rec+4)
                 if hhh == hhhh:
-                    arr.append(self.get_rec_offs(rec))
+                    arr.append(self.get_rec_byoffs(rec))
                     if len(arr) &gt;= limx:
                         break
         self.lock.unlock()  #dellock(self.lckname)
@@ -1331,20 +1355,18 @@ class TwinCore(TwinCoreBase):
                 mrep2 = datax
 
             rrr = self._recoffset(header, 1)
-            if rrr[2]:
-                #print(&#34;Replace rec&#34;, hex(rrr[0]), &#34;len:&#34;, rrr[1])
-                if len(mrep2) &lt;= rrr[2]:
-                    #print(&#34;Fit&#34;)
-                    padded = mrep2 + b&#39; &#39; * (rrr[1] - len(mrep2))
-                    #print(&#34;Padded&#34;, padded)
+            arr = self.get_rec_byoffs(rrr[0])
+            #print(arr)
+            if arr:
+                #print(&#34;Replace rec&#34;, arr[1], &#34;len:&#34;, arr[1])
+                if len(mrep2) &lt;= len(arr[1]):
+                    padded = mrep2 + b&#39; &#39; * (len(arr[1]) - len(mrep2) )
+                    #print(&#34;Padded&#34;, b&#34;&#39;&#34; + padded + b&#34;&#39;&#34;)
                     ccc = self.hash32(padded)
                     self.putbuffint(rrr[1] - 8, ccc)
                     #print(&#34;ccc&#34;, hex(ccc))
                     self.putbuffstr(rrr[1], padded)
                     was = True
-                    # This was helpful ... but more systematic approach is needed
-                    self.fp.flush()
-                    self.ifp.flush()
                     ret =  rrr[0]
         if not was:
             ret = self._save_data2(header, datax)
@@ -1365,7 +1387,7 @@ class TwinCore(TwinCoreBase):
             arg3 = arg3.encode()
 
         if self.pgdebug &gt; 1:
-            print(&#34;args&#34;, arg2, &#34;arg3&#34;, arg3)
+            print(&#34;Save_data2() args&#34;, arg2, &#34;arg3&#34;, arg3)
 
         hhh2 = self.hash32(arg2)
         hhh3 = self.hash32(arg3)
@@ -1658,8 +1680,13 @@ The TWIN refers to separate files for data / index.</p></div>
 
         &#39;&#39;&#39; Print record to the screen. &#39;&#39;&#39;
 
+        if self.pgdebug &gt; 1:
+            print(&#34;Dump Rec at&#34;, rec)
+
         cnt2 = 0
         sig = self.getbuffstr(rec, self.INTSIZE)
+        if self.pgdebug &gt; 5:
+            print(&#34;Sig &#34;, sig, &#34;at&#34;, rec)
 
         if sig == RECDEL:
             if base_showdel:
@@ -1668,8 +1695,18 @@ The TWIN refers to separate files for data / index.</p></div>
                 rec2 = rec + 16 + klen;
                 blen = self.getbuffint(rec2+4)
                 data = self.getbuffstr(rec2+8, blen)
-
                 print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, truncs(data))
+            if self.base_verbose &gt; 1:
+                klen = self.getbuffint(rec+8)
+                kdata = self.getbuffstr(rec+12, klen)
+                rec2 = rec + 16 + klen;
+                blen = self.getbuffint(rec2+4)
+                data = self.getbuffstr(rec2+8, blen)
+                if self.base_verbose &gt; 2:
+                    print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, data)
+                else:
+                    print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, truncs(data))
+
             return cnt2
 
         if sig != RECSIG:
@@ -1705,7 +1742,8 @@ The TWIN refers to separate files for data / index.</p></div>
         blen2 = self.getbuffint(rec2+4)
 
         if blen2 &lt; 0:
-            print(&#34;Invalid data length %d at %d&#34; % (blen2, rec))
+            if self.base_verbose &gt; 1:
+                print(&#34;Invalid data length %d at %d&#34; % (blen2, rec))
             return cnt2
 
         data2 = self.getbuffstr(rec2+8, blen2)
@@ -1811,10 +1849,10 @@ The TWIN refers to separate files for data / index.</p></div>
 
     def  __dump_data(self, lim = INT_MAX, skip = 0, dirx = 0):
 
-        if self.pgdebug:
-            print(&#34;dump_data()&#34;, &#34;lim =&#34;, hex(lim), &#34;skip=&#34;, skip, &#34;dirx =&#34;, dirx)
-
         &#39;&#39;&#39; Put all data to screen worker function. &#39;&#39;&#39;
+
+        #if self.pgdebug:
+        #    print(&#34;dump_data()&#34;, &#34;lim =&#34;, hex(lim), &#34;skip=&#34;, skip, &#34;dirx =&#34;, dirx)
 
         cnt = skip; cnt2 = 0
         curr =  chash = HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
@@ -1827,10 +1865,16 @@ The TWIN refers to separate files for data / index.</p></div>
 
         for aa in rrr:
             rec = self.getidxint(aa)
+
             #print(aa, rec)
             if not base_quiet:
                 cnt2 += 1
                 ret = self.dump_rec(rec, cnt)
+
+                if not ret:
+                    if self.pgdebug &gt; 5:
+                        print(&#34;Deleted / empty record at&#34;, cnt)
+
                 if ret:
                     cnt += 1
                     if cnt &gt;= lim:
@@ -1854,7 +1898,7 @@ The TWIN refers to separate files for data / index.</p></div>
 
         self.lock.waitlock() #self.lckname)
         ret = self.__reindex()
-        self.lock.unlock    #dellock(self.lckname)
+        self.lock.unlock()    #dellock(self.lckname)
         return ret
 
     # --------------------------------------------------------------------
@@ -1925,12 +1969,14 @@ The TWIN refers to separate files for data / index.</p></div>
             aa += lenx + len2 + 24
             ret += 1
 
+        tempifp.flush()
+        tempifp.close()
+
         # Make it go out of scope
         self.fp.flush()
-        self.ifp.flush();
-        self.ifp.close()
-        tempifp.flush();
-        tempifp.close()
+        #self.fp.close()
+        self.ifp.flush()
+        #self.ifp.close()
 
         # Now move files
         try:
@@ -2030,7 +2076,7 @@ The TWIN refers to separate files for data / index.</p></div>
                     global base_integrity
                     tmpi = base_integrity
                     base_integrity = True
-                    arr = self.get_rec_offs(rec)
+                    arr = self.get_rec_byoffs(rec)
                     base_integrity = tmpi
 
                     if self.pgdebug &gt; 1:
@@ -2048,7 +2094,7 @@ The TWIN refers to separate files for data / index.</p></div>
                             print(&#34;Error on vac: %d&#34; % rec)
                 cnt += 1
 
-            vacdb.unlock()  #dellock(vacdb.lckname)
+            vacdb.lock.unlock()  #dellock(vacdb.lckname)
 
             # if vacerr is empty
             try:
@@ -2119,7 +2165,7 @@ The TWIN refers to separate files for data / index.</p></div>
         #print(&#34;offs&#34;, offs)
         return self._rec2arr(offs)
 
-    def  get_rec_offs(self, recoffs):
+    def  get_rec_byoffs(self, recoffs):
 
         &#39;&#39;&#39; Return record by offset. &#39;&#39;&#39;
 
@@ -2268,7 +2314,7 @@ The TWIN refers to separate files for data / index.</p></div>
             else:
                 hhh = self.getbuffint(rec+4)
                 if hhh == hhhh:
-                    arr.append(self.get_rec_offs(rec))
+                    arr.append(self.get_rec_byoffs(rec))
                     if len(arr) &gt;= limx:
                         break
         self.lock.unlock()  #dellock(self.lckname)
@@ -2639,20 +2685,18 @@ The TWIN refers to separate files for data / index.</p></div>
                 mrep2 = datax
 
             rrr = self._recoffset(header, 1)
-            if rrr[2]:
-                #print(&#34;Replace rec&#34;, hex(rrr[0]), &#34;len:&#34;, rrr[1])
-                if len(mrep2) &lt;= rrr[2]:
-                    #print(&#34;Fit&#34;)
-                    padded = mrep2 + b&#39; &#39; * (rrr[1] - len(mrep2))
-                    #print(&#34;Padded&#34;, padded)
+            arr = self.get_rec_byoffs(rrr[0])
+            #print(arr)
+            if arr:
+                #print(&#34;Replace rec&#34;, arr[1], &#34;len:&#34;, arr[1])
+                if len(mrep2) &lt;= len(arr[1]):
+                    padded = mrep2 + b&#39; &#39; * (len(arr[1]) - len(mrep2) )
+                    #print(&#34;Padded&#34;, b&#34;&#39;&#34; + padded + b&#34;&#39;&#34;)
                     ccc = self.hash32(padded)
                     self.putbuffint(rrr[1] - 8, ccc)
                     #print(&#34;ccc&#34;, hex(ccc))
                     self.putbuffstr(rrr[1], padded)
                     was = True
-                    # This was helpful ... but more systematic approach is needed
-                    self.fp.flush()
-                    self.ifp.flush()
                     ret =  rrr[0]
         if not was:
             ret = self._save_data2(header, datax)
@@ -2673,7 +2717,7 @@ The TWIN refers to separate files for data / index.</p></div>
             arg3 = arg3.encode()
 
         if self.pgdebug &gt; 1:
-            print(&#34;args&#34;, arg2, &#34;arg3&#34;, arg3)
+            print(&#34;Save_data2() args&#34;, arg2, &#34;arg3&#34;, arg3)
 
         hhh2 = self.hash32(arg2)
         hhh3 = self.hash32(arg3)
@@ -3065,8 +3109,13 @@ False for scanning down, True for up</p>
 
     &#39;&#39;&#39; Print record to the screen. &#39;&#39;&#39;
 
+    if self.pgdebug &gt; 1:
+        print(&#34;Dump Rec at&#34;, rec)
+
     cnt2 = 0
     sig = self.getbuffstr(rec, self.INTSIZE)
+    if self.pgdebug &gt; 5:
+        print(&#34;Sig &#34;, sig, &#34;at&#34;, rec)
 
     if sig == RECDEL:
         if base_showdel:
@@ -3075,8 +3124,18 @@ False for scanning down, True for up</p>
             rec2 = rec + 16 + klen;
             blen = self.getbuffint(rec2+4)
             data = self.getbuffstr(rec2+8, blen)
-
             print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, truncs(data))
+        if self.base_verbose &gt; 1:
+            klen = self.getbuffint(rec+8)
+            kdata = self.getbuffstr(rec+12, klen)
+            rec2 = rec + 16 + klen;
+            blen = self.getbuffint(rec2+4)
+            data = self.getbuffstr(rec2+8, blen)
+            if self.base_verbose &gt; 2:
+                print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, data)
+            else:
+                print(&#34; Del at&#34;, rec, &#34;key:&#34;, kdata, &#34;data:&#34;, truncs(data))
+
         return cnt2
 
     if sig != RECSIG:
@@ -3112,7 +3171,8 @@ False for scanning down, True for up</p>
     blen2 = self.getbuffint(rec2+4)
 
     if blen2 &lt; 0:
-        print(&#34;Invalid data length %d at %d&#34; % (blen2, rec))
+        if self.base_verbose &gt; 1:
+            print(&#34;Invalid data length %d at %d&#34; % (blen2, rec))
         return cnt2
 
     data2 = self.getbuffstr(rec2+8, blen2)
@@ -3379,8 +3439,8 @@ False for scanning down, True for up</p>
     return self._rec2arr(offs)</code></pre>
 </details>
 </dd>
-<dt id="twincore.TwinCore.get_rec_offs"><code class="name flex">
-<span>def <span class="ident">get_rec_offs</span></span>(<span>self, recoffs)</span>
+<dt id="twincore.TwinCore.get_rec_byoffs"><code class="name flex">
+<span>def <span class="ident">get_rec_byoffs</span></span>(<span>self, recoffs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return record by offset.</p></div>
@@ -3388,7 +3448,7 @@ False for scanning down, True for up</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def  get_rec_offs(self, recoffs):
+<pre><code class="python">def  get_rec_byoffs(self, recoffs):
 
     &#39;&#39;&#39; Return record by offset. &#39;&#39;&#39;
 
@@ -3534,7 +3594,7 @@ Skip number of records.</p></div>
 
     self.lock.waitlock() #self.lckname)
     ret = self.__reindex()
-    self.lock.unlock    #dellock(self.lckname)
+    self.lock.unlock()    #dellock(self.lckname)
     return ret</code></pre>
 </details>
 </dd>
@@ -3579,7 +3639,7 @@ Skip number of records.</p></div>
         else:
             hhh = self.getbuffint(rec+4)
             if hhh == hhhh:
-                arr.append(self.get_rec_offs(rec))
+                arr.append(self.get_rec_byoffs(rec))
                 if len(arr) &gt;= limx:
                     break
     self.lock.unlock()  #dellock(self.lckname)
@@ -3655,20 +3715,18 @@ Useful for counters or dynamically changing data.</p>
             mrep2 = datax
 
         rrr = self._recoffset(header, 1)
-        if rrr[2]:
-            #print(&#34;Replace rec&#34;, hex(rrr[0]), &#34;len:&#34;, rrr[1])
-            if len(mrep2) &lt;= rrr[2]:
-                #print(&#34;Fit&#34;)
-                padded = mrep2 + b&#39; &#39; * (rrr[1] - len(mrep2))
-                #print(&#34;Padded&#34;, padded)
+        arr = self.get_rec_byoffs(rrr[0])
+        #print(arr)
+        if arr:
+            #print(&#34;Replace rec&#34;, arr[1], &#34;len:&#34;, arr[1])
+            if len(mrep2) &lt;= len(arr[1]):
+                padded = mrep2 + b&#39; &#39; * (len(arr[1]) - len(mrep2) )
+                #print(&#34;Padded&#34;, b&#34;&#39;&#34; + padded + b&#34;&#39;&#34;)
                 ccc = self.hash32(padded)
                 self.putbuffint(rrr[1] - 8, ccc)
                 #print(&#34;ccc&#34;, hex(ccc))
                 self.putbuffstr(rrr[1], padded)
                 was = True
-                # This was helpful ... but more systematic approach is needed
-                self.fp.flush()
-                self.ifp.flush()
                 ret =  rrr[0]
     if not was:
         ret = self._save_data2(header, datax)
@@ -3748,7 +3806,7 @@ operations are present (like find / retrieve cycle).</p></div>
 <li><code><a title="twincore.TwinCore.flush" href="#twincore.TwinCore.flush">flush</a></code></li>
 <li><code><a title="twincore.TwinCore.get_key_offs" href="#twincore.TwinCore.get_key_offs">get_key_offs</a></code></li>
 <li><code><a title="twincore.TwinCore.get_rec" href="#twincore.TwinCore.get_rec">get_rec</a></code></li>
-<li><code><a title="twincore.TwinCore.get_rec_offs" href="#twincore.TwinCore.get_rec_offs">get_rec_offs</a></code></li>
+<li><code><a title="twincore.TwinCore.get_rec_byoffs" href="#twincore.TwinCore.get_rec_byoffs">get_rec_byoffs</a></code></li>
 <li><code><a title="twincore.TwinCore.getdbsize" href="#twincore.TwinCore.getdbsize">getdbsize</a></code></li>
 <li><code><a title="twincore.TwinCore.integrity_check" href="#twincore.TwinCore.integrity_check">integrity_check</a></code></li>
 <li><code><a title="twincore.TwinCore.listall" href="#twincore.TwinCore.listall">listall</a></code></li>

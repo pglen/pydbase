@@ -9,7 +9,7 @@ It is fast, and the time test shows that this is an order of magnitude
 faster than most mainstream databases. This is due to the engine's simplicity.
 It avoids expensive computations in favor of quickly saving data.
 
-### Fast data save / retrieve 
+### Fast data save / retrieve
 
  &nbsp; Mostly ready for production. All tests pass. Please use caution, as this is new.
 The command line tester can drive most aspects of this API; and it is somewhat

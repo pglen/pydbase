@@ -239,12 +239,14 @@ class TwinChain(TwinCore):
         &#39;&#39;&#39; Return the payload on record number &#39;&#39;&#39;
 
         arr = self.get_rec(recnum)
+        if not arr:
+            return []
         try:
             decoded = self.packer.decode_data(arr[1])
             #print(&#34;decoded&#34;, decoded)
         except:
-            print(&#34;Cannot decode&#34;, recnum, sys.exc_info())
-            return &#34;Bad record&#34;
+            print(&#34;Cannot decode record at&#34;, recnum, recnum, sys.exc_info())
+            raise
         dic = self._get_fields(decoded[0])
 
         if self.core_verbose &gt; 2:
@@ -306,11 +308,21 @@ class TwinChain(TwinCore):
 
     def get_header(self, recnum):
 
-        &#39;&#39;&#39; Get header of record &#39;&#39;&#39;
+        &#39;&#39;&#39; Get the header of record. &#39;&#39;&#39;
 
+        if self.pgdebug &gt; 5:
+            print(&#34;get_header()&#34;, recnum)
         arr = self.get_rec(recnum)
+        if not arr:
+            if self.pgdebug &gt; 5:
+                print(&#34;get_header(): empty/deleted record&#34;, recnum)
+
+            if self.core_verbose &gt; 1:
+                print(&#34;get_header(): empty/deleted record&#34;, recnum)
+            return []
+
         if self.core_verbose &gt; 1:
-            print(&#34;arr[0]&#34;, arr[0])
+            print(&#34;arr&#34;, arr)
             uuu = uuid.UUID(arr[0].decode())
             ddd = str(uuid2date(uuu))
             print(&#34;header&#34;, arr[0])
@@ -655,12 +667,14 @@ class TwinChain(TwinCore):
         &#39;&#39;&#39; Return the payload on record number &#39;&#39;&#39;
 
         arr = self.get_rec(recnum)
+        if not arr:
+            return []
         try:
             decoded = self.packer.decode_data(arr[1])
             #print(&#34;decoded&#34;, decoded)
         except:
-            print(&#34;Cannot decode&#34;, recnum, sys.exc_info())
-            return &#34;Bad record&#34;
+            print(&#34;Cannot decode record at&#34;, recnum, recnum, sys.exc_info())
+            raise
         dic = self._get_fields(decoded[0])
 
         if self.core_verbose &gt; 2:
@@ -722,11 +736,21 @@ class TwinChain(TwinCore):
 
     def get_header(self, recnum):
 
-        &#39;&#39;&#39; Get header of record &#39;&#39;&#39;
+        &#39;&#39;&#39; Get the header of record. &#39;&#39;&#39;
 
+        if self.pgdebug &gt; 5:
+            print(&#34;get_header()&#34;, recnum)
         arr = self.get_rec(recnum)
+        if not arr:
+            if self.pgdebug &gt; 5:
+                print(&#34;get_header(): empty/deleted record&#34;, recnum)
+
+            if self.core_verbose &gt; 1:
+                print(&#34;get_header(): empty/deleted record&#34;, recnum)
+            return []
+
         if self.core_verbose &gt; 1:
-            print(&#34;arr[0]&#34;, arr[0])
+            print(&#34;arr&#34;, arr)
             uuu = uuid.UUID(arr[0].decode())
             ddd = str(uuid2date(uuu))
             print(&#34;header&#34;, arr[0])
@@ -1098,18 +1122,28 @@ check as found. Raises exception</p>
 <span>def <span class="ident">get_header</span></span>(<span>self, recnum)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get header of record</p></div>
+<div class="desc"><p>Get the header of record.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_header(self, recnum):
 
-    &#39;&#39;&#39; Get header of record &#39;&#39;&#39;
+    &#39;&#39;&#39; Get the header of record. &#39;&#39;&#39;
 
+    if self.pgdebug &gt; 5:
+        print(&#34;get_header()&#34;, recnum)
     arr = self.get_rec(recnum)
+    if not arr:
+        if self.pgdebug &gt; 5:
+            print(&#34;get_header(): empty/deleted record&#34;, recnum)
+
+        if self.core_verbose &gt; 1:
+            print(&#34;get_header(): empty/deleted record&#34;, recnum)
+        return []
+
     if self.core_verbose &gt; 1:
-        print(&#34;arr[0]&#34;, arr[0])
+        print(&#34;arr&#34;, arr)
         uuu = uuid.UUID(arr[0].decode())
         ddd = str(uuid2date(uuu))
         print(&#34;header&#34;, arr[0])
@@ -1130,12 +1164,14 @@ check as found. Raises exception</p>
     &#39;&#39;&#39; Return the payload on record number &#39;&#39;&#39;
 
     arr = self.get_rec(recnum)
+    if not arr:
+        return []
     try:
         decoded = self.packer.decode_data(arr[1])
         #print(&#34;decoded&#34;, decoded)
     except:
-        print(&#34;Cannot decode&#34;, recnum, sys.exc_info())
-        return &#34;Bad record&#34;
+        print(&#34;Cannot decode record at&#34;, recnum, recnum, sys.exc_info())
+        raise
     dic = self._get_fields(decoded[0])
 
     if self.core_verbose &gt; 2:
