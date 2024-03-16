@@ -361,6 +361,9 @@ class TwinChain(TwinCore):
 
         ooo = self.get_rec(sss-1)
 
+        if self.pgdebug > 5:
+            print("decoding", ooo)
+
         decoded = self.packer.decode_data(ooo[1])
 
         self.old_dicx = self._get_fields(decoded[0])
