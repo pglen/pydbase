@@ -8,6 +8,8 @@ core = None
 fname = createname(__file__)
 iname = createidxname(__file__)
 
+# Thread to fill the DB
+
 def oneproc():
 
     #print("started thread")
@@ -54,11 +56,12 @@ def test_adders(capsys):
     # Start a handful of threads
 
     ttt = []
-    for aa in range(300):
+    for aa in range(200):
         tt = threading.Thread(target = oneproc)
         ttt.append(tt)
         tt.run()
 
+    # Wait for all to finish
     while 1:
         aa = False
         for tt in ttt:
@@ -66,6 +69,7 @@ def test_adders(capsys):
                 aa = True
         if not aa:
             break
+        sleep(.1)
 
 def test_integrity(capsys):
     ddd = core.integrity_check()

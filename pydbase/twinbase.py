@@ -6,7 +6,12 @@
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
-import  struct, io, traceback, fcntl, hashlib, traceback
+import  struct, io, traceback, hashlib, traceback
+
+try:
+    import fcntl
+except:
+    fcntl = None
 
 base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base, '..', 'pydbase'))
@@ -50,6 +55,7 @@ class TwinCoreBase():
 
         global base_pgdebug
         base_pgdebug = pgdebug
+        set_pgdebug(pgdebug)
 
         if self.pgdebug > 1:
             print("Initializing core base pgdebug =", pgdebug)
@@ -152,6 +158,14 @@ class TwinCoreBase():
 
         return hashx
 
+    def _lockx(self, fp):
+        if fcntl:
+            fcntl.lockf(fp, fcntl.LOCK_EX)
+        else:
+            import msvcrt
+            fnum = fp.fileno()
+            msvcrt.locking(fnum, msvcrt.LK_LOCK, os.fstat(fnum).st_size)
+
     def softcreate(self, fname, raisex = True):
 
         ''' Open for read / write. Create if needed. '''
@@ -161,15 +175,17 @@ class TwinCoreBase():
         fp = None
         try:
             fp = open(fname, "rb+")
+            #self._lockx(fp)
         except:
             try:
                 fp = open(fname, "wb+")
-                fcntl.lockf(fp, fcntl.LOCK_EX)
+                self._lockx(fp)
             except:
                 #print("Deleting lock", self.lckname)
                 #dellock(self.lckname)
                 self.lock.unlock()  #dellock(self.lckname)
                 print("Cannot open / create ", "'" + fname + "'", sys.exc_info())
+
                 if raisex:
                     raise
                 pass

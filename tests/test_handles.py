@@ -6,15 +6,23 @@ fff = __file__[:]
 from mytest import *
 
 core = None
+dcore = None
+fname = createname(__file__)
+iname = createidxname(__file__)
 
 def _print_handles():
-    open_file_handles = os.listdir('/proc/self/fd')
-    print('open file handles: ' + ', '.join(map(str, open_file_handles)))
+    try:
+        import fcntl
+        open_file_handles = os.listdir('/proc/self/fd')
+        print('open file handles: ' + ', '.join(map(str, open_file_handles)))
+    except:
+        pass
+        # Windows here ...
 
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
     global core
-    core = create_db()
+    core = create_db(fname)
     assert core != None
 
 def teardown_module(module):

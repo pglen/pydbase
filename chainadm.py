@@ -152,8 +152,15 @@ def execfunc():
 
     ''' Execute individual function from command line '''
 
+
     # Create our database
     core = twinchain.TwinChain(_c.deffile, _c.pgdebug, _c.verbose)
+
+    core.base_quiet     = _c.quiet
+    core.base_pgdebug   = _c.pgdebug
+    core.base_showdel   = _c.sdelx
+    core.base_integrity = _c.checkx
+    core.base_pgdebug   = _c.pgdebug
 
     if _c.integx:
         #print("Integrity", _c.integx)

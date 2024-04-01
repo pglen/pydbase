@@ -37,7 +37,7 @@ def teardown_module(module):
     """
     try:
         # No dangling data
-        #os.remove(fname)
+        os.remove(fname)
         os.remove(iname)
         pass
     except:

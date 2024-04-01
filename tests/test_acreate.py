@@ -6,11 +6,13 @@ fff = __file__[:]
 from mytest import *
 
 core = None
+fname = createname(__file__)
+iname = createidxname(__file__)
 
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
     global core
-    core = create_db()
+    core = create_db(fname)
     assert core != None
 
 def teardown_module(module):

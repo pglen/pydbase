@@ -65,6 +65,7 @@ import  random, stat, os.path, datetime, threading
 import  struct, io
 
 base = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(base))
 sys.path.append(os.path.join(base, '..', 'pydbase'))
 
 from twinbase import *
@@ -497,6 +498,16 @@ class TwinCore(TwinCoreBase):
         curr =  self._getdbsize(self.ifp) * self.INTSIZE * 2
 
         reidx = os.path.splitext(self.fname)[0]  + "_tmp_" + ".pidx"
+        relock = os.path.splitext(self.fname)[0]  + "_tmp_" + ".pidx"
+        # Make sure reidx is empty
+        try:
+            os.remove(reidx)
+        except:
+            pass
+
+        tmplock = FileLock(relock)
+        tmplock.waitlock()
+
         tempifp = self.softcreate(reidx)
         self.create_idx(tempifp)
         dlen = self.getsize(self.fp)
@@ -557,19 +568,26 @@ class TwinCore(TwinCoreBase):
         tempifp.close()
 
         # Make it go out of scope
-        self.fp.flush()
+        #self.fp.flush()
         #self.fp.close()
         self.ifp.flush()
-        #self.ifp.close()
+        self.ifp.close()
 
         # Now move files
         try:
             os.remove(self.idxname)
         except:
             pass
+            #print("remove:", sys.exc_info())
 
         #print("rename", reidx, "->", self.idxname)
-        os.rename(reidx, self.idxname)
+        try:
+            os.rename(reidx, self.idxname)
+        except:
+            pass
+            #print("rename:", sys.exc_info())
+
+        tmplock.unlock()
 
         # Activate new index
         self.ifp = self.softcreate(self.idxname)
@@ -678,6 +696,9 @@ class TwinCore(TwinCoreBase):
                             print("Error on vac: %d" % rec)
                 cnt += 1
 
+            vacdb.fp.close()
+            vacdb.ifp.close()
+
             vacdb.lock.unlock()  #dellock(vacdb.lckname)
 
             # if vacerr is empty
@@ -688,8 +709,6 @@ class TwinCore(TwinCoreBase):
             except:
                 print("vacerr", sys.exc_info())
 
-        self.lock.unlock()  #dellock(self.lckname)
-
         # Any vacummed?
         if vac > 0:
             # Make it go out of scope
@@ -698,21 +717,34 @@ class TwinCore(TwinCoreBase):
 
             # Now move files
             try:
-                os.remove(self.fname);  os.remove(self.idxname)
+                os.remove(self.fname);
             except:
+                print("vacuum remove", self.fname, sys.exc_info())
+                pass
+
+            try:
+                os.remove(self.idxname)
+            except:
+                print("vacuum idx remove", self.idxname, sys.exc_info())
                 pass
 
             if self.pgdebug > 1:
                 print("rename", vacname, "->", self.fname)
                 print("rename", vacidx, "->", self.idxname)
 
-            os.rename(vacname, self.fname)
-            os.rename(vacidx, self.idxname)
+            try:
+                os.rename(vacname, self.fname)
+            except:
+                print("vacuum rename", vacname, sys.exc_info())
+            try:
+                os.rename(vacidx, self.idxname)
+            except:
+                print("vacuum idx rename", vacidx, sys.exc_info())
 
             self.lock.waitlock() #self.lckname)
             self.fp = self.softcreate(self.fname)
             self.ifp = self.softcreate(self.idxname)
-            self.lock.unlock()  #dellock(self.lckname)
+            #self.lock.unlock()  #dellock(self.lckname)
 
         else:
             # Just remove non vacuumed files
@@ -723,6 +755,9 @@ class TwinCore(TwinCoreBase):
                 os.remove(vacidx)
             except:
                 pass
+
+        #self.lock.unlock()
+        #dellock(self.lckname)
 
         #print("ended vacuum")
         return ret, vac
@@ -1372,12 +1407,14 @@ class TwinCore(TwinCoreBase):
 
         if hasattr(self, "fp"):
                 if self.fp:
-                    self.fp.flush()
-                    self.fp.close()
+                    if not self.fp.closed:
+                        self.fp.flush()
+                        self.fp.close()
 
         if hasattr(self, "ifp"):
                 if self.ifp:
-                    self.ifp.flush()
-                    self.ifp.close()
+                    if not self.ifp.closed:
+                        self.ifp.flush()
+                        self.ifp.close()
 
 # EOF

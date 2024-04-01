@@ -8,7 +8,6 @@ from mytest import *
 # Test for pydbase
 
 core = None
-
 fname = createname(__file__)
 iname = createidxname(__file__)
 

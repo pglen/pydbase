@@ -52,22 +52,41 @@ def createidxname(file):
     datafile = os.path.splitext(os.path.basename(file))[0]
     return test_dir + os.sep + datafile + ".pidx"
 
+gl_fname = ""
+gl_iname = ""
+
 def create_db(fname = ""):
+
+    global gl_fname, gl_iname
 
     core = None
 
     if fname == "":
-       fname = baseall + ".pydb"
+       gl_fname = createname(__file__)
+       gl_iname = createidxname(__file__)
+    else:
+       gl_fname = createname(fname)
+       gl_iname = createidxname(fname)
+
+    #print("used", gl_fname, gl_iname)
 
     try:
         # Fresh start
-        os.remove(fname)
+        os.remove(gl_fname)
+        os.remove(gl_iname)
         pass
     except:
+        #print("Cannot delete", sys.exc_info())
         pass
 
+    # We aquire a global lock so multiople pytests are OK
+    lockname = os.path.splitext(gl_fname)[0] + ".xlock"
+    lock = twincore.FileLock(lockname)
+    lock.waitlock()
+    print("lock", lock, lock.lockname)
+
     try:
-        core = twincore.TwinCore(fname)
+        core = twincore.TwinCore(gl_fname)
         #print(core)
         #assert 0
     except:
@@ -77,13 +96,14 @@ def create_db(fname = ""):
 
 def uncreate_db(fname = ""):
 
-    if fname == "":
-       fname = baseall + ".pydb"
-       iname = baseall + ".pidx"
+    #if fname == "":
+    #   fname = baseall + ".pydb"
+    #   iname = baseall + ".pidx"
+
     try:
         # Fresh start for next run
-        os.remove(fname)
-        os.remove(iname)
+        os.remove(gl_fname)
+        os.remove(gl_iname)
         pass
     except:
         pass

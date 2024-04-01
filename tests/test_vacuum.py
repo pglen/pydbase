@@ -57,20 +57,28 @@ def teardown_module(module):
 def test_vacuum(capsys):
 
     core.pgdebug = 0
+
+    ooo = []
+    dbsize = core.getdbsize()
+    for aa in range(dbsize):
+        vvv = core.get_rec(aa)
+        if vvv:
+            ooo.append(vvv)
+
     core.vacuum()
 
-    core.dump_data()
+    dbsize2 = core.getdbsize()
 
-    #assert 0
+    assert dbsize == dbsize2 + 1
 
-    captured = capsys.readouterr()
+    ddd = []
+    for aa in range(dbsize2):
+        vvv = core.get_rec(aa)
+        if vvv:
+            ddd.append(vvv)
 
-    out =   "0     pos    32 Data: b'1111' Data2: b'2222'\n"    \
-            "1     pos    64 Data: b'11111' Data2: b'22222'\n"
-
-            #"2     pos    98 Data: b'111' Data2: b'222'\n"
-
-    assert captured.out == out
+    print(ddd); print(ooo)
+    assert ooo == ddd
 
     #assert 0
 

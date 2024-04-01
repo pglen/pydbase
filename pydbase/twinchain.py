@@ -69,13 +69,11 @@ class TwinChain(TwinCore):
         self.core_verbose = core_verbose
 
         # Upper lock name
-        self.ulockname = os.path.splitext(fname)[0] + ".ulock"
-        self.lock = FileLock(self.ulockname)
+        ulockname = os.path.splitext(fname)[0] + ".ulock"
+        self.ulock = FileLock(ulockname)
+        self.ulock.waitlock()    #(self.ulockname)
 
-        self.lock.waitlock()    #(self.ulockname)
         super(TwinChain, self).__init__(fname, pgdebug)
-
-        #print("TwinChain.init", self.fname, self.ulockname)
 
         self.packer = pyvpacker.packbin()
         sss = self.getdbsize()
@@ -102,7 +100,7 @@ class TwinChain(TwinCore):
             encoded = self.packer.encode_data("", aaa)
             self.save_data(header, encoded)
 
-        self.lock.unlock() #self.ulockname)
+        self.ulock.unlock() #self.ulockname)
 
     def _hashtohex(self, varx):
 
@@ -340,7 +338,7 @@ class TwinChain(TwinCore):
         if self.core_verbose > 0:
             print("Appendwith", header, datax)
 
-        self.lock.waitlock()    #self.ulockname)
+        self.ulock.waitlock()    #self.ulockname)
 
         try:
             uuu = uuid.UUID(header)
@@ -348,7 +346,7 @@ class TwinChain(TwinCore):
             if self.core_verbose:
                 print("Header override must be a valid UUID string.")
 
-            self.lock.unlock() #self.ulockname)
+            self.ulock.unlock() #self.ulockname)
             raise ValueError("Header override must be a valid UUID string.")
 
         self.old_dicx = {}
@@ -385,7 +383,7 @@ class TwinChain(TwinCore):
             bbb = self.packer.decode_data(encoded)
             print("Rec", bbb[0])
 
-        self.lock.unlock() #self.ulockname)
+        self.ulock.unlock() #self.ulockname)
         return True
 
     def append(self, datax):

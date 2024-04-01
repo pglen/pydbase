@@ -5,11 +5,13 @@ from mytest import *
 import twincore, pyvpacker
 
 core = None
+fname = createname(__file__)
+iname = createidxname(__file__)
 
 def setup_module(module):
     """ setup any state specific to the execution of the given module."""
     global core
-    core = create_db()
+    core = create_db(fname)
     assert core != 0
 
     ret = core.save_data("1111", "2222")
