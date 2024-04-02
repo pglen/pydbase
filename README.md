@@ -9,7 +9,7 @@ It is fast, and the time test shows that this is an order of magnitude
 faster than most mainstream databases. This is due to the engine's simplicity.
 It avoids expensive computations in favor of quickly saving data.
 
-### Fast data save / retrieve 
+### Fast data save / retrieve
 
  &nbsp; Mostly ready for production. All tests pass. Please use caution, as this is new.
 The command line tester can drive most aspects of this API; and it is somewhat
@@ -232,9 +232,9 @@ this same key, except the last one.
    The database is extended with a blockhcain implementation. The new class
 is called twinchain; and it is a class derived from twincore.
 
-  To drive the blockchain, just use the append method. Th database will calculate
+  To drive the blockchain, just use the append method. The database will calculate
 all the hashes, integrate it into the existing chain with the new item getting
-a backlink field. This field is calulated based upon the previous record's
+a backlink field. This field is calculated based upon the previous record's
 hash and the previous record's frozen date. This assures that identical data
 will have a different hash, so data cannot be anticipated based upon its hash
 alone. The hash is done with 256 bits, and assumed to be very secure.
@@ -288,41 +288,41 @@ in a microsecond time range.
     strx = str(self.packer.encode_data("", arr))
     ret = dbcore.save_data(rec[0], strx, True)
 
- If the in-place data is longer, a new record is created, just like a normal
-operation. This new, longer record than accommodates all the new in-place requests.
+ If the new data (relativeto the in-place data) is longer, a new record is
+created, just like a normal operation. This new, longer record than accommodates all the new in-place requests.
 It is recommended that one produces a fixed record size for consistent results.
 (See: sprintf (python % operator) in the example above.)
 
 ### Test results:
 
-    ============================= test session starts ==============================
+    ============================ test session starts ==============================
     platform linux -- Python 3.10.12, pytest-7.4.3, pluggy-1.0.0
-    rootdir: /home/peterglen/pgpygtk/pydbase
-    collected 43 items
+    collected 44 items
 
-    test_acreate.py .....                                                    [ 11%]
-    test_bindata.py .                                                        [ 13%]
-    test_chain.py .                                                          [ 16%]
-    test_chain_integ.py ..                                                   [ 20%]
-    test_chain_link.py ..                                                    [ 25%]
-    test_del.py .                                                            [ 27%]
-    test_dump.py .                                                           [ 30%]
-    test_find.py ..                                                          [ 34%]
-    test_findrec.py ..                                                       [ 39%]
-    test_getoffs.py ...                                                      [ 46%]
-    test_getrec.py .                                                         [ 48%]
-    test_inplace.py ...                                                      [ 55%]
-    test_integrity.py .                                                      [ 58%]
-    test_list.py ..                                                          [ 62%]
-    test_lockrel.py ..                                                       [ 67%]
-    test_multi.py ..                                                         [ 72%]
-    test_packer.py ......                                                    [ 86%]
-    test_randdata.py .                                                       [ 88%]
+    test_acreate.py ...                                                      [  6%]
+    test_bigdata.py .                                                        [  9%]
+    test_bindata.py .                                                        [ 11%]
+    test_chain.py .                                                          [ 13%]
+    test_chain_data.py .                                                     [ 15%]
+    test_chain_link.py ..                                                    [ 20%]
+    test_del.py .                                                            [ 22%]
+    test_dump.py .                                                           [ 25%]
+    test_find.py ..                                                          [ 29%]
+    test_findrec.py ..                                                       [ 34%]
+    test_getoffs.py ...                                                      [ 40%]
+    test_getrec.py .                                                         [ 43%]
+    test_handles.py .....                                                    [ 54%]
+    test_inplace.py ...                                                      [ 61%]
+    test_integrity.py .                                                      [ 63%]
+    test_list.py ..                                                          [ 68%]
+    test_lockrel.py .                                                        [ 70%]
+    test_multi.py ..                                                         [ 75%]
+    test_packer.py ......                                                    [ 88%]
     test_reindex.py .                                                        [ 90%]
     test_search.py ...                                                       [ 97%]
     test_vacuum.py .                                                         [100%]
 
-    ============================== 43 passed in 0.68s ==============================
+    ============================== 44 passed in 0.59s ==============================
 
 ## History
 
@@ -336,10 +336,7 @@ It is recommended that one produces a fixed record size for consistent results.
     1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
     1.4.7       Tue 05.Mar.2024     In place record update
     1.4.8       Sat 09.Mar.2024     Added new locking mechanism
-
-## Errata
-
-    Chain is still in development, most of it functions well.
-    Not for production.
+    1.4.9       Mon 01.Apr.2024     Updated to run on MSYS2, new locking
+    1.5.0       Tue 02.Apr.2024     Cleaned, pip upload
 
 // EOF
