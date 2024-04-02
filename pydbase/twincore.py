@@ -149,12 +149,13 @@ class TwinCore(TwinCoreBase):
                 self.create_idx(self.ifp)
                 # It was an existing data, new index needed
                 if self.base_verbose > 0:
-                        print("Reindexing")
+                    print("Reindexing")
                 self.__reindex()
 
         # Check
         if  self.getbuffstr(0, 4) != FILESIG:
-            print("Invalid data signature")
+            if self.base_verbose > 2:
+                print("Invalid data signature")
             self.lock.unlock()  #dellock(self.lckname)
             raise  RuntimeError("Invalid database signature.")
 
@@ -303,7 +304,8 @@ class TwinCore(TwinCoreBase):
         blen = self.getbuffint(rec+8)
 
         if blen < 0:
-            print("Invalid key length %d at %d" % (blen, rec))
+            if self.base_verbose > 2:
+                print("Invalid key length %d at %d" % (blen, rec))
             return cnt2
 
         data = self.getbuffstr(rec+12, blen)
@@ -420,7 +422,6 @@ class TwinCore(TwinCoreBase):
             elif self.base_verbose > 0:
                 print("Error on hash2 at rec", rec, cnt2, "hash2",
                                         hex(hash2), "check2", hex(ccc2))
-
             return ret
 
         if self.base_verbose > 2:
@@ -523,7 +524,8 @@ class TwinCore(TwinCoreBase):
             sig = self.getbuffstr(aa, self.INTSIZE)
             # Check if sig is correct
             if sig != RECSIG:
-                print("Invalid sig .. resync needed")
+                if self.core_verbose > 0:
+                    print("Invalid sig .. resync needed")
                 raise
 
             #print("reind", aa)
@@ -532,13 +534,16 @@ class TwinCore(TwinCoreBase):
                 hhh2 = self.getbuffint(aa + 4)
                 lenx = self.getbuffint(aa + 8)
                 if lenx < 0:
-                    print("Invalid key length")
+                    if self.core_verbose > 0:
+                        print("Invalid key length.")
                 sep =  self.getbuffstr(aa + 12 + lenx, self.INTSIZE)
                 len2 =  self.getbuffint(aa + 20 + lenx)
                 if len2 < 0:
-                    print("Invalid record length")
+                    if self.core_verbose > 0:
+                        print("Invalid record length")
             except:
-                print("in reindex", sys.exc_info())
+                if self.core_verbose > 2:
+                    print("in reindex", sys.exc_info())
 
             if self.base_verbose == 1:
                 print(aa, "sig", sig, "hhh2", hex(hhh2), "len", lenx, \
@@ -707,7 +712,8 @@ class TwinCore(TwinCoreBase):
                     #print("Vac error empty")
                     os.remove(vacerr)
             except:
-                print("vacerr", sys.exc_info())
+                if self.core_verbose > 0:
+                    print("vacerr", sys.exc_info())
 
         # Any vacummed?
         if vac > 0:
@@ -719,13 +725,15 @@ class TwinCore(TwinCoreBase):
             try:
                 os.remove(self.fname);
             except:
-                print("vacuum remove", self.fname, sys.exc_info())
+                if self.core_verbose > 0:
+                    print("vacuum remove", self.fname, sys.exc_info())
                 pass
 
             try:
                 os.remove(self.idxname)
             except:
-                print("vacuum idx remove", self.idxname, sys.exc_info())
+                if self.core_verbose > 2:
+                    print("vacuum idx remove", self.idxname, sys.exc_info())
                 pass
 
             if self.pgdebug > 1:
@@ -735,11 +743,13 @@ class TwinCore(TwinCoreBase):
             try:
                 os.rename(vacname, self.fname)
             except:
-                print("vacuum rename", vacname, sys.exc_info())
+                if self.core_verbose > 2:
+                    print("vacuum rename", vacname, sys.exc_info())
             try:
                 os.rename(vacidx, self.idxname)
             except:
-                print("vacuum idx rename", vacidx, sys.exc_info())
+                if self.core_verbose > 2:
+                    print("vacuum idx rename", vacidx, sys.exc_info())
 
             self.lock.waitlock() #self.lckname)
             self.fp = self.softcreate(self.fname)
@@ -771,7 +781,8 @@ class TwinCore(TwinCoreBase):
 
         rsize = self._getdbsize(self.ifp)
         if recnum >= rsize:
-            #print("Past end of data.");
+            if self.core_verbose > 0:
+                print("Past end of data.");
             raise  RuntimeError( \
                     "Past end of Data. Asking for %d while max is 0 .. %d records." \
                                      % (recnum, rsize-1) )
@@ -802,7 +813,8 @@ class TwinCore(TwinCoreBase):
                 print("Deleted record.")
             return []
         if sig != RECSIG:
-            print("Unlikely offset %d is not at record boundary." % recoffs, sig)
+            if self.core_verbose > 0:
+                print("Unlikely offset %d is not at record boundary." % recoffs, sig)
             return []
         #print("recoffs", recoffs)
         return self._rec2arr(recoffs)
@@ -825,7 +837,8 @@ class TwinCore(TwinCoreBase):
                 print("Deleted record.")
             return []
         if sig != RECSIG:
-            print("Unlikely offset %d is not at record boundary." % recoffs, sig)
+            if self.core_verbose > 0:
+                print("Unlikely offset %d is not at record boundary." % recoffs, sig)
             return []
         #print("recoffs", recoffs)
         return self._rec2arr(recoffs)[0]
@@ -870,7 +883,8 @@ class TwinCore(TwinCoreBase):
 
         sig = self.getbuffstr(recoffs, self.INTSIZE)
         if sig != RECSIG  and sig != RECDEL:
-            print("Unlikely offset %d is not at record boundary." % recoffs, sig)
+            if self.core_verbose > 0:
+                print("Unlikely offset %d is not at record boundary." % recoffs, sig)
             return False
 
         self.putbuffstr(recoffs, RECDEL)
@@ -944,7 +958,8 @@ class TwinCore(TwinCoreBase):
 
     def  _recoffset(self, strx, limx = INT_MAX, skipx = 0):
 
-        #chash = self.getidxint(CURROFFS)            #;print("chash", chash)
+        #chash = self.getidxint(CURROFFS)
+        #;print("chash", chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         rec = 0; blen = 0; data = ""
         arr = []

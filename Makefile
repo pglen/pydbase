@@ -65,7 +65,9 @@ clean:
 	@rm -f pedlib/*.pyc
 	@rm -rf ./pydbase/__pycache__
 	@rm -rf build/*
+	@rm -rf _build/*
 	@rm -rf dist/*
+	@rm -f README.html
 
 cleandata:
 	@rm -f pydbase.pydb

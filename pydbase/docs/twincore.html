@@ -151,6 +151,7 @@ import  random, stat, os.path, datetime, threading
 import  struct, io
 
 base = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(base))
 sys.path.append(os.path.join(base, &#39;..&#39;, &#39;pydbase&#39;))
 
 from twinbase import *
@@ -234,12 +235,13 @@ class TwinCore(TwinCoreBase):
                 self.create_idx(self.ifp)
                 # It was an existing data, new index needed
                 if self.base_verbose &gt; 0:
-                        print(&#34;Reindexing&#34;)
+                    print(&#34;Reindexing&#34;)
                 self.__reindex()
 
         # Check
         if  self.getbuffstr(0, 4) != FILESIG:
-            print(&#34;Invalid data signature&#34;)
+            if self.base_verbose &gt; 2:
+                print(&#34;Invalid data signature&#34;)
             self.lock.unlock()  #dellock(self.lckname)
             raise  RuntimeError(&#34;Invalid database signature.&#34;)
 
@@ -388,7 +390,8 @@ class TwinCore(TwinCoreBase):
         blen = self.getbuffint(rec+8)
 
         if blen &lt; 0:
-            print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
+            if self.base_verbose &gt; 2:
+                print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
             return cnt2
 
         data = self.getbuffstr(rec+12, blen)
@@ -505,7 +508,6 @@ class TwinCore(TwinCoreBase):
             elif self.base_verbose &gt; 0:
                 print(&#34;Error on hash2 at rec&#34;, rec, cnt2, &#34;hash2&#34;,
                                         hex(hash2), &#34;check2&#34;, hex(ccc2))
-
             return ret
 
         if self.base_verbose &gt; 2:
@@ -583,6 +585,16 @@ class TwinCore(TwinCoreBase):
         curr =  self._getdbsize(self.ifp) * self.INTSIZE * 2
 
         reidx = os.path.splitext(self.fname)[0]  + &#34;_tmp_&#34; + &#34;.pidx&#34;
+        relock = os.path.splitext(self.fname)[0]  + &#34;_tmp_&#34; + &#34;.pidx&#34;
+        # Make sure reidx is empty
+        try:
+            os.remove(reidx)
+        except:
+            pass
+
+        tmplock = FileLock(relock)
+        tmplock.waitlock()
+
         tempifp = self.softcreate(reidx)
         self.create_idx(tempifp)
         dlen = self.getsize(self.fp)
@@ -598,7 +610,8 @@ class TwinCore(TwinCoreBase):
             sig = self.getbuffstr(aa, self.INTSIZE)
             # Check if sig is correct
             if sig != RECSIG:
-                print(&#34;Invalid sig .. resync needed&#34;)
+                if self.core_verbose &gt; 0:
+                    print(&#34;Invalid sig .. resync needed&#34;)
                 raise
 
             #print(&#34;reind&#34;, aa)
@@ -607,13 +620,16 @@ class TwinCore(TwinCoreBase):
                 hhh2 = self.getbuffint(aa + 4)
                 lenx = self.getbuffint(aa + 8)
                 if lenx &lt; 0:
-                    print(&#34;Invalid key length&#34;)
+                    if self.core_verbose &gt; 0:
+                        print(&#34;Invalid key length.&#34;)
                 sep =  self.getbuffstr(aa + 12 + lenx, self.INTSIZE)
                 len2 =  self.getbuffint(aa + 20 + lenx)
                 if len2 &lt; 0:
-                    print(&#34;Invalid record length&#34;)
+                    if self.core_verbose &gt; 0:
+                        print(&#34;Invalid record length&#34;)
             except:
-                print(&#34;in reindex&#34;, sys.exc_info())
+                if self.core_verbose &gt; 2:
+                    print(&#34;in reindex&#34;, sys.exc_info())
 
             if self.base_verbose == 1:
                 print(aa, &#34;sig&#34;, sig, &#34;hhh2&#34;, hex(hhh2), &#34;len&#34;, lenx, \
@@ -643,19 +659,26 @@ class TwinCore(TwinCoreBase):
         tempifp.close()
 
         # Make it go out of scope
-        self.fp.flush()
+        #self.fp.flush()
         #self.fp.close()
         self.ifp.flush()
-        #self.ifp.close()
+        self.ifp.close()
 
         # Now move files
         try:
             os.remove(self.idxname)
         except:
             pass
+            #print(&#34;remove:&#34;, sys.exc_info())
 
         #print(&#34;rename&#34;, reidx, &#34;-&gt;&#34;, self.idxname)
-        os.rename(reidx, self.idxname)
+        try:
+            os.rename(reidx, self.idxname)
+        except:
+            pass
+            #print(&#34;rename:&#34;, sys.exc_info())
+
+        tmplock.unlock()
 
         # Activate new index
         self.ifp = self.softcreate(self.idxname)
@@ -764,6 +787,9 @@ class TwinCore(TwinCoreBase):
                             print(&#34;Error on vac: %d&#34; % rec)
                 cnt += 1
 
+            vacdb.fp.close()
+            vacdb.ifp.close()
+
             vacdb.lock.unlock()  #dellock(vacdb.lckname)
 
             # if vacerr is empty
@@ -772,9 +798,8 @@ class TwinCore(TwinCoreBase):
                     #print(&#34;Vac error empty&#34;)
                     os.remove(vacerr)
             except:
-                print(&#34;vacerr&#34;, sys.exc_info())
-
-        self.lock.unlock()  #dellock(self.lckname)
+                if self.core_verbose &gt; 0:
+                    print(&#34;vacerr&#34;, sys.exc_info())
 
         # Any vacummed?
         if vac &gt; 0:
@@ -784,21 +809,38 @@ class TwinCore(TwinCoreBase):
 
             # Now move files
             try:
-                os.remove(self.fname);  os.remove(self.idxname)
+                os.remove(self.fname);
             except:
+                if self.core_verbose &gt; 0:
+                    print(&#34;vacuum remove&#34;, self.fname, sys.exc_info())
+                pass
+
+            try:
+                os.remove(self.idxname)
+            except:
+                if self.core_verbose &gt; 2:
+                    print(&#34;vacuum idx remove&#34;, self.idxname, sys.exc_info())
                 pass
 
             if self.pgdebug &gt; 1:
                 print(&#34;rename&#34;, vacname, &#34;-&gt;&#34;, self.fname)
                 print(&#34;rename&#34;, vacidx, &#34;-&gt;&#34;, self.idxname)
 
-            os.rename(vacname, self.fname)
-            os.rename(vacidx, self.idxname)
+            try:
+                os.rename(vacname, self.fname)
+            except:
+                if self.core_verbose &gt; 2:
+                    print(&#34;vacuum rename&#34;, vacname, sys.exc_info())
+            try:
+                os.rename(vacidx, self.idxname)
+            except:
+                if self.core_verbose &gt; 2:
+                    print(&#34;vacuum idx rename&#34;, vacidx, sys.exc_info())
 
             self.lock.waitlock() #self.lckname)
             self.fp = self.softcreate(self.fname)
             self.ifp = self.softcreate(self.idxname)
-            self.lock.unlock()  #dellock(self.lckname)
+            #self.lock.unlock()  #dellock(self.lckname)
 
         else:
             # Just remove non vacuumed files
@@ -809,6 +851,9 @@ class TwinCore(TwinCoreBase):
                 os.remove(vacidx)
             except:
                 pass
+
+        #self.lock.unlock()
+        #dellock(self.lckname)
 
         #print(&#34;ended vacuum&#34;)
         return ret, vac
@@ -822,7 +867,8 @@ class TwinCore(TwinCoreBase):
 
         rsize = self._getdbsize(self.ifp)
         if recnum &gt;= rsize:
-            #print(&#34;Past end of data.&#34;);
+            if self.core_verbose &gt; 0:
+                print(&#34;Past end of data.&#34;);
             raise  RuntimeError( \
                     &#34;Past end of Data. Asking for %d while max is 0 .. %d records.&#34; \
                                      % (recnum, rsize-1) )
@@ -853,7 +899,8 @@ class TwinCore(TwinCoreBase):
                 print(&#34;Deleted record.&#34;)
             return []
         if sig != RECSIG:
-            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            if self.core_verbose &gt; 0:
+                print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
             return []
         #print(&#34;recoffs&#34;, recoffs)
         return self._rec2arr(recoffs)
@@ -876,7 +923,8 @@ class TwinCore(TwinCoreBase):
                 print(&#34;Deleted record.&#34;)
             return []
         if sig != RECSIG:
-            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            if self.core_verbose &gt; 0:
+                print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
             return []
         #print(&#34;recoffs&#34;, recoffs)
         return self._rec2arr(recoffs)[0]
@@ -921,7 +969,8 @@ class TwinCore(TwinCoreBase):
 
         sig = self.getbuffstr(recoffs, self.INTSIZE)
         if sig != RECSIG  and sig != RECDEL:
-            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            if self.core_verbose &gt; 0:
+                print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
             return False
 
         self.putbuffstr(recoffs, RECDEL)
@@ -995,7 +1044,8 @@ class TwinCore(TwinCoreBase):
 
     def  _recoffset(self, strx, limx = INT_MAX, skipx = 0):
 
-        #chash = self.getidxint(CURROFFS)            #;print(&#34;chash&#34;, chash)
+        #chash = self.getidxint(CURROFFS)
+        #;print(&#34;chash&#34;, chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         rec = 0; blen = 0; data = &#34;&#34;
         arr = []
@@ -1458,13 +1508,15 @@ class TwinCore(TwinCoreBase):
 
         if hasattr(self, &#34;fp&#34;):
                 if self.fp:
-                    self.fp.flush()
-                    self.fp.close()
+                    if not self.fp.closed:
+                        self.fp.flush()
+                        self.fp.close()
 
         if hasattr(self, &#34;ifp&#34;):
                 if self.ifp:
-                    self.ifp.flush()
-                    self.ifp.close()
+                    if not self.ifp.closed:
+                        self.ifp.flush()
+                        self.ifp.close()
 
 # EOF</code></pre>
 </details>
@@ -1564,12 +1616,13 @@ The TWIN refers to separate files for data / index.</p></div>
                 self.create_idx(self.ifp)
                 # It was an existing data, new index needed
                 if self.base_verbose &gt; 0:
-                        print(&#34;Reindexing&#34;)
+                    print(&#34;Reindexing&#34;)
                 self.__reindex()
 
         # Check
         if  self.getbuffstr(0, 4) != FILESIG:
-            print(&#34;Invalid data signature&#34;)
+            if self.base_verbose &gt; 2:
+                print(&#34;Invalid data signature&#34;)
             self.lock.unlock()  #dellock(self.lckname)
             raise  RuntimeError(&#34;Invalid database signature.&#34;)
 
@@ -1718,7 +1771,8 @@ The TWIN refers to separate files for data / index.</p></div>
         blen = self.getbuffint(rec+8)
 
         if blen &lt; 0:
-            print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
+            if self.base_verbose &gt; 2:
+                print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
             return cnt2
 
         data = self.getbuffstr(rec+12, blen)
@@ -1835,7 +1889,6 @@ The TWIN refers to separate files for data / index.</p></div>
             elif self.base_verbose &gt; 0:
                 print(&#34;Error on hash2 at rec&#34;, rec, cnt2, &#34;hash2&#34;,
                                         hex(hash2), &#34;check2&#34;, hex(ccc2))
-
             return ret
 
         if self.base_verbose &gt; 2:
@@ -1913,6 +1966,16 @@ The TWIN refers to separate files for data / index.</p></div>
         curr =  self._getdbsize(self.ifp) * self.INTSIZE * 2
 
         reidx = os.path.splitext(self.fname)[0]  + &#34;_tmp_&#34; + &#34;.pidx&#34;
+        relock = os.path.splitext(self.fname)[0]  + &#34;_tmp_&#34; + &#34;.pidx&#34;
+        # Make sure reidx is empty
+        try:
+            os.remove(reidx)
+        except:
+            pass
+
+        tmplock = FileLock(relock)
+        tmplock.waitlock()
+
         tempifp = self.softcreate(reidx)
         self.create_idx(tempifp)
         dlen = self.getsize(self.fp)
@@ -1928,7 +1991,8 @@ The TWIN refers to separate files for data / index.</p></div>
             sig = self.getbuffstr(aa, self.INTSIZE)
             # Check if sig is correct
             if sig != RECSIG:
-                print(&#34;Invalid sig .. resync needed&#34;)
+                if self.core_verbose &gt; 0:
+                    print(&#34;Invalid sig .. resync needed&#34;)
                 raise
 
             #print(&#34;reind&#34;, aa)
@@ -1937,13 +2001,16 @@ The TWIN refers to separate files for data / index.</p></div>
                 hhh2 = self.getbuffint(aa + 4)
                 lenx = self.getbuffint(aa + 8)
                 if lenx &lt; 0:
-                    print(&#34;Invalid key length&#34;)
+                    if self.core_verbose &gt; 0:
+                        print(&#34;Invalid key length.&#34;)
                 sep =  self.getbuffstr(aa + 12 + lenx, self.INTSIZE)
                 len2 =  self.getbuffint(aa + 20 + lenx)
                 if len2 &lt; 0:
-                    print(&#34;Invalid record length&#34;)
+                    if self.core_verbose &gt; 0:
+                        print(&#34;Invalid record length&#34;)
             except:
-                print(&#34;in reindex&#34;, sys.exc_info())
+                if self.core_verbose &gt; 2:
+                    print(&#34;in reindex&#34;, sys.exc_info())
 
             if self.base_verbose == 1:
                 print(aa, &#34;sig&#34;, sig, &#34;hhh2&#34;, hex(hhh2), &#34;len&#34;, lenx, \
@@ -1973,19 +2040,26 @@ The TWIN refers to separate files for data / index.</p></div>
         tempifp.close()
 
         # Make it go out of scope
-        self.fp.flush()
+        #self.fp.flush()
         #self.fp.close()
         self.ifp.flush()
-        #self.ifp.close()
+        self.ifp.close()
 
         # Now move files
         try:
             os.remove(self.idxname)
         except:
             pass
+            #print(&#34;remove:&#34;, sys.exc_info())
 
         #print(&#34;rename&#34;, reidx, &#34;-&gt;&#34;, self.idxname)
-        os.rename(reidx, self.idxname)
+        try:
+            os.rename(reidx, self.idxname)
+        except:
+            pass
+            #print(&#34;rename:&#34;, sys.exc_info())
+
+        tmplock.unlock()
 
         # Activate new index
         self.ifp = self.softcreate(self.idxname)
@@ -2094,6 +2168,9 @@ The TWIN refers to separate files for data / index.</p></div>
                             print(&#34;Error on vac: %d&#34; % rec)
                 cnt += 1
 
+            vacdb.fp.close()
+            vacdb.ifp.close()
+
             vacdb.lock.unlock()  #dellock(vacdb.lckname)
 
             # if vacerr is empty
@@ -2102,9 +2179,8 @@ The TWIN refers to separate files for data / index.</p></div>
                     #print(&#34;Vac error empty&#34;)
                     os.remove(vacerr)
             except:
-                print(&#34;vacerr&#34;, sys.exc_info())
-
-        self.lock.unlock()  #dellock(self.lckname)
+                if self.core_verbose &gt; 0:
+                    print(&#34;vacerr&#34;, sys.exc_info())
 
         # Any vacummed?
         if vac &gt; 0:
@@ -2114,21 +2190,38 @@ The TWIN refers to separate files for data / index.</p></div>
 
             # Now move files
             try:
-                os.remove(self.fname);  os.remove(self.idxname)
+                os.remove(self.fname);
             except:
+                if self.core_verbose &gt; 0:
+                    print(&#34;vacuum remove&#34;, self.fname, sys.exc_info())
+                pass
+
+            try:
+                os.remove(self.idxname)
+            except:
+                if self.core_verbose &gt; 2:
+                    print(&#34;vacuum idx remove&#34;, self.idxname, sys.exc_info())
                 pass
 
             if self.pgdebug &gt; 1:
                 print(&#34;rename&#34;, vacname, &#34;-&gt;&#34;, self.fname)
                 print(&#34;rename&#34;, vacidx, &#34;-&gt;&#34;, self.idxname)
 
-            os.rename(vacname, self.fname)
-            os.rename(vacidx, self.idxname)
+            try:
+                os.rename(vacname, self.fname)
+            except:
+                if self.core_verbose &gt; 2:
+                    print(&#34;vacuum rename&#34;, vacname, sys.exc_info())
+            try:
+                os.rename(vacidx, self.idxname)
+            except:
+                if self.core_verbose &gt; 2:
+                    print(&#34;vacuum idx rename&#34;, vacidx, sys.exc_info())
 
             self.lock.waitlock() #self.lckname)
             self.fp = self.softcreate(self.fname)
             self.ifp = self.softcreate(self.idxname)
-            self.lock.unlock()  #dellock(self.lckname)
+            #self.lock.unlock()  #dellock(self.lckname)
 
         else:
             # Just remove non vacuumed files
@@ -2139,6 +2232,9 @@ The TWIN refers to separate files for data / index.</p></div>
                 os.remove(vacidx)
             except:
                 pass
+
+        #self.lock.unlock()
+        #dellock(self.lckname)
 
         #print(&#34;ended vacuum&#34;)
         return ret, vac
@@ -2152,7 +2248,8 @@ The TWIN refers to separate files for data / index.</p></div>
 
         rsize = self._getdbsize(self.ifp)
         if recnum &gt;= rsize:
-            #print(&#34;Past end of data.&#34;);
+            if self.core_verbose &gt; 0:
+                print(&#34;Past end of data.&#34;);
             raise  RuntimeError( \
                     &#34;Past end of Data. Asking for %d while max is 0 .. %d records.&#34; \
                                      % (recnum, rsize-1) )
@@ -2183,7 +2280,8 @@ The TWIN refers to separate files for data / index.</p></div>
                 print(&#34;Deleted record.&#34;)
             return []
         if sig != RECSIG:
-            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            if self.core_verbose &gt; 0:
+                print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
             return []
         #print(&#34;recoffs&#34;, recoffs)
         return self._rec2arr(recoffs)
@@ -2206,7 +2304,8 @@ The TWIN refers to separate files for data / index.</p></div>
                 print(&#34;Deleted record.&#34;)
             return []
         if sig != RECSIG:
-            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            if self.core_verbose &gt; 0:
+                print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
             return []
         #print(&#34;recoffs&#34;, recoffs)
         return self._rec2arr(recoffs)[0]
@@ -2251,7 +2350,8 @@ The TWIN refers to separate files for data / index.</p></div>
 
         sig = self.getbuffstr(recoffs, self.INTSIZE)
         if sig != RECSIG  and sig != RECDEL:
-            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+            if self.core_verbose &gt; 0:
+                print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
             return False
 
         self.putbuffstr(recoffs, RECDEL)
@@ -2325,7 +2425,8 @@ The TWIN refers to separate files for data / index.</p></div>
 
     def  _recoffset(self, strx, limx = INT_MAX, skipx = 0):
 
-        #chash = self.getidxint(CURROFFS)            #;print(&#34;chash&#34;, chash)
+        #chash = self.getidxint(CURROFFS)
+        #;print(&#34;chash&#34;, chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         rec = 0; blen = 0; data = &#34;&#34;
         arr = []
@@ -2788,13 +2889,15 @@ The TWIN refers to separate files for data / index.</p></div>
 
         if hasattr(self, &#34;fp&#34;):
                 if self.fp:
-                    self.fp.flush()
-                    self.fp.close()
+                    if not self.fp.closed:
+                        self.fp.flush()
+                        self.fp.close()
 
         if hasattr(self, &#34;ifp&#34;):
                 if self.ifp:
-                    self.ifp.flush()
-                    self.ifp.close()</code></pre>
+                    if not self.ifp.closed:
+                        self.ifp.flush()
+                        self.ifp.close()</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -2875,7 +2978,6 @@ The TWIN refers to separate files for data / index.</p></div>
         elif self.base_verbose &gt; 0:
             print(&#34;Error on hash2 at rec&#34;, rec, cnt2, &#34;hash2&#34;,
                                     hex(hash2), &#34;check2&#34;, hex(ccc2))
-
         return ret
 
     if self.base_verbose &gt; 2:
@@ -3073,7 +3175,8 @@ False for scanning down, True for up</p>
 
     sig = self.getbuffstr(recoffs, self.INTSIZE)
     if sig != RECSIG  and sig != RECDEL:
-        print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+        if self.core_verbose &gt; 0:
+            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
         return False
 
     self.putbuffstr(recoffs, RECDEL)
@@ -3147,7 +3250,8 @@ False for scanning down, True for up</p>
     blen = self.getbuffint(rec+8)
 
     if blen &lt; 0:
-        print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
+        if self.base_verbose &gt; 2:
+            print(&#34;Invalid key length %d at %d&#34; % (blen, rec))
         return cnt2
 
     data = self.getbuffstr(rec+12, blen)
@@ -3401,7 +3505,8 @@ False for scanning down, True for up</p>
             print(&#34;Deleted record.&#34;)
         return []
     if sig != RECSIG:
-        print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+        if self.core_verbose &gt; 0:
+            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
         return []
     #print(&#34;recoffs&#34;, recoffs)
     return self._rec2arr(recoffs)[0]</code></pre>
@@ -3425,7 +3530,8 @@ False for scanning down, True for up</p>
 
     rsize = self._getdbsize(self.ifp)
     if recnum &gt;= rsize:
-        #print(&#34;Past end of data.&#34;);
+        if self.core_verbose &gt; 0:
+            print(&#34;Past end of data.&#34;);
         raise  RuntimeError( \
                 &#34;Past end of Data. Asking for %d while max is 0 .. %d records.&#34; \
                                  % (recnum, rsize-1) )
@@ -3466,7 +3572,8 @@ False for scanning down, True for up</p>
             print(&#34;Deleted record.&#34;)
         return []
     if sig != RECSIG:
-        print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
+        if self.core_verbose &gt; 0:
+            print(&#34;Unlikely offset %d is not at record boundary.&#34; % recoffs, sig)
         return []
     #print(&#34;recoffs&#34;, recoffs)
     return self._rec2arr(recoffs)</code></pre>

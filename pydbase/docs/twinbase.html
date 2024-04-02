@@ -37,7 +37,12 @@ twinbase &ndash; extracted from twincore to make it eazier to read</p>
 
 import  os, sys, getopt, signal, select, socket, time, struct
 import  random, stat, os.path, datetime, threading
-import  struct, io, traceback, fcntl, hashlib, traceback
+import  struct, io, traceback, hashlib, traceback
+
+try:
+    import fcntl
+except:
+    fcntl = None
 
 base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base, &#39;..&#39;, &#39;pydbase&#39;))
@@ -81,6 +86,7 @@ class TwinCoreBase():
 
         global base_pgdebug
         base_pgdebug = pgdebug
+        set_pgdebug(pgdebug)
 
         if self.pgdebug &gt; 1:
             print(&#34;Initializing core base pgdebug =&#34;, pgdebug)
@@ -183,6 +189,14 @@ class TwinCoreBase():
 
         return hashx
 
+    def _lockx(self, fp):
+        if fcntl:
+            fcntl.lockf(fp, fcntl.LOCK_EX)
+        else:
+            import msvcrt
+            fnum = fp.fileno()
+            msvcrt.locking(fnum, msvcrt.LK_LOCK, os.fstat(fnum).st_size)
+
     def softcreate(self, fname, raisex = True):
 
         &#39;&#39;&#39; Open for read / write. Create if needed. &#39;&#39;&#39;
@@ -192,15 +206,17 @@ class TwinCoreBase():
         fp = None
         try:
             fp = open(fname, &#34;rb+&#34;)
+            #self._lockx(fp)
         except:
             try:
                 fp = open(fname, &#34;wb+&#34;)
-                fcntl.lockf(fp, fcntl.LOCK_EX)
+                self._lockx(fp)
             except:
                 #print(&#34;Deleting lock&#34;, self.lckname)
                 #dellock(self.lckname)
                 self.lock.unlock()  #dellock(self.lckname)
                 print(&#34;Cannot open / create &#34;, &#34;&#39;&#34; + fname + &#34;&#39;&#34;, sys.exc_info())
+
                 if raisex:
                     raise
                 pass
@@ -284,6 +300,7 @@ class TwinCoreBase():
 
         global base_pgdebug
         base_pgdebug = pgdebug
+        set_pgdebug(pgdebug)
 
         if self.pgdebug &gt; 1:
             print(&#34;Initializing core base pgdebug =&#34;, pgdebug)
@@ -386,6 +403,14 @@ class TwinCoreBase():
 
         return hashx
 
+    def _lockx(self, fp):
+        if fcntl:
+            fcntl.lockf(fp, fcntl.LOCK_EX)
+        else:
+            import msvcrt
+            fnum = fp.fileno()
+            msvcrt.locking(fnum, msvcrt.LK_LOCK, os.fstat(fnum).st_size)
+
     def softcreate(self, fname, raisex = True):
 
         &#39;&#39;&#39; Open for read / write. Create if needed. &#39;&#39;&#39;
@@ -395,15 +420,17 @@ class TwinCoreBase():
         fp = None
         try:
             fp = open(fname, &#34;rb+&#34;)
+            #self._lockx(fp)
         except:
             try:
                 fp = open(fname, &#34;wb+&#34;)
-                fcntl.lockf(fp, fcntl.LOCK_EX)
+                self._lockx(fp)
             except:
                 #print(&#34;Deleting lock&#34;, self.lckname)
                 #dellock(self.lckname)
                 self.lock.unlock()  #dellock(self.lckname)
                 print(&#34;Cannot open / create &#34;, &#34;&#39;&#34; + fname + &#34;&#39;&#34;, sys.exc_info())
+
                 if raisex:
                     raise
                 pass
@@ -697,15 +724,17 @@ Replaced this with an external hash function for speed.</p></div>
     fp = None
     try:
         fp = open(fname, &#34;rb+&#34;)
+        #self._lockx(fp)
     except:
         try:
             fp = open(fname, &#34;wb+&#34;)
-            fcntl.lockf(fp, fcntl.LOCK_EX)
+            self._lockx(fp)
         except:
             #print(&#34;Deleting lock&#34;, self.lckname)
             #dellock(self.lckname)
             self.lock.unlock()  #dellock(self.lckname)
             print(&#34;Cannot open / create &#34;, &#34;&#39;&#34; + fname + &#34;&#39;&#34;, sys.exc_info())
+
             if raisex:
                 raise
             pass

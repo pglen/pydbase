@@ -8,20 +8,6 @@ core = None
 fname = createname(__file__)
 iname = createidxname(__file__)
 
-# Thread to fill the DB
-
-def oneproc():
-
-    #print("started thread")
-    # Create a database of 500 random records
-    for aa in range(5):
-        #key = randbin(random.randint(6, 12))
-        #val = randbin(random.randint(24, 96))
-        key = randstr(random.randint(6, 12))
-        val = randstr(random.randint(24, 96))
-        ret = core.save_data(str(key), str(val))
-        assert ret != 0
-
 # ------------------------------------------------------------------------
 
 def setup_module(module):
@@ -51,13 +37,28 @@ def teardown_module(module):
         #print(sys.exc_info())
         pass
 
+# Thread to fill the DB
+
+def threadproc():
+
+    #print("started thread")
+
+    # Create a database of random records
+    for aa in range(10):
+        #key = randbin(random.randint(6, 12))
+        #val = randbin(random.randint(24, 96))
+        key = randstr(random.randint(6, 12))
+        val = randstr(random.randint(24, 96))
+        ret = core.save_data(str(key), str(val))
+        assert ret != 0
+
+
 def test_adders(capsys):
 
     # Start a handful of threads
-
     ttt = []
     for aa in range(200):
-        tt = threading.Thread(target = oneproc)
+        tt = threading.Thread(target=threadproc)
         ttt.append(tt)
         tt.run()
 
@@ -68,17 +69,22 @@ def test_adders(capsys):
             if tt.is_alive():
                 aa = True
         if not aa:
+            # If none alive
             break
         sleep(.1)
 
+# If the DB is the right size, and not damaged
+
 def test_integrity(capsys):
+
     ddd = core.integrity_check()
     assert len(ddd) == 2
 
+    assert ddd[0] == 2000
+    assert ddd[0] == ddd[1]
+
     #print (ddd)
     #assert 0
-
-    assert ddd[0] == ddd[1]
 
 
 # EOF

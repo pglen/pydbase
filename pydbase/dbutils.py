@@ -143,7 +143,8 @@ class   FileLock():
 
     def unlock(self):
 
-        print("Unlock", self.lockname)
+        #print("Unlock", self.lockname)
+
         if fcntl:
             try:
                 fcntl.flock(self.fpx, fcntl.LOCK_UN | fcntl.LOCK_NB)

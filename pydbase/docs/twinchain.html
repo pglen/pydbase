@@ -123,13 +123,11 @@ class TwinChain(TwinCore):
         self.core_verbose = core_verbose
 
         # Upper lock name
-        self.ulockname = os.path.splitext(fname)[0] + &#34;.ulock&#34;
-        self.lock = FileLock(self.ulockname)
+        ulockname = os.path.splitext(fname)[0] + &#34;.ulock&#34;
+        self.ulock = FileLock(ulockname)
+        self.ulock.waitlock()    #(self.ulockname)
 
-        self.lock.waitlock()    #(self.ulockname)
         super(TwinChain, self).__init__(fname, pgdebug)
-
-        #print(&#34;TwinChain.init&#34;, self.fname, self.ulockname)
 
         self.packer = pyvpacker.packbin()
         sss = self.getdbsize()
@@ -156,7 +154,7 @@ class TwinChain(TwinCore):
             encoded = self.packer.encode_data(&#34;&#34;, aaa)
             self.save_data(header, encoded)
 
-        self.lock.unlock() #self.ulockname)
+        self.ulock.unlock() #self.ulockname)
 
     def _hashtohex(self, varx):
 
@@ -351,7 +349,8 @@ class TwinChain(TwinCore):
         try:
             decoded2 = self.packer.decode_data(arr2[1])
         except:
-            print(&#34;Cannot decode curr:&#34;, recnum, sys.exc_info())
+            if self.core_verbose &gt; 2:
+                print(&#34;Cannot decode curr:&#34;, recnum, sys.exc_info())
             return
         dic = self._get_fields(decoded2[0])
         backlink = self._build_backlink(dicold)
@@ -369,7 +368,8 @@ class TwinChain(TwinCore):
         try:
             decoded = self.packer.decode_data(arr[1])
         except:
-            print(&#34;Cannot decode:&#34;, recnum, sys.exc_info())
+            if self.core_verbose &gt; 2:
+                print(&#34;Cannot decode:&#34;, recnum, sys.exc_info())
             return
 
         aaa = self._get_fields(decoded[0])
@@ -394,7 +394,7 @@ class TwinChain(TwinCore):
         if self.core_verbose &gt; 0:
             print(&#34;Appendwith&#34;, header, datax)
 
-        self.lock.waitlock()    #self.ulockname)
+        self.ulock.waitlock()    #self.ulockname)
 
         try:
             uuu = uuid.UUID(header)
@@ -402,7 +402,7 @@ class TwinChain(TwinCore):
             if self.core_verbose:
                 print(&#34;Header override must be a valid UUID string.&#34;)
 
-            self.lock.unlock() #self.ulockname)
+            self.ulock.unlock() #self.ulockname)
             raise ValueError(&#34;Header override must be a valid UUID string.&#34;)
 
         self.old_dicx = {}
@@ -414,6 +414,9 @@ class TwinChain(TwinCore):
             raise ValueError(&#34;Invalid database, must have at least one record.&#34;)
 
         ooo = self.get_rec(sss-1)
+
+        if self.pgdebug &gt; 5:
+            print(&#34;decoding&#34;, ooo)
 
         decoded = self.packer.decode_data(ooo[1])
 
@@ -436,7 +439,7 @@ class TwinChain(TwinCore):
             bbb = self.packer.decode_data(encoded)
             print(&#34;Rec&#34;, bbb[0])
 
-        self.lock.unlock() #self.ulockname)
+        self.ulock.unlock() #self.ulockname)
         return True
 
     def append(self, datax):
@@ -551,13 +554,11 @@ class TwinChain(TwinCore):
         self.core_verbose = core_verbose
 
         # Upper lock name
-        self.ulockname = os.path.splitext(fname)[0] + &#34;.ulock&#34;
-        self.lock = FileLock(self.ulockname)
+        ulockname = os.path.splitext(fname)[0] + &#34;.ulock&#34;
+        self.ulock = FileLock(ulockname)
+        self.ulock.waitlock()    #(self.ulockname)
 
-        self.lock.waitlock()    #(self.ulockname)
         super(TwinChain, self).__init__(fname, pgdebug)
-
-        #print(&#34;TwinChain.init&#34;, self.fname, self.ulockname)
 
         self.packer = pyvpacker.packbin()
         sss = self.getdbsize()
@@ -584,7 +585,7 @@ class TwinChain(TwinCore):
             encoded = self.packer.encode_data(&#34;&#34;, aaa)
             self.save_data(header, encoded)
 
-        self.lock.unlock() #self.ulockname)
+        self.ulock.unlock() #self.ulockname)
 
     def _hashtohex(self, varx):
 
@@ -779,7 +780,8 @@ class TwinChain(TwinCore):
         try:
             decoded2 = self.packer.decode_data(arr2[1])
         except:
-            print(&#34;Cannot decode curr:&#34;, recnum, sys.exc_info())
+            if self.core_verbose &gt; 2:
+                print(&#34;Cannot decode curr:&#34;, recnum, sys.exc_info())
             return
         dic = self._get_fields(decoded2[0])
         backlink = self._build_backlink(dicold)
@@ -797,7 +799,8 @@ class TwinChain(TwinCore):
         try:
             decoded = self.packer.decode_data(arr[1])
         except:
-            print(&#34;Cannot decode:&#34;, recnum, sys.exc_info())
+            if self.core_verbose &gt; 2:
+                print(&#34;Cannot decode:&#34;, recnum, sys.exc_info())
             return
 
         aaa = self._get_fields(decoded[0])
@@ -822,7 +825,7 @@ class TwinChain(TwinCore):
         if self.core_verbose &gt; 0:
             print(&#34;Appendwith&#34;, header, datax)
 
-        self.lock.waitlock()    #self.ulockname)
+        self.ulock.waitlock()    #self.ulockname)
 
         try:
             uuu = uuid.UUID(header)
@@ -830,7 +833,7 @@ class TwinChain(TwinCore):
             if self.core_verbose:
                 print(&#34;Header override must be a valid UUID string.&#34;)
 
-            self.lock.unlock() #self.ulockname)
+            self.ulock.unlock() #self.ulockname)
             raise ValueError(&#34;Header override must be a valid UUID string.&#34;)
 
         self.old_dicx = {}
@@ -842,6 +845,9 @@ class TwinChain(TwinCore):
             raise ValueError(&#34;Invalid database, must have at least one record.&#34;)
 
         ooo = self.get_rec(sss-1)
+
+        if self.pgdebug &gt; 5:
+            print(&#34;decoding&#34;, ooo)
 
         decoded = self.packer.decode_data(ooo[1])
 
@@ -864,7 +870,7 @@ class TwinChain(TwinCore):
             bbb = self.packer.decode_data(encoded)
             print(&#34;Rec&#34;, bbb[0])
 
-        self.lock.unlock() #self.ulockname)
+        self.ulock.unlock() #self.ulockname)
         return True
 
     def append(self, datax):
@@ -964,7 +970,7 @@ class TwinChain(TwinCore):
     if self.core_verbose &gt; 0:
         print(&#34;Appendwith&#34;, header, datax)
 
-    self.lock.waitlock()    #self.ulockname)
+    self.ulock.waitlock()    #self.ulockname)
 
     try:
         uuu = uuid.UUID(header)
@@ -972,7 +978,7 @@ class TwinChain(TwinCore):
         if self.core_verbose:
             print(&#34;Header override must be a valid UUID string.&#34;)
 
-        self.lock.unlock() #self.ulockname)
+        self.ulock.unlock() #self.ulockname)
         raise ValueError(&#34;Header override must be a valid UUID string.&#34;)
 
     self.old_dicx = {}
@@ -984,6 +990,9 @@ class TwinChain(TwinCore):
         raise ValueError(&#34;Invalid database, must have at least one record.&#34;)
 
     ooo = self.get_rec(sss-1)
+
+    if self.pgdebug &gt; 5:
+        print(&#34;decoding&#34;, ooo)
 
     decoded = self.packer.decode_data(ooo[1])
 
@@ -1006,7 +1015,7 @@ class TwinChain(TwinCore):
         bbb = self.packer.decode_data(encoded)
         print(&#34;Rec&#34;, bbb[0])
 
-    self.lock.unlock() #self.ulockname)
+    self.ulock.unlock() #self.ulockname)
     return True</code></pre>
 </details>
 </dd>
@@ -1027,7 +1036,8 @@ class TwinChain(TwinCore):
     try:
         decoded = self.packer.decode_data(arr[1])
     except:
-        print(&#34;Cannot decode:&#34;, recnum, sys.exc_info())
+        if self.core_verbose &gt; 2:
+            print(&#34;Cannot decode:&#34;, recnum, sys.exc_info())
         return
 
     aaa = self._get_fields(decoded[0])
@@ -1236,7 +1246,8 @@ check as found. Raises exception</p>
     try:
         decoded2 = self.packer.decode_data(arr2[1])
     except:
-        print(&#34;Cannot decode curr:&#34;, recnum, sys.exc_info())
+        if self.core_verbose &gt; 2:
+            print(&#34;Cannot decode curr:&#34;, recnum, sys.exc_info())
         return
     dic = self._get_fields(decoded2[0])
     backlink = self._build_backlink(dicold)

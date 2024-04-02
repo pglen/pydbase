@@ -21,7 +21,7 @@ classx = [
         ]
 
 includex = ["*", "pydbase/", ]
-versionx = "1.4.9"
+versionx = "1.5.0"
 
 doclist = []; droot = "pydbase/docs/"
 doclistx = os.listdir(droot)

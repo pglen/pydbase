@@ -295,7 +295,8 @@ class TwinChain(TwinCore):
         try:
             decoded2 = self.packer.decode_data(arr2[1])
         except:
-            print("Cannot decode curr:", recnum, sys.exc_info())
+            if self.core_verbose > 2:
+                print("Cannot decode curr:", recnum, sys.exc_info())
             return
         dic = self._get_fields(decoded2[0])
         backlink = self._build_backlink(dicold)
@@ -313,7 +314,8 @@ class TwinChain(TwinCore):
         try:
             decoded = self.packer.decode_data(arr[1])
         except:
-            print("Cannot decode:", recnum, sys.exc_info())
+            if self.core_verbose > 2:
+                print("Cannot decode:", recnum, sys.exc_info())
             return
 
         aaa = self._get_fields(decoded[0])
