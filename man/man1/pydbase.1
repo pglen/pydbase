@@ -1,0 +1,209 @@
+.TH pydbase 1 "" "" \" -*- nroff -*-
+.SH NAME
+.B pydbase \-
+Simple python database
+.SH SYNOPSIS
+.B pydbase [options] [key data]
+.br
+.SH DESCRIPTION
+This manual page documents the pydbase python database
+.PP
+pydbase Features:
+.br
+    o Simple usage, reliable storage
+.br
+    o Per record checksum
+.br
+    o Multi platform operation (Linux and Windows for now)
+.br
+    o Fast. Because it is simple
+.br
+.SH COMMAND LINE OPTIONS
+
+.br
+Usage: dbaseadm.py [options] [arg_key arg_data]
+.br
+    -h          Help (this screen)
+.br
+    -E          Replace record in place (see notes)
+.br
+    -V          Print version
+.br
+    -q          Quiet on, less printing
+.br
+    -d          Debug level (0-10)
+.br
+    -v          Increment verbosity level
+.br
+    -r          Randomize (with -w)
+.br
+    -w          Write random record(s)
+.br
+    -z          Dump backwards(s)
+.br
+    -i          Show deleted record(s)
+.br
+    -U          Vacuum DB
+.br
+    -R          Re-index / recover DB
+.br
+    -I          DB Integrity check
+.br
+    -c          Set check integrity flag
+.br
+    -s          Skip to count recs
+.br
+    -K          List keys only
+.br
+    -S          Print num recs
+.br
+    -m          Dump data to console
+.br
+    -n  num     Num of recs (with -w)
+.br
+    -t  keyval  Retrieve by key
+.br
+    -o  offs    Get data from offset
+.br
+    -G  num     Get record by number
+.br
+    -F  subkey  Find by sub str
+.br
+    -g  num     Get number of recs.
+.br
+    -k  keyval  Key to save
+.br
+    -a  str     Data to save
+.br
+    -y  keyval  Find by key
+.br
+    -D  keyval  Delete by key
+.br
+    -p  num     Skip number of recs
+.br
+    -u  recnum  Delete at recnum
+.br
+    -l  lim     Limit get records
+.br
+    -e  offs    Delete at offset
+.br
+    -Z  keyval  Get record position
+.br
+    -X  max     Limit recs on delete
+.br
+    -f  file    DB file for save/retrieve default: 'pydbase.pydb'
+
+The verbosity / debug  level influences the amount of printout presented.
+Use quotes for multi word arguments.
+
+Notes:
+
+ For in-place replacement, the replacement record has to be shorter than \
+ the existing record. If longer, the record is stored as normal.
+
+.SH BLOCKCHAIN
+
+ The database is extended with a blockhcain implementation. The new class
+is called twinchain; and it is a class derived from twincore.
+
+ To drive the blockchain, use chainad.py append method. The database will calculate
+all the hashes, integrate it into the existing chain with the new item getting
+a back link field. This field is calculated based upon the previous record's
+hash and the previous record's frozen date. This assures that identical data
+will have a different hash, so data cannot be anticipated based upon its hash
+alone. The hash is done with 256 bits, and assumed to be very secure.
+
+Usage: chainadm.py [options]
+.br
+    -a  data   append data to the end of chain
+.br
+    -g recnum  get record
+.br
+    -k reckey  get record by key/header
+.br
+    -G recnum  get record offset
+.br
+    -r recnum  get record header
+.br
+    -n         append / show / get number of records
+.br
+    -e         override header (checked for UUID)
+.br
+    -t         print record's UUID date)
+.br
+    -s         skip count
+.br
+    -x         max record count to list
+.br
+    -m         dump chain data
+.br
+    -c         check data integrity
+.br
+    -i         check link integrity
+.br
+    -S         get db size
+.br
+    -v         increase verbosity
+.br
+    -h         help (this screen)
+
+.SH FILESPEC
+
+Saved file specification consists of two parts:
+.PP
+    o Data file
+.br
+    o Index file
+.PP
+Structure of the data:
+
+    DATA FILE HEADER
+    FILESIG     = b"PYDB"
+    32 byte header, starting with FILESIG
+
+    4 bytes    4 bytes          4 bytes         Variable
+    ------------------------------------------------------------
+    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+        .
+        .
+    RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+    RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+
+    where:
+
+    RECSIG="RECB" (record begin here)
+    RECSEP="RECS" (record separated here)
+    RECDEL="RECX" (record deleted)
+
+    Deleted records are marked with the RECSIG mutated from RECB to RECX
+
+    Vacuum will remove the deleted records; Make sure your database has no
+    pending ops; or non atomic opts when vacuuming;
+
+Structure of the index:
+
+    INDEX FILE HEADER
+
+    IDXSIG      = b"PYIX"
+
+    32 byte header, starting with IDXSIG
+
+    32 bit index
+    .
+    .
+    32 bit index ...
+
+    The index is the offset of the record in the data file.
+
+.SH PLATFORMS
+All platforms that have python should work fine. Current platforms include
+Linux, WinX, MSYS2 ...
+.SH FILES
+ pydbase/*, dbaseadm.py chainadm.py twincore.py, chaincore.py twinbase.py
+ dbutils.py
+.SH COPYING
+pydbase can be copied under the MIT or General Public License
+.SH AUTHOR
+pydbase was written by Peter Glen, peterglen99@google.com
+

@@ -55,19 +55,15 @@ setup:
 build:
 	@python3 ./setup.py build
 
-#remove:
-#	@python3 ./setup.py install --record files.txt
-#	xargs rm -rf < files.txt
-#	@rm -f files.txt
-
 clean:
 	@rm -f *.pyc
 	@rm -f pedlib/*.pyc
 	@rm -rf ./pydbase/__pycache__
-	@rm -rf build/*
-	@rm -rf _build/*
-	@rm -rf dist/*
-	@rm -f README.html
+	@rm -rf build
+	@rm -rf _build
+	@rm -rf dist
+	@rm -f pydbase.p*
+	@rm -f pydbchain.p*
 
 cleandata:
 	@rm -f pydbase.pydb
@@ -111,10 +107,14 @@ docs:
 	@pdoc  --force --html -o pydbase/docs pydbase/twinchain.py
 	@pdoc  --force --html -o pydbase/docs pydbase/twincore.py
 	@pdoc  --force --html -o pydbase/docs pydbase/twinbase.py
-	@pdoc  --force --html -o docs chainadm.py
-	@pdoc  --force --html -o docs dbaseadm.py
+	@pdoc  --force --html -o pydbase/docs chainadm.py
+	@pdoc  --force --html -o pydbase/docs dbaseadm.py
 
 doxy:
 	doxygen
+
+install:
+	@echo installing pydbase manual file
+	sudo install man/man1/pydbase.1 /usr/share/man/man1
 
 # End of Makefile

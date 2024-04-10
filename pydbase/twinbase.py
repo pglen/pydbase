@@ -35,6 +35,8 @@ RECDEL      = b"RECX"
 RECSEP      = b"RECS"
 RECEND      = b"RECE"
 
+version = "1.5.2"
+
 # Accessed from the main file as well
 
 base_locktout   = LOCK_TIMEOUT   # Settable from ...

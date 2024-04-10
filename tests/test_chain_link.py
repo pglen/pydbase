@@ -39,8 +39,8 @@ def teardown_module(module):
 
     try:
         # No dangling data
-        os.remove(fname)
-        os.remove(iname)
+        #os.remove(fname)
+        #os.remove(iname)
         pass
     except:
         print(sys.exc_info())
@@ -71,9 +71,9 @@ def test_links(capsys):
     fp = open(fname, "rb")
     buff = fp.read(); fp.close()
 
-    # Damage file buffer rec 2 -- make sure it is in payload
+    # Damage file buffer rec 1 -- make sure it is in relevant section
     # Please note that this is a hack to test damage
-    pos = 0x370
+    pos = 0x440
     buff = buff[:pos] + b'x' + buff[pos+1:]
 
     fp2 = open(fname, "wb")
@@ -88,12 +88,12 @@ def test_links(capsys):
     #for aa in range(1, dbsize):
     #    print(aa, core2.get_payload(aa))
 
-    # The failing record
-    ppp = core2.checkdata(1)
-    assert ppp == False
+    # The succeeding record
+    ppp = core2.linkintegrity(0)
+    assert ppp == True
 
     # The failing record
-    ppp = core2.linkintegrity(2)
+    ppp = core2.linkintegrity(1)
     assert ppp == False
 
     # Test print of the setup

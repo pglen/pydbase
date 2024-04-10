@@ -24,15 +24,6 @@ name.pydb for data; name.pidx for the index, name.lock for the lock file.
 and breaks the lock. If the locking process (id in lockfile) does
 not exist, the lock breaks immediately.
 
-### Setting verbosity and debug level:
-
-    twincore.core_quiet   = quiet
-    twincore.core_verbose = verbose
-    twincore.core_pgdebug = pgdebug
-    twincore.core_showdel = sdelx
-
- (Setting before data creation will display mesages from the construtor)
-
 Example DB creation:
 
     core = twincore.TwinCore(datafile_name)
@@ -52,6 +43,14 @@ Example chain DB creation:
     recnum = core.getdbsize()
     rec = core.get_payload(recnum)
     print(recnum, rec)
+
+### Setting verbosity and debug level:
+
+    twincore.core_quiet   = quiet
+    twincore.core_verbose = verbose
+    twincore.core_pgdebug = pgdebug
+
+ (Setting before data creation will display mesages from the construtor)
 
 ### Structure of the data:
 
@@ -161,7 +160,7 @@ Please note the the time.sh clears all files in test_data/* for a fair test.
     user	0m0.130s
     sys	0m0.292s
 
-  Please mind the fact that the sqlite engine has to do a lot of parsing which we
+  Please note that the sqlite engine has to do a lot of parsing which we
 skip doing; That is why pydbase is more than an order of magnitude faster ...
 even with all the hashing for data integrity check
 
@@ -172,14 +171,17 @@ to contain more sophisticated data. For example: adding a string in front of it.
 [ Like: the string CUST_ for customer data / details]. Also the key can be made
 unique by adding a UUID to it, or using pyvpacker to construct it. (see below)
 
-  The data may consist of any text / binary. The library pyvpacker and can pack any data
-into a string; It is installed as a dependency, and a copy of pyvpacker can be
-obtained from pip or github.
+ &nbsp; The data may consist of any text / binary. The library pyvpacker and can pack
+any data into a string; It is installed as a dependency, and a copy of
+pyvpacker can be obtained from pip or github.
 
-## pyvpacker.py
+## the pyvpacker.py module:
 
- This module can pack arbitrary python data into a string; which can be used to store
-anything in the pydbase's key / data sections.
+ This module can pack arbitrary python data into a string; which can be
+used to store anything in the pydbase's key / data sections. Note that
+data type is limited to the python native data types and compounds thereof.
+
+        Types: (int, real, str, array, hash)
 
 Example from running testpacker.py:
 
@@ -262,15 +264,6 @@ To drive it:
    Two levels; Level one is checking if the record checksums are correct;
    Level two checks if the linkage is correct.
 
-### TODO
-
-    Speed this up by implementing this as a 'C' module
-
-## PyTest
-
- The pytest passes with no errors;
- The following (and more) test are created / executed:
-
 ## The in-place update
 
   The save operation has a flag for in-place update. This is useful for updating
@@ -293,10 +286,16 @@ created, just like a normal operation. This new, longer record than accommodates
 It is recommended that one produces a fixed record size for consistent results.
 (See: sprintf (python % operator) in the example above.)
 
+## PyTest
+
+ The pytest passes with no errors;
+ The following (and more) test are created / executed:
+
 ### Test results:
 
-    ============================ test session starts ==============================
+    ============================= test session starts ==============================
     platform linux -- Python 3.10.12, pytest-7.4.3, pluggy-1.0.0
+    rootdir: /home/peterglen/pgpygtk/pydbase
     collected 44 items
 
     test_acreate.py ...                                                      [  6%]
@@ -322,7 +321,7 @@ It is recommended that one produces a fixed record size for consistent results.
     test_search.py ...                                                       [ 97%]
     test_vacuum.py .                                                         [100%]
 
-    ============================== 44 passed in 0.59s ==============================
+    ============================== 44 passed in 0.57s ==============================
 
 ## History
 
@@ -338,5 +337,6 @@ It is recommended that one produces a fixed record size for consistent results.
     1.4.8       Sat 09.Mar.2024     Added new locking mechanism
     1.4.9       Mon 01.Apr.2024     Updated to run on MSYS2, new locking
     1.5.0       Tue 02.Apr.2024     Cleaned, pip upload
+    1.5.1       Wed 10.Apr.2024     Dangling lock .. fixed
 
 // EOF

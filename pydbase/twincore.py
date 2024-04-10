@@ -91,6 +91,7 @@ class TwinCore(TwinCoreBase):
         self.idxname  = os.path.splitext(self.fname)[0] + ".pidx"
         self.pgdebug = pgdebug
         self.base_verbose  = 0
+        self.core_verbose  = 0
         self.devmode = devmode
         self.lock = FileLock(self.lckname)
 
@@ -1431,5 +1432,9 @@ class TwinCore(TwinCoreBase):
                     if not self.ifp.closed:
                         self.ifp.flush()
                         self.ifp.close()
+
+        # remove lockfile
+        if hasattr(self, "lock"):
+            self.lock.unlock()    #dellock(self.lckname)
 
 # EOF

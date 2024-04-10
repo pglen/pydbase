@@ -5,7 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>dbaseadm API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Usage: pdoc [options] [arg_key arg_data]
+-h
+Help (this screen)
+-|-
+-E
+Replace record in place
+-V
+Print version …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,6 +29,105 @@
 <h1 class="title">Module <code>dbaseadm</code></h1>
 </header>
 <section id="section-intro">
+<p>Usage: pdoc [options] [arg_key arg_data]
+-h
+Help (this screen)
+-|-
+-E
+Replace record in place
+-V
+Print version
+-|-
+-q
+Quiet on, less printing
+-d
+Debug level (0-10)
+-|-
+-v
+Increment verbosity level
+-r
+Randomize (with -w)
+-|-
+-w
+Write random record(s)
+-z
+Dump backwards(s)
+-|-
+-i
+Show deleted record(s)
+-U
+Vacuum DB
+-|-
+-R
+Re-index / recover DB
+-I
+DB Integrity check
+-|-
+-c
+Set check integrity flag
+-s
+Skip to count recs
+-|-
+-K
+List keys only
+-S
+Print num recs
+-|-
+-m
+Dump data to console
+-n
+num
+Num of recs (with -w)-|-
+-t
+keyval Retrieve by key
+-o
+offs
+Get data from offset -|-
+-G
+num
+Get record by number
+-F
+subkey Find by sub str
+-|-
+-g
+num
+Get number of recs.
+-k
+keyval Key to save
+-|-
+-a
+str
+Data to save
+-y
+keyval Find by key
+-|-
+-D
+keyval Delete by key
+-p
+num
+Skip number of recs
+-|-
+-u
+recnum Delete at recnum
+-l
+lim
+Limit get records
+-|-
+-e
+offs
+Delete at offset
+-Z
+keyval Get record position
+-|-
+-X
+max
+Limit recs on delete
+-f
+file
+DB file for save/retrieve default: 'pydbase.pydb')
+The verbosity / debug
+level influences the amount of data presented.
+Use quotes for multi word arguments.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -44,6 +150,8 @@ sys.path.append(os.path.join(base, &#39;pydbase&#39;))
 
 from pydbase import twincore
 
+#print(sys.prefix)
+
 # ------------------------------------------------------------------------
 
 gl_lockname = &#34;pydbase.main.lock&#34;
@@ -51,27 +159,17 @@ gl_lockname = &#34;pydbase.main.lock&#34;
 # Module variables (pushed to a class)
 
 class _m():
-    pgdebug = 0
-    verbose = 0
-    keyonly = 0
-    ncount  = 1
-    skipcnt = 0
-    maxx    = 1; maxdel = 0xffffffff
+    pgdebug = 0;  verbose = 0
+    keyonly = 0;  ncount  = 1
+    skipcnt = 0;  maxdel = 0xffffffff
     lcount  = twincore.INT_MAX
-    quiet   = 0; writex  = 0
-    randx   = 0; skipx   = 0
-    offsx   = 0; delx    = 0
-    delrx   = 0; delrx2  = 0
-    backx   = 0; sdelx   = 0
-    vacx    = 0; recx    = 0
-    integx  = 0; checkx  = 0
-    sizex   = 0; findx   = &#34;&#34;
-    retrx   = &#34;&#34;; getit  = &#34;&#34;
-    keyx    = &#34;&#34;; datax  = &#34;&#34;
-    dkeyx   = &#34;&#34;; dumpx  = 0
-    findrec = &#34;&#34;; getrec = 0
-    replace = 0 ; recpos = 0
-    inplace = 0
+    quiet   = 0; writex  = 0;   randx   = 0; skipx   = 0
+    offsx   = 0; delx    = 0;   delrx   = 0; delrx2  = 0
+    backx   = 0; sdelx   = 0;   vacx    = 0; recx    = 0
+    integx  = 0; checkx  = 0;   sizex   = 0; findx   = &#34;&#34;
+    retrx   = &#34;&#34;; getit  = &#34;&#34;;  keyx    = &#34;&#34;; datax  = &#34;&#34;
+    dkeyx   = &#34;&#34;; dumpx  = 0;   findrec = &#34;&#34;; getrec = 0
+    replace = 0 ; recpos = 0;   inplace = 0
     deffile = &#34;pydbase.pydb&#34;
 
 version = &#34;0.4.1&#34;
@@ -94,31 +192,37 @@ def randstr(lenx):
         strx += str(rr)
     return strx
 
-def help():
-    &#39;&#39;&#39; Program usage information &#39;&#39;&#39;
+pname = os.path.split(sys.argv[0])[1]
 
-    pname = os.path.split(sys.argv[0])[1]
-    print(&#34;Usage: %s [options] [arg_key arg_data]&#34; %  pname)
-    print(&#34;   -h         Help (this screen)   -|-  -E         Replace record in place&#34;)
-    print(&#34;   -V         Print version        -|-  -q         Quiet on, less printing&#34;)
-    print(&#34;   -d         Debug level (0-10)   -|-  -v         Increment verbosity level&#34;)
-    print(&#34;   -r         Randomize data       -|-  -w         Write random record(s)&#34;)
-    print(&#34;   -z         Dump backwards(s)    -|-  -i         Show deleted record(s)&#34;)
-    print(&#34;   -U         Vacuum DB            -|-  -R         Re-index / recover DB&#34;)
-    print(&#34;   -I         DB Integrity check   -|-  -c         Set check integrity flag&#34;)
-    print(&#34;   -s         Skip to count recs   -|-  -K         List keys only&#34;)
-    print(&#34;   -S         Print num recs       -|-  -m         Dump data to console&#34;)
-    print(&#34;   -o  offs   Get data from offset -|-  -G  num    Get record by number &#34;)
-    print(&#34;   -F  subkey Find by sub str      -|-  -g  num    Get number of recs.&#34;)
-    print(&#34;   -k  keyval Key to save          -|-  -a  str    Data to save &#34;)
-    print(&#34;   -y  keyval Find by key          -|-  -D  keyval Delete by key &#34;)
-    print(&#34;   -n  num    Number of records    -|-  -t  keyval Retrieve by key&#34;)
-    print(&#34;   -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum&#34;)
-    print(&#34;   -l  lim    Limit get records    -|-  -e  offs   Delete at offset&#34;)
-    print(&#34;   -Z  keyval Get record position  -|-  -X  max    Limit recs on delete &#34;)
-    print(&#34;   -f  file   DB file for save/retrieve default: &#39;pydbase.pydb&#39;)&#34;)
-    print(&#34;The verbosity / debug  level influences the amount of data presented.&#34;)
-    print(&#34;Use quotes for multi word arguments.&#34;)
+__doc__ = &#39;&#39;&#39; \
+Usage: %s [options] [arg_key arg_data]
+   -h         Help (this screen)   -|-  -E         Replace record in place
+   -V         Print version        -|-  -q         Quiet on, less printing
+   -d         Debug level (0-10)   -|-  -v         Increment verbosity level
+   -r         Randomize (with -w)  -|-  -w         Write random record(s)
+   -z         Dump backwards(s)    -|-  -i         Show deleted record(s)
+   -U         Vacuum DB            -|-  -R         Re-index / recover DB
+   -I         DB Integrity check   -|-  -c         Set check integrity flag
+   -s         Skip to count recs   -|-  -K         List keys only
+   -S         Print num recs       -|-  -m         Dump data to console
+   -n  num    Num of recs (with -w)-|-  -t  keyval Retrieve by key
+   -o  offs   Get data from offset -|-  -G  num    Get record by number
+   -F  subkey Find by sub str      -|-  -g  num    Get number of recs.
+   -k  keyval Key to save          -|-  -a  str    Data to save
+   -y  keyval Find by key          -|-  -D  keyval Delete by key
+   -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum
+   -l  lim    Limit get records    -|-  -e  offs   Delete at offset
+   -Z  keyval Get record position  -|-  -X  max    Limit recs on delete
+   -f  file   DB file for save/retrieve default: &#39;pydbase.pydb&#39;)
+The verbosity / debug  level influences the amount of data presented.
+Use quotes for multi word arguments.&#39;&#39;&#39; \
+     % (pname)
+
+def help():
+
+    &#39;&#39;&#39; Program usage information &#39;&#39;&#39;
+    print(__doc__)
+    sys.exit(0)
 
 def mainfunc():
 
@@ -175,8 +279,6 @@ def mainfunc():
             _m.retrx = aa[1]
         if aa[0] == &#34;-l&#34;:
             _m.lcount = int(aa[1])
-        if aa[0] == &#34;-x&#34;:
-            _m.maxx = int(aa[1])
         if aa[0] == &#34;-X&#34;:
             _m.maxdel = int(aa[1])
         if aa[0] == &#34;-s&#34;:
@@ -250,9 +352,6 @@ def mainfunc():
         sys.exit(0)
 
     #print(dir(core))
-
-    # Correct maxx
-    if _m.maxx &lt;= 0 : _m.maxx = 1
 
     dbsize = core.getdbsize()
     #print(&#34;DBsize&#34;, dbsize)
@@ -390,30 +489,10 @@ if __name__ == &#34;__main__&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def help():
-    &#39;&#39;&#39; Program usage information &#39;&#39;&#39;
 
-    pname = os.path.split(sys.argv[0])[1]
-    print(&#34;Usage: %s [options] [arg_key arg_data]&#34; %  pname)
-    print(&#34;   -h         Help (this screen)   -|-  -E         Replace record in place&#34;)
-    print(&#34;   -V         Print version        -|-  -q         Quiet on, less printing&#34;)
-    print(&#34;   -d         Debug level (0-10)   -|-  -v         Increment verbosity level&#34;)
-    print(&#34;   -r         Randomize data       -|-  -w         Write random record(s)&#34;)
-    print(&#34;   -z         Dump backwards(s)    -|-  -i         Show deleted record(s)&#34;)
-    print(&#34;   -U         Vacuum DB            -|-  -R         Re-index / recover DB&#34;)
-    print(&#34;   -I         DB Integrity check   -|-  -c         Set check integrity flag&#34;)
-    print(&#34;   -s         Skip to count recs   -|-  -K         List keys only&#34;)
-    print(&#34;   -S         Print num recs       -|-  -m         Dump data to console&#34;)
-    print(&#34;   -o  offs   Get data from offset -|-  -G  num    Get record by number &#34;)
-    print(&#34;   -F  subkey Find by sub str      -|-  -g  num    Get number of recs.&#34;)
-    print(&#34;   -k  keyval Key to save          -|-  -a  str    Data to save &#34;)
-    print(&#34;   -y  keyval Find by key          -|-  -D  keyval Delete by key &#34;)
-    print(&#34;   -n  num    Number of records    -|-  -t  keyval Retrieve by key&#34;)
-    print(&#34;   -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum&#34;)
-    print(&#34;   -l  lim    Limit get records    -|-  -e  offs   Delete at offset&#34;)
-    print(&#34;   -Z  keyval Get record position  -|-  -X  max    Limit recs on delete &#34;)
-    print(&#34;   -f  file   DB file for save/retrieve default: &#39;pydbase.pydb&#39;)&#34;)
-    print(&#34;The verbosity / debug  level influences the amount of data presented.&#34;)
-    print(&#34;Use quotes for multi word arguments.&#34;)</code></pre>
+    &#39;&#39;&#39; Program usage information &#39;&#39;&#39;
+    print(__doc__)
+    sys.exit(0)</code></pre>
 </details>
 </dd>
 <dt id="dbaseadm.mainfunc"><code class="name flex">
@@ -480,8 +559,6 @@ if __name__ == &#34;__main__&#34;:
             _m.retrx = aa[1]
         if aa[0] == &#34;-l&#34;:
             _m.lcount = int(aa[1])
-        if aa[0] == &#34;-x&#34;:
-            _m.maxx = int(aa[1])
         if aa[0] == &#34;-X&#34;:
             _m.maxdel = int(aa[1])
         if aa[0] == &#34;-s&#34;:
@@ -555,9 +632,6 @@ if __name__ == &#34;__main__&#34;:
         sys.exit(0)
 
     #print(dir(core))
-
-    # Correct maxx
-    if _m.maxx &lt;= 0 : _m.maxx = 1
 
     dbsize = core.getdbsize()
     #print(&#34;DBsize&#34;, dbsize)

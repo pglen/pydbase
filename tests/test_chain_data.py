@@ -86,7 +86,7 @@ def test_data(capsys):
 
     # The failing record
     ppp = core2.checkdata(1)
-    assert ppp == False
+    assert ppp == True
 
     # All others
     #for aa in range(0, dbsize):

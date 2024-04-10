@@ -92,7 +92,7 @@ class   FileLock():
                 if utils_pgdebug > 1:
                     print("Cannot create lock file")
 
-                raise ValuError("Cannot create lock file")
+                raise ValueError("Cannot create lock file")
 
     def waitlock(self):
         if utils_pgdebug > 1:
@@ -163,8 +163,10 @@ class   FileLock():
         #print("__del__ lock", self.lockname)
         try:
             if fcntl:
-                # Do not remove, others may have locked it
+                # Do not remove, others may have locked it ...
+                # ... but close our handle
                 fcntl.flock(self.fpx, fcntl.LOCK_UN | fcntl.LOCK_NB)
+                self.fpx.close()
                 pass
 
             # Always remove file

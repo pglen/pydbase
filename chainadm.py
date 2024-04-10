@@ -152,7 +152,6 @@ def execfunc():
 
     ''' Execute individual function from command line '''
 
-
     # Create our database
     core = twinchain.TwinChain(_c.deffile, _c.pgdebug, _c.verbose)
 
@@ -167,7 +166,7 @@ def execfunc():
         errx = False; cnt = []
         sss = core.getdbsize()
         # Remember record zero is the anchor
-        for aa in range(1, sss):
+        for aa in range(0, sss):
             ppp = core.linkintegrity(aa)
             if _c.verbose:
                 print(aa, ppp)

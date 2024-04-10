@@ -16,6 +16,8 @@ sys.path.append(os.path.join(base, 'pydbase'))
 
 from pydbase import twincore
 
+#print(sys.prefix)
+
 # ------------------------------------------------------------------------
 
 gl_lockname = "pydbase.main.lock"
@@ -23,27 +25,17 @@ gl_lockname = "pydbase.main.lock"
 # Module variables (pushed to a class)
 
 class _m():
-    pgdebug = 0
-    verbose = 0
-    keyonly = 0
-    ncount  = 1
-    skipcnt = 0
-    maxx    = 1; maxdel = 0xffffffff
+    pgdebug = 0;  verbose = 0
+    keyonly = 0;  ncount  = 1
+    skipcnt = 0;  maxdel = 0xffffffff
     lcount  = twincore.INT_MAX
-    quiet   = 0; writex  = 0
-    randx   = 0; skipx   = 0
-    offsx   = 0; delx    = 0
-    delrx   = 0; delrx2  = 0
-    backx   = 0; sdelx   = 0
-    vacx    = 0; recx    = 0
-    integx  = 0; checkx  = 0
-    sizex   = 0; findx   = ""
-    retrx   = ""; getit  = ""
-    keyx    = ""; datax  = ""
-    dkeyx   = ""; dumpx  = 0
-    findrec = ""; getrec = 0
-    replace = 0 ; recpos = 0
-    inplace = 0
+    quiet   = 0; writex  = 0;   randx   = 0; skipx   = 0
+    offsx   = 0; delx    = 0;   delrx   = 0; delrx2  = 0
+    backx   = 0; sdelx   = 0;   vacx    = 0; recx    = 0
+    integx  = 0; checkx  = 0;   sizex   = 0; findx   = ""
+    retrx   = ""; getit  = "";  keyx    = ""; datax  = ""
+    dkeyx   = ""; dumpx  = 0;   findrec = ""; getrec = 0
+    replace = 0 ; recpos = 0;   inplace = 0
     deffile = "pydbase.pydb"
 
 version = "0.4.1"
@@ -66,31 +58,37 @@ def randstr(lenx):
         strx += str(rr)
     return strx
 
-def help():
-    ''' Program usage information '''
+pname = os.path.split(sys.argv[0])[1]
 
-    pname = os.path.split(sys.argv[0])[1]
-    print("Usage: %s [options] [arg_key arg_data]" %  pname)
-    print("   -h         Help (this screen)   -|-  -E         Replace record in place")
-    print("   -V         Print version        -|-  -q         Quiet on, less printing")
-    print("   -d         Debug level (0-10)   -|-  -v         Increment verbosity level")
-    print("   -r         Randomize data       -|-  -w         Write random record(s)")
-    print("   -z         Dump backwards(s)    -|-  -i         Show deleted record(s)")
-    print("   -U         Vacuum DB            -|-  -R         Re-index / recover DB")
-    print("   -I         DB Integrity check   -|-  -c         Set check integrity flag")
-    print("   -s         Skip to count recs   -|-  -K         List keys only")
-    print("   -S         Print num recs       -|-  -m         Dump data to console")
-    print("   -o  offs   Get data from offset -|-  -G  num    Get record by number ")
-    print("   -F  subkey Find by sub str      -|-  -g  num    Get number of recs.")
-    print("   -k  keyval Key to save          -|-  -a  str    Data to save ")
-    print("   -y  keyval Find by key          -|-  -D  keyval Delete by key ")
-    print("   -n  num    Number of records    -|-  -t  keyval Retrieve by key")
-    print("   -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum")
-    print("   -l  lim    Limit get records    -|-  -e  offs   Delete at offset")
-    print("   -Z  keyval Get record position  -|-  -X  max    Limit recs on delete ")
-    print("   -f  file   DB file for save/retrieve default: 'pydbase.pydb')")
-    print("The verbosity / debug  level influences the amount of data presented.")
-    print("Use quotes for multi word arguments.")
+__doc__ = ''' \
+Usage: %s [options] [arg_key arg_data]
+   -h         Help (this screen)   -|-  -E         Replace record in place
+   -V         Print version        -|-  -q         Quiet on, less printing
+   -d         Debug level (0-10)   -|-  -v         Increment verbosity level
+   -r         Randomize (with -w)  -|-  -w         Write random record(s)
+   -z         Dump backwards(s)    -|-  -i         Show deleted record(s)
+   -U         Vacuum DB            -|-  -R         Re-index / recover DB
+   -I         DB Integrity check   -|-  -c         Set check integrity flag
+   -s         Skip to count recs   -|-  -K         List keys only
+   -S         Print num recs       -|-  -m         Dump data to console
+   -n  num    Num of recs (with -w)-|-  -t  keyval Retrieve by key
+   -o  offs   Get data from offset -|-  -G  num    Get record by number
+   -F  subkey Find by sub str      -|-  -g  num    Get number of recs.
+   -k  keyval Key to save          -|-  -a  str    Data to save
+   -y  keyval Find by key          -|-  -D  keyval Delete by key
+   -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum
+   -l  lim    Limit get records    -|-  -e  offs   Delete at offset
+   -Z  keyval Get record position  -|-  -X  max    Limit recs on delete
+   -f  file   DB file for save/retrieve default: 'pydbase.pydb')
+The verbosity / debug  level influences the amount of printout presented.
+Use quotes for multi word arguments.''' \
+     % (pname)
+
+def help():
+
+    ''' Program usage information '''
+    print(__doc__)
+    sys.exit(0)
 
 def mainfunc():
 
@@ -147,8 +145,6 @@ def mainfunc():
             _m.retrx = aa[1]
         if aa[0] == "-l":
             _m.lcount = int(aa[1])
-        if aa[0] == "-x":
-            _m.maxx = int(aa[1])
         if aa[0] == "-X":
             _m.maxdel = int(aa[1])
         if aa[0] == "-s":
@@ -222,9 +218,6 @@ def mainfunc():
         sys.exit(0)
 
     #print(dir(core))
-
-    # Correct maxx
-    if _m.maxx <= 0 : _m.maxx = 1
 
     dbsize = core.getdbsize()
     #print("DBsize", dbsize)

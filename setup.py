@@ -20,22 +20,33 @@ classx = [
           'Topic :: Databases',
         ]
 
+# Get version number  from the server support file:
+fp = open("pydbase/twinbase.py", "rt")
+vvv = fp.read(); fp.close()
+loc_vers =  '1.0.0'     # Default
+for aa in vvv.split("\n"):
+    idx = aa.find("version =")
+    if idx == 0:        # At the beginning of line
+        try:
+            loc_vers = aa.split()[2].replace('"', "")
+            break
+        except:
+            pass
+#print("loc_vers:", loc_vers)
+
 includex = ["*", "pydbase/", ]
-versionx = "1.5.0"
 
 doclist = []; droot = "pydbase/docs/"
 doclistx = os.listdir(droot)
 for aa in doclistx:
     doclist.append(droot + aa)
-#print(doclist)
-#sys.exit()
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="pydbase",
-    version=versionx,
+    version=loc_vers,
     author="Peter Glen",
     author_email="peterglen99@gmail.com",
     description="High speed database with key / data in python.",
@@ -47,11 +58,12 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    include_package_data=True,
     packages=setuptools.find_packages(include=includex),
     scripts = ['dbaseadm.py', 'chainadm.py'],
     py_modules = ["pyvpacker",],
-    package_data = {"docs" : doclist},
+    include_package_data=True,
+    package_data = {"pydbase" : doclist},
+    #data_files = {"man/man1/pydbase.1"},
     python_requires='>=3',
     entry_points={
         'console_scripts': [ "dbaseadm=dbaseadm:mainfunc",

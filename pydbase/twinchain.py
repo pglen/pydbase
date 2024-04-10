@@ -76,29 +76,38 @@ class TwinChain(TwinCore):
         super(TwinChain, self).__init__(fname, pgdebug)
 
         self.packer = pyvpacker.packbin()
+
         sss = self.getdbsize()
-        if sss == 0:
-            payload = {"Initial": "Initial record, do not use."}
-            #print("Init anchor record", payload)
-
-            # Here we fake the initial backlink for the anchor record
-            self.old_dicx = {}
-
+        '''if sss == 0:
             # Produce initial data structure
+            # This is the wron place to produce it, as the chain has no
+            # knowledge of the actual structure ... we provide minimum here
             header = str(uuid.uuid1())
-
             dt = datetime.datetime.utcnow()
             fdt = dt.strftime('%a, %d %b %Y %H:%M:%S`')
-            self.old_dicx["now"] =  fdt
-            self.old_dicx["hash256"]  =  self._hash_any(payload).hexdigest()
-            self.old_dicx["header"]   =  header
-            self.old_dicx["payload"]  =  payload
-            self.old_dicx["backlink"] =  ""
 
-            aaa = self._fill_record(header, payload)
-            #print(aaa)
-            encoded = self.packer.encode_data("", aaa)
+            payload = {"Initial": "Initial record, do not use.",
+                            "Default" : 'None', "header": header}
+
+            #payload2 = {"header": header, "payload" : payload}
+
+            # Here we fake the initial backlink for the anchor record
+            old_dicx = {}
+            old_dicx["now"] =  fdt
+            old_dicx["hash256"]  =  self._hash_any(payload).hexdigest()
+            old_dicx["header"]   =  header
+            old_dicx["payload"]  =  payload
+            old_dicx["backlink"] =  ""
+
+            #print("old_dicx:", self.old_dicx)
+
+            aaa = self._fill_record(header, payload, old_dicx)
+            #print("aaa:", aaa)
+            encoded = self.packer.encode_data("", [aaa])
+            #print("encoded:", encoded)
+
             self.save_data(header, encoded)
+        '''
 
         self.ulock.unlock() #self.ulockname)
 
@@ -158,7 +167,7 @@ class TwinChain(TwinCore):
 
     # --------------------------------------------------------------------
 
-    def _fill_record(self, header, payload):
+    def _fill_record(self, header, payload, old_dict):
 
         aaa = {}
         aaa["header"] = header
@@ -173,7 +182,7 @@ class TwinChain(TwinCore):
         sumstr = self._build_sumstr(aaa)
         aaa["hash256"] = self._hashtohex(sumstr)
 
-        backlink = self._build_backlink(self.old_dicx)
+        backlink = self._build_backlink(old_dict)
         aaa["backlink"] = self._hashtohex(backlink)
 
         return aaa
@@ -351,32 +360,32 @@ class TwinChain(TwinCore):
             self.ulock.unlock() #self.ulockname)
             raise ValueError("Header override must be a valid UUID string.")
 
-        self.old_dicx = {}
+        old_dicx = {}
         # Get last data from db
         sss = self.getdbsize()
         #print("sss", sss)
 
+        # We fake an empty set ... checking against an empty set is a valid OP
         if not sss:
-            raise ValueError("Invalid database, must have at least one record.")
-
-        ooo = self.get_rec(sss-1)
+            #raise ValueError("Invalid database, must have at least one record.")
+            ddd = self.packer.encode_data("", {"blank": 0, })
+            ooo = [0, ddd,]
+        else:
+            ooo = self.get_rec(sss-1)
 
         if self.pgdebug > 5:
             print("decoding", ooo)
 
         decoded = self.packer.decode_data(ooo[1])
+        old_dicx = self._get_fields(decoded[0])
 
-        self.old_dicx = self._get_fields(decoded[0])
+        #print("old_fff", old_dicx["hash256"])
+        #print("old_time", old_dicx["now"])
 
-        #print("old_fff", self.old_dicx["hash256"])
-        #print("old_time", self.old_dicx["now"])
-
-        aaa = self._fill_record(header, datax)
-
+        aaa = self._fill_record(header, datax, old_dicx)
         encoded = self.packer.encode_data("", aaa)
 
         #print("save", header, "-", encoded)
-
         #print("bbb", self.getdbsize())
         self.save_data(header, encoded)
         #print("eee", self.getdbsize())
@@ -396,9 +405,10 @@ class TwinChain(TwinCore):
             print("Append", datax)
 
         # Get last data from db
-        sss = self.getdbsize()
-        if not sss:
-            raise ValueError("Invalid database, must have at least one record.")
+        #sss = self.getdbsize()
+        #if not sss:
+        #    #raise ValueError("Invalid database, must have at least one record.")
+        #    pass
 
         # Produce header  structure
         uuu = uuid.uuid1()
