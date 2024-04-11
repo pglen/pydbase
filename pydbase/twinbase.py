@@ -42,8 +42,6 @@ version = "1.5.2"
 base_locktout   = LOCK_TIMEOUT   # Settable from ...
 base_pgdebug    = 0
 base_quiet      = 0
-base_integrity  = 0
-base_showdel    = 0
 
 class TwinCoreBase():
 

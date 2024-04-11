@@ -117,4 +117,9 @@ install:
 	@echo installing pydbase manual file
 	sudo install man/man1/pydbase.1 /usr/share/man/man1
 
+pipup:
+	./pip-build.py
+	./pip-upload.sh
+
+
 # End of Makefile

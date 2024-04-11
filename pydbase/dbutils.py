@@ -176,7 +176,9 @@ class   FileLock():
                 pass
                 #print("cannot delete lock", self.lockname, sys.exc_info())
         except:
-            print("exc on del (ignored)", self.lockname, sys.exc_info())
+
+            if utils_pgdebug:
+                print("exc on del (ignored)", self.lockname, sys.exc_info())
             pass
 
 def truncs(strx, num = 8):

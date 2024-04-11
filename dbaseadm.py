@@ -31,7 +31,7 @@ class _m():
     lcount  = twincore.INT_MAX
     quiet   = 0; writex  = 0;   randx   = 0; skipx   = 0
     offsx   = 0; delx    = 0;   delrx   = 0; delrx2  = 0
-    backx   = 0; sdelx   = 0;   vacx    = 0; recx    = 0
+    backx   = 0; showdelx = 0;   vacx    = 0; recx    = 0
     integx  = 0; checkx  = 0;   sizex   = 0; findx   = ""
     retrx   = ""; getit  = "";  keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0;   findrec = ""; getrec = 0
@@ -136,7 +136,7 @@ def mainfunc():
         if aa[0] == "-w":
             _m.writex = True
         if aa[0] == "-i":
-            _m.sdelx = True
+            _m.showdelx = True
         if aa[0] == "-q":
             _m.quiet = True
         if aa[0] == "-n":
@@ -203,13 +203,13 @@ def mainfunc():
     # Set some flags
     twincore.base_quiet     = _m.quiet
     twincore.base_pgdebug   = _m.pgdebug
-    twincore.base_showdel   = _m.sdelx
-    twincore.base_integrity = _m.checkx
     twincore.base_pgdebug   = _m.pgdebug
 
     # Create our database
     core = twincore.TwinCore(_m.deffile, _m.pgdebug)
-    core.base_verbose   = _m.verbose
+    core.verbose   = _m.verbose
+    core.showdel   = _m.showdelx
+    core.integrity = _m.checkx
 
     # See if we have two arguments, save it as data
     if len(args) == 2:
