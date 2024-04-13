@@ -47,7 +47,7 @@ def send_expect(context, sendx, expectx):
 
     ret = obtain(sendx)
     if args.debug > 2:
-        print("got:", ret)
+        print("got: ", ret)
 
     err = diff(ret, expectx)
 
@@ -73,22 +73,46 @@ work = [ \
     ["Dump data", "./dbaseadm.py -m",
          b"0     pos    68 Data: b'test2' Data2: b'testdata2'\n"\
          b"1     pos    32 Data: b'test' Data2: b'testdata'\n"],
+
+    [ "", "./dbaseadm.py -k test3 -a testdata3", b""],
+    [ "", "./dbaseadm.py -k test4 -a testdata4", b""],
+    [ "", "./dbaseadm.py -k test5 -a testdata5", b""],
+
+    ["Get data", "./dbaseadm.py -t test",
+         b"[[b'test', b'testdata']]\n", ],
+
+    ["Find data", "./dbaseadm.py -F test",
+        b"[[b'test5', b'testdata5'], [b'test4', b'testdata4'], "\
+        b"[b'test3', b'testdata3'], [b'test2', b'testdata2'], "\
+        b"[b'test', b'testdata']]\n", ],
     ]
 
 def mainloop():
 
-    for aa in work:
-        send_expect(aa[0], aa[1], aa[2])
+    if args.readx:
+        try:
+            with open(args.readx) as fp:
+                testx = fp.read()
+        except:
+            print("Cannot open file", "'" + args.readx + "'")
+            sys.exit()
+        test_case = eval(testx)
+        for aa in test_case:
+            send_expect(aa[0], aa[1], aa[2])
+    else:
+        for aa in work:
+            send_expect(aa[0], aa[1], aa[2])
 
-parser = argparse.ArgumentParser(description='Test by executing sub commands')
+
+parser = argparse.ArgumentParser(description='Test send/expect by executing sub commands')
 
 parser.add_argument("-v", '--verbose', dest='verbose',
                     default=0,  action='count',
                     help='verbocity on (default: off)')
 
-parser.add_argument("-t", '--test', dest='test',
-                    default=0,  action='store_true',
-                    help='see what would be done')
+parser.add_argument("-r", '--read', dest='readx',
+                    default=0,  action='store',
+                    help='Read test from file)')
 
 parser.add_argument("-d", '--debug', dest='debug',
                     default=0,  type=int, action='store',
@@ -107,5 +131,3 @@ if __name__ == "__main__":
     mainfunct()
 
 # EOF
-
-

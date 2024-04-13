@@ -124,5 +124,10 @@ pipup:
 	./pip-build.py
 	./pip-upload.sh
 
+time:
+	./time.sh
+
+testdrive:
+	./testdrive.py
 
 # End of Makefile

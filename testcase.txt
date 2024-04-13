@@ -1,0 +1,17 @@
+# Define test cases here. Python syntax
+
+#  Context Message  Send command  Expect response
+#  ---------------  ------------  ---------------
+
+[
+    [ "add data", "./dbaseadm.py -k test3 -a testdata3", b""],
+    [ "again  ", "./dbaseadm.py -k test4 -a testdata4", b""],
+    [ "again  ", "./dbaseadm.py -k test5 -a testdata5", b""],
+
+    ["Dump data", "./dbaseadm.py -m",
+    b"0     pos   108 Data: b'test5' Data2: b'testdata5'\n"\
+    b"1     pos    70 Data: b'test4' Data2: b'testdata4'\n"\
+    b"2     pos    32 Data: b'test3' Data2: b'testdata3'\n",]
+]
+
+# EOF
