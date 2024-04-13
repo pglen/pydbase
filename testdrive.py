@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-'''!
-    twinbase -- extracted from twincore to make it eazier to read
+'''
 '''
 
 import  os, sys, getopt, signal, select, socket, time, struct

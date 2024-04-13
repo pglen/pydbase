@@ -1,22 +1,27 @@
 #!/usr/bin/env python3
 
-import  os, sys, getopt, signal, select, socket, time, struct
-import  random, stat, os.path, datetime, threading, warnings
+''' Module pydb '''
+
+import  os
+import  sys
+import  random
 import  string
-
-import pyvpacker
-
-import gettext
-gettext.bindtextdomain('thisapp', './locale/')
-gettext.textdomain('thisapp')
-_ = gettext.gettext
+import  getopt
 
 base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base, 'pydbase'))
 
 from pydbase import twincore
 
+import gettext
+gettext.bindtextdomain('thisapp', './locale/')
+gettext.textdomain('thisapp')
+_ = gettext.gettext
+
 #print(sys.prefix)
+
+# pylint: disable=C0321
+# pylint: disable=C0103
 
 # ------------------------------------------------------------------------
 
@@ -87,7 +92,7 @@ Use quotes for multi word arguments.'''  % (pname)
 
 __doc__ = "<pre>" + chelp + "</pre>"
 
-def help():
+def phelp():
 
     ''' Program usage information '''
     print(chelp)
@@ -97,7 +102,8 @@ def mainfunc():
 
     ''' Exercise most / all functions of the twincore library '''
 
-    opts = []; args = []
+    opts = []
+    args = []
 
     # Old fashioned parsing
     opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:X:Z:"
@@ -111,7 +117,8 @@ def mainfunc():
     # Scan twice so verbose shows up early
     for aa in opts:
         if aa[0] == "-h" or aa[0] == "-?":
-            help(); exit(1)
+            phelp()
+            sys.exit(1)
         if aa[0] == "-v":
             _m.verbose += 1
         if aa[0] == "-d":
@@ -123,12 +130,12 @@ def mainfunc():
 
     for aa in opts:
         if aa[0] == "-V":
-            print("Script Version:", version);
-            print("Engine Version:", twincore.version);
+            print("Script Version:", version)
+            print("Engine Version:", twincore.version)
 
             if _m.verbose > 0:
-                print("Compiled:", vdate);
-            exit(1)
+                print("Compiled:", vdate)
+            sys.exit(1)
 
         # Action flags, one at a time
         if aa[0] == "-z":
@@ -242,7 +249,7 @@ def mainfunc():
             curr = core.save_data(_m.keyx, data, _m.replace)
         #print("curr", curr)
     elif _m.writex:
-        curr = 0;
+        curr = 0
         if _m.randx:
             for aa in range(_m.ncount):
                 curr = core.save_data(
@@ -324,18 +331,18 @@ def mainfunc():
         else:
             core.revdump_data(_m.lcount, _m.skipx)
     elif _m.findrec:
-            ret = core.findrec(_m.findrec, _m.lcount, _m.skipx)
-            if _m.verbose:
-                print("Found:", end = "")
-            print(ret)
+        ret = core.findrec(_m.findrec, _m.lcount, _m.skipx)
+        if _m.verbose:
+            print("Found:", end = "")
+        print(ret)
     elif _m.findoff:
-            ret = core.findrecoffs(_m.findoff, _m.lcount, _m.skipx)
-            if _m.verbose:
-                print("Found:", end = "")
-            print(ret)
+        ret = core.findrecoffs(_m.findoff, _m.lcount, _m.skipx)
+        if _m.verbose:
+            print("Found:", end = "")
+        print(ret)
     elif _m.recpos:
-            ret = core.findrecpos(_m.recpos, _m.lcount, _m.skipx)
-            print(ret)
+        ret = core.findrecpos(_m.recpos, _m.lcount, _m.skipx)
+        print(ret)
     else:
         print("Use:", os.path.split(sys.argv[0])[1], "-h to see options and help")
 
