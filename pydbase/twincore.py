@@ -1,63 +1,68 @@
 #!/usr/bin/env python3
 
-'''!
-    @mainpage
+'''
+    <pre>
+    Database with two files. One for data, one for index;
 
-        Database with two files. One for data, one for index;
+    The reason for the 'twin' name is that two files are created.
+    The first contains the data, the second contains the
+    offsets (indexes) and hashes.
 
-        The reason for the 'twin' name is that two files are created.
-        The first contains the data, the second contains the
-        offsets (indexes) and hashes.
+    The second file can be re-built easily from the first
+    using the reindex option.
 
-        The second file can be re-built easily from the first
-        using the reindex option.
+    Structure of the data:
 
-        Structure of the data:
+        32 byte header, starating with FILESIG;
 
-            32 byte header, starating with FILESIG;
+        4 bytes    4 bytes          4 bytes         Variable
+        ------------------------------------------------------------
+        RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+        RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+            .
+            .
 
-            4 bytes    4 bytes          4 bytes         Variable
-            ------------------------------------------------------------
-            RECSIG     Hash_of_key      Len_of_key      DATA_for_key
-            RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
-                .
-                .
+        RECSIG     Hash_of_key      Len_of_key      DATA_for_key
+        RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
 
-            RECSIG     Hash_of_key      Len_of_key      DATA_for_key
-            RECSEP     Hash_of_payload  Len_of_payload  DATA_for_payload
+    Deleted records are marked with RECSIG mutated from RECB to RECX
 
-        Deleted records are marked with RECSIG mutated from RECB to RECX
+    New data is appended to the end, no duplicate filtering is done.
+    Retrieval is searched from reverse, the latest record with this key
+    is retrieved first.
 
-        New data is appended to the end, no duplicate filtering is done.
-        Retrieval is searched from reverse, the latest record with this key
-        is retrieved first.
+    Verbosity:    (use the '-v' option multiple times)
 
-        Verbosity:    (use the '-v' option multiple times)
+        0 =  no output
+        1 =  normal, some items printed, short record ;
+        2 =  more detail; full record (-vv)
+        3 =  more detail + damaged records (-vvv)
 
-            0 =  no output
-            1 =  normal, some items printed, short record ;
-            2 =  more detail; full record (-vv)
-            3 =  more detail + damaged records (-vvv)
+    Debug:    (use the '-d' option with number)
 
-        Debug:    (use the '-d' option with number)
+        0 =  no output
+        1 =  normal, some items
+        2 =  more details
 
-            0 =  no output
-            1 =  normal, some items
-            2 =  more details
+    History:
 
-        History:
+        1.1         Tue 20.Feb.2024     Initial release
+        1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
+        1.4.0       Tue 27.Feb.2024     Addedd pgdebug
+        1.4.2       Wed 28.Feb.2024     Fixed multiple instances
+        1.4.3       Wed 28.Feb.2024     ChainAdm added
+        1.4.4       Fri 01.Mar.2024     Tests for chain functions
+        1.4.5       Fri 01.Mar.2024     Misc fixes
+        1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
+        1.4.7       Tue 05.Mar.2024     In place record update
+        1.4.8       Sat 09.Mar.2024     Added new locking mechanism
+        ... more ... see README.md
 
-            1.1         Tue 20.Feb.2024     Initial release
-            1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
-            1.4.0       Tue 27.Feb.2024     Addedd pgdebug
-            1.4.2       Wed 28.Feb.2024     Fixed multiple instances
-            1.4.3       Wed 28.Feb.2024     ChainAdm added
-            1.4.4       Fri 01.Mar.2024     Tests for chain functions
-            1.4.5       Fri 01.Mar.2024     Misc fixes
-            1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
-            1.4.7       Tue 05.Mar.2024     In place record update
-            1.4.8       Sat 09.Mar.2024     Added new locking mechanism
+    In the code the term positions and absolute positions refer to
+    the ordinal number of the record. The offset refers to the file
+    offset of the record.
 
+        </pre>
 '''
 
 import  os, sys, getopt, signal, select, socket, time, struct
@@ -69,8 +74,6 @@ sys.path.append(os.path.join(base))
 sys.path.append(os.path.join(base, '..', 'pydbase'))
 
 from twinbase import *
-
-Version = "1.4.8"
 
 # ------------------------------------------------------------------------
 
@@ -97,7 +100,7 @@ class TwinCore(TwinCoreBase):
         self.lock = FileLock(self.lckname)
 
         # Make sure only one process can use this
-        self.lock.waitlock() #self.lckname)
+        self.lock.waitlock()
 
         super(TwinCore, self).__init__(pgdebug)
 
@@ -158,15 +161,11 @@ class TwinCore(TwinCoreBase):
         if  self.getbuffstr(0, 4) != FILESIG:
             if self.verbose > 2:
                 print("Invalid data signature")
-            self.lock.unlock()  #dellock(self.lckname)
+            self.lock.unlock()
             raise  RuntimeError("Invalid database signature.")
 
         #print("buffsize", buffsize, "indexsize", indexsize)
-        self.lock.unlock() #dellock(self.lckname)
-
-    def version(self):
-        ''' Return version sting. '''
-        return Version
+        self.lock.unlock()
 
     def flush(self):
 
@@ -459,18 +458,15 @@ class TwinCore(TwinCoreBase):
             rec = self.getidxint(aa)
 
             #print(aa, rec)
-            if not base_quiet:
-                cnt2 += 1
-                ret = self.dump_rec(rec, cnt)
-
-                if not ret:
-                    if self.pgdebug > 5:
-                        print("Deleted / empty record at", cnt)
-
-                if ret:
-                    cnt += 1
-                    if cnt >= lim:
-                        break
+            cnt2 += 1
+            ret = self.dump_rec(rec, cnt)
+            if not ret:
+                if self.pgdebug > 5:
+                    print("Deleted / empty record at", cnt)
+            if ret:
+                cnt += 1
+                if cnt >= lim:
+                    break
 
     def  dump_data(self, lim = INT_MAX, skip = 0):
 
@@ -488,9 +484,9 @@ class TwinCore(TwinCoreBase):
 
         ''' Re create index file. '''
 
-        self.lock.waitlock() #self.lckname)
+        self.lock.waitlock()
         ret = self.__reindex()
-        self.lock.unlock()    #dellock(self.lckname)
+        self.lock.unlock()
         return ret
 
     # --------------------------------------------------------------------
@@ -635,9 +631,9 @@ class TwinCore(TwinCoreBase):
             operations are present (like find / retrieve cycle).
         '''
 
-        self.lock.waitlock() #self.lckname)
+        self.lock.waitlock()
         ret = self._vacuum()
-        self.lock.unlock()  #dellock(self.lckname)
+        self.lock.unlock()
         return ret
 
     def  _vacuum(self):
@@ -707,7 +703,7 @@ class TwinCore(TwinCoreBase):
             vacdb.fp.close()
             vacdb.ifp.close()
 
-            vacdb.lock.unlock()  #dellock(vacdb.lckname)
+            vacdb.lock.unlock()
 
             # if vacerr is empty
             try:
@@ -754,10 +750,10 @@ class TwinCore(TwinCoreBase):
                 if self.verbose > 2:
                     print("vacuum idx rename", vacidx, sys.exc_info())
 
-            self.lock.waitlock() #self.lckname)
+            self.lock.waitlock()
             self.fp = self.softcreate(self.fname)
             self.ifp = self.softcreate(self.idxname)
-            #self.lock.unlock()  #dellock(self.lckname)
+            #self.lock.unlock()
 
         else:
             # Just remove non vacuumed files
@@ -770,7 +766,7 @@ class TwinCore(TwinCoreBase):
                 pass
 
         #self.lock.unlock()
-        #dellock(self.lckname)
+
 
         #print("ended vacuum")
         return ret, vac
@@ -786,9 +782,8 @@ class TwinCore(TwinCoreBase):
         if recnum >= rsize:
             if self.verbose > 0:
                 print("Past end of data.");
-            raise  RuntimeError( \
-                    "Past end of Data. Asking for %d while max is 0 .. %d records." \
-                                     % (recnum, rsize-1) )
+            errx =  "Past end of Data. (ask: %d max: %d)"  % (recnum, rsize-1)
+            raise  RuntimeError(errx)
             return []
 
         chash = self.getidxint(CURROFFS)
@@ -901,7 +896,7 @@ class TwinCore(TwinCoreBase):
             Skip number of records.
         '''
 
-        self.lock.waitlock()    #(self.lckname)
+        self.lock.waitlock()
         ret = 0; cnt2 = 0; cnt3 = 0;
         #chash = self.getidxint(CURROFFS)        #;print("chash", chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
@@ -915,12 +910,12 @@ class TwinCore(TwinCoreBase):
             cnt3 += 1
             if cnt3 >= count:
                 break
-        self.lock.unlock() #dellock(self.lckname)
+        self.lock.unlock()
         return ret, cnt2
 
     def  retrieve(self, strx, limx = 1):
 
-        ''' Retrive in reverse, limit it. '''
+        ''' Retrive in reverse, limit it. Compare by hash.'''
 
         if type(strx) != type(b""):
             strx = strx.encode(errors='strict')
@@ -935,7 +930,7 @@ class TwinCore(TwinCoreBase):
         #;print("chash", chash)
         arr = []
 
-        self.lock.waitlock() #(self.lckname)
+        self.lock.waitlock()
 
         #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
         for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
@@ -953,7 +948,7 @@ class TwinCore(TwinCoreBase):
                     arr.append(self.get_rec_byoffs(rec))
                     if len(arr) >= limx:
                         break
-        self.lock.unlock()  #dellock(self.lckname)
+        self.lock.unlock()
 
         return arr
 
@@ -998,9 +993,11 @@ class TwinCore(TwinCoreBase):
 
     def  findrec(self, strx, limx = INT_MAX, skipx = 0):
 
-        ''' Find by string matching substring. '''
+        ''' Find key by matching strx with substring.
+        Return record(s).
+        '''
 
-        self.lock.waitlock()    #(self.lckname)
+        self.lock.waitlock()
 
         #chash = self.getidxint(CURROFFS)            #;print("chash", chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
@@ -1027,20 +1024,21 @@ class TwinCore(TwinCoreBase):
                     print("find", data)
                 #if str(strx2) in str(data):
                 if strx2 in data:
-                    arr.append(self.get_key_offs(rec))
+                    #arr.append(self.get_key_offs(rec))
+                    arr.append(self.get_rec_byoffs(rec))
                     #arr.append(rec)
-
                     if len(arr) >= limx:
                         break
-        self.lock.unlock()  #dellock(self.lckname)
+        self.lock.unlock()
 
         return arr
 
     def  findrecpos(self, strx, limx = INT_MAX, skipx = 0):
 
-        ''' Find record, return array of positions. '''
+        ''' Find record by key, return array of positions. '''
 
-        self.lock.waitlock()    #(self.lckname)
+        print("findrecpos", strx)
+        self.lock.waitlock()
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         arr = []
         if type(strx) != type(b""):
@@ -1061,60 +1059,58 @@ class TwinCore(TwinCoreBase):
                 if self.verbose > 1:
                     print("frecpos", data)
                 if strx == data:
-                    arr.append(rec)
+                    arr.append((aa - HEADSIZE) //  (self.INTSIZE * 2) )
                     if len(arr) >= limx:
                         break
-
-        self.lock.unlock()  #dellock(self.lckname)
-
+        self.lock.unlock()
         return arr
 
-    def  findrec(self, strx, limx = INT_MAX, skipx = 0):
+    def  findrecoffs(self, strx, limx = INT_MAX, skipx = 0):
 
-        ''' Find by string matching substring. '''
+            ''' Find record by matching substring.
+                Return array of offsets.
+            '''
 
-        self.lock.waitlock()    #(self.lckname)
-        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
-        arr = []
-        if type(strx) != type(b""):
-            strx2 = strx.encode(errors='strict');
+            self.lock.waitlock()
+            chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+            arr = []
+            if type(strx) != type(b""):
+                strx2 = strx.encode(errors='strict');
 
-        #print("findrec", strx2)
+            #print("findrec", strx2)
 
-        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
-        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
-            rec = self.getidxint(aa)
-            sig = self.getbuffstr(rec, self.INTSIZE)
-            if sig == RECDEL:
-                if self.showdel:
-                    print(" Deleted record '%s' at" % sig, rec)
-            elif sig != RECSIG:
-                if self.verbose > 0:
-                    print(" Damaged data '%s' at" % sig, rec)
-            else:
-                blen = self.getbuffint(rec+8)
-                data = self.getbuffstr(rec + 12, blen)
-                if self.verbose > 1:
-                    print("find", data)
-                #if str(strx2) in str(data):
-                if strx2 in data:
-                    #arr.append(self.get_key_offs(rec))
-                    #arr.append(rec)
-                    arr.append(self._rec2arr(rec))
-                    if len(arr) >= limx:
-                        break
-        self.lock.unlock()    #dellock(self.lckname)
+            #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+            for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+                rec = self.getidxint(aa)
+                sig = self.getbuffstr(rec, self.INTSIZE)
+                if sig == RECDEL:
+                    if self.showdel:
+                        print(" Deleted record '%s' at" % sig, rec)
+                elif sig != RECSIG:
+                    if self.verbose > 0:
+                        print(" Damaged data '%s' at" % sig, rec)
+                else:
+                    blen = self.getbuffint(rec+8)
+                    data = self.getbuffstr(rec + 12, blen)
+                    if self.verbose > 1:
+                        print("find", data)
+                    #if str(strx2) in str(data):
+                    if strx2 in data:
+                        #arr.append(self.get_key_offs(rec))
+                        arr.append(rec)
+                        if len(arr) >= limx:
+                            break
+            self.lock.unlock()
+            return arr
 
-        return arr
-
-    # --------------------------------------------------------------------
+        # --------------------------------------------------------------------
     # List all active records
 
     def  listall(self):
 
         ''' List all active records. Return array id record indexes. '''
 
-        self.lock.waitlock()    #(self.lckname)
+        self.lock.waitlock()
         keys = []; arr = []; cnt = 0
 
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
@@ -1146,15 +1142,18 @@ class TwinCore(TwinCoreBase):
             cnt += 1
 
         keys = []
-        self.lock.unlock()  #dellock()self.lckname)
+        self.lock.unlock()
 
         return arr
 
     def  find_key(self, keyx, limx = 0xffffffff):
 
-        ''' Find record by key Search from the end, so latest comes first. '''
+        ''' Find record by key value.
+            Search from the end, so latest comes first.
+            This operates on the hash, so it reaches the answer fast.
+        '''
 
-        self.lock.waitlock()   #self.lckname)
+        self.lock.waitlock()
 
         skip = 0; arr = []; cnt = 0
         try:
@@ -1191,7 +1190,7 @@ class TwinCore(TwinCoreBase):
                     #print("no match", hex(hhh))
 
             cnt += 1
-        self.lock.unlock()  #dellock()self.lckname)
+        self.lock.unlock()
 
         return arr
 
@@ -1294,11 +1293,12 @@ class TwinCore(TwinCoreBase):
     def  save_data(self, header, datax, replace = False):
 
         ''' Append to the end of file. If replace flag is set, try to overwrite
-            in place. If new record is larger, add it as ususal. If smaller,
+            in place. If new record is larger, add it as usual. If smaller,
             the record is padded with spaces. This should not influence most ops.
             (like: int())
             This feature allows the database update wthout creating new records.
-            Useful for counters or dynamically changing data.
+            Useful for counters or dynamically changing data. To be useful,
+            use  create fixed size data. Like sprintf(%12d).
 
                     Input:
                         header     Header
@@ -1311,9 +1311,8 @@ class TwinCore(TwinCoreBase):
         if self.pgdebug > 0:
             print("Save_data()", header, datax)
 
-        self.lock.waitlock()   #self.lckname)
-        ret = 0
-        was = False
+        self.lock.waitlock()
+        ret = 0 ; was = False
         # Put new data in place
         if replace:
             if type(datax) != type(b""):
@@ -1336,9 +1335,10 @@ class TwinCore(TwinCoreBase):
                     was = True
                     ret =  rrr[0]
         if not was:
+            #print("Saving longer data", header, datax)
             ret = self._save_data2(header, datax)
 
-        self.lock.unlock()  #dellock()self.lckname)
+        self.lock.unlock()
 
         return ret
 
@@ -1411,7 +1411,7 @@ class TwinCore(TwinCoreBase):
         self.fp.flush()
         self.ifp.flush()
 
-        return curr
+        return dcurr
 
     def __del__(self):
 
@@ -1437,6 +1437,6 @@ class TwinCore(TwinCoreBase):
 
         # remove lockfile
         if hasattr(self, "lock"):
-            self.lock.unlock()    #dellock(self.lckname)
+            self.lock.unlock()
 
 # EOF

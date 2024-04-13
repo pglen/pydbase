@@ -66,15 +66,13 @@ RECDEL      = b&#34;RECX&#34;
 RECSEP      = b&#34;RECS&#34;
 RECEND      = b&#34;RECE&#34;
 
-version = &#34;1.5.2&#34;
+version = &#34;1.5.3&#34;
 
 # Accessed from the main file as well
 
 base_locktout   = LOCK_TIMEOUT   # Settable from ...
 base_pgdebug    = 0
 base_quiet      = 0
-base_integrity  = 0
-base_showdel    = 0
 
 class TwinCoreBase():
 
@@ -101,6 +99,10 @@ class TwinCoreBase():
         #self.fname = &#34;&#34; ;        self.idxname = &#34;&#34;
         #self.lckname = &#34;&#34;;
         self.lasterr = &#34;&#34;
+
+    def get_version(self):
+        &#39;&#39;&#39; Return version sting. &#39;&#39;&#39;
+        return version
 
     #def __del__(self):
     #    print(&#34;Flushing&#34;)
@@ -315,6 +317,10 @@ class TwinCoreBase():
         #self.fname = &#34;&#34; ;        self.idxname = &#34;&#34;
         #self.lckname = &#34;&#34;;
         self.lasterr = &#34;&#34;
+
+    def get_version(self):
+        &#39;&#39;&#39; Return version sting. &#39;&#39;&#39;
+        return version
 
     #def __del__(self):
     #    print(&#34;Flushing&#34;)
@@ -554,6 +560,20 @@ class TwinCoreBase():
     #ifp.write(pp)</code></pre>
 </details>
 </dd>
+<dt id="twinbase.TwinCoreBase.get_version"><code class="name flex">
+<span>def <span class="ident">get_version</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return version sting.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_version(self):
+    &#39;&#39;&#39; Return version sting. &#39;&#39;&#39;
+    return version</code></pre>
+</details>
+</dd>
 <dt id="twinbase.TwinCoreBase.getbuffint"><code class="name flex">
 <span>def <span class="ident">getbuffint</span></span>(<span>self, offs)</span>
 </code></dt>
@@ -763,6 +783,7 @@ Replaced this with an external hash function for speed.</p></div>
 <li><code><a title="twinbase.TwinCoreBase.INTSIZE" href="#twinbase.TwinCoreBase.INTSIZE">INTSIZE</a></code></li>
 <li><code><a title="twinbase.TwinCoreBase.create_data" href="#twinbase.TwinCoreBase.create_data">create_data</a></code></li>
 <li><code><a title="twinbase.TwinCoreBase.create_idx" href="#twinbase.TwinCoreBase.create_idx">create_idx</a></code></li>
+<li><code><a title="twinbase.TwinCoreBase.get_version" href="#twinbase.TwinCoreBase.get_version">get_version</a></code></li>
 <li><code><a title="twinbase.TwinCoreBase.getbuffint" href="#twinbase.TwinCoreBase.getbuffint">getbuffint</a></code></li>
 <li><code><a title="twinbase.TwinCoreBase.getbuffstr" href="#twinbase.TwinCoreBase.getbuffstr">getbuffstr</a></code></li>
 <li><code><a title="twinbase.TwinCoreBase.getidxint" href="#twinbase.TwinCoreBase.getidxint">getidxint</a></code></li>

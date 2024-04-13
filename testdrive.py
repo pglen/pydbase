@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+
+'''!
+    twinbase -- extracted from twincore to make it eazier to read
+'''
+
+import  os, sys, getopt, signal, select, socket, time, struct
+import  random, stat, os.path, datetime, threading, subprocess
+import  struct, io, traceback, hashlib, traceback, argparse
+
+try:
+    import fcntl
+except:
+    fcntl = None
+
+base = os.path.dirname(os.path.realpath(__file__))
+
+#print("testdrive")
+
+def diff(expectx, actualx):
+
+    ''' Compare values, display string in Color '''
+
+    if expectx == actualx:
+        return "\033[32;1mOK\033[0m"
+    else:
+        return"\033[31;1mERR\033[0m"
+
+def obtain(cmd):
+    exec = cmd.split()
+    if args.debug > 1:
+        print("exec:", exec)
+    ret = subprocess.Popen(exec, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    comm = ret.communicate()
+    return comm[0]
+
+# Fresh start, no data
+try:
+    os.remove("pydbase.pydb")
+    os.remove("pydbase.pidx")
+except:
+    pass
+
+def send_expect(context, sendx, expectx):
+
+    ''' evaluate Send -- EXPECT sequence '''
+
+    ret = obtain(sendx)
+    if args.debug > 2:
+        print("got:", ret)
+
+    err = diff(ret, expectx)
+
+    # If no context, we do not want any printing
+    if context:
+        print(context, "\t", err)
+
+    if args.verbose:
+        # On error tell us the expected result
+        if ret != expectx:
+            print(ret)
+
+# String triplet per test.  Context string and a pair send / expect strings
+
+work = [ \
+    ["", "./dbaseadm.py -k test -a testdata", b""],
+
+    [ "Dump data", "./dbaseadm.py -m",
+           b"0     pos    32 Data: b'test' Data2: b'testdata'\n"],
+
+    [ "Create data2", "./dbaseadm.py -k test2 -a testdata2", b""],
+
+    ["Dump data", "./dbaseadm.py -m",
+         b"0     pos    68 Data: b'test2' Data2: b'testdata2'\n"\
+         b"1     pos    32 Data: b'test' Data2: b'testdata'\n"],
+    ]
+
+def mainloop():
+
+    for aa in work:
+        send_expect(aa[0], aa[1], aa[2])
+
+parser = argparse.ArgumentParser(description='Test by executing sub commands')
+
+parser.add_argument("-v", '--verbose', dest='verbose',
+                    default=0,  action='count',
+                    help='verbocity on (default: off)')
+
+parser.add_argument("-t", '--test', dest='test',
+                    default=0,  action='store_true',
+                    help='see what would be done')
+
+parser.add_argument("-d", '--debug', dest='debug',
+                    default=0,  type=int, action='store',
+                    help='Debug level')
+
+version = "1.0.0"
+
+def mainfunct():
+
+    global args
+    args = parser.parse_args()
+    #print(args)
+    mainloop()
+
+if __name__ == "__main__":
+    mainfunct()
+
+# EOF
+
+

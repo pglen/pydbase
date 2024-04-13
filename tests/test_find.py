@@ -51,12 +51,12 @@ def test_search():
 
     strx = "1111"
     ret = core.findrec(strx, 1)
-    #print(ret)
+    #print("ret", ret)
     assert ret ==[[b'11111', b'22222']]
 
     strx = "11111"
-    ret = core.findrec(strx, 1)
-    #print(ret)
+    ret2 = core.findrec(strx, 1)
+    #print("ret2", ret2)
     assert ret == [[b'11111', b'22222']]
 
 # EOF

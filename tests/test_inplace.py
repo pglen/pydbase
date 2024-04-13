@@ -66,4 +66,27 @@ def test_finder():
     #print(ret3)
     assert ret3 == [b'11111', b'333  ']
 
+def test_bigger():
+
+    org = core.findrecpos("11111", 1)
+    #print("org", org)
+
+    # This is in place, but longer
+    ret = core.save_data("11111", "444444", True)
+    #print("save bigger data", ret)
+    assert ret != org
+
+    ret4 = core.get_rec_byoffs(ret)
+    #print("get _rec_byoffs", ret4)
+    assert ret4 == [b'11111', b'444444']
+
+    ret5 = core.save_data("11111", "555555", True)
+    assert ret == ret5
+
+    ret6 = core.get_rec_byoffs(ret5)
+    assert ret6 == [b'11111', b'555555']
+
+    #core.dump_data()
+    #assert 0
+
 # EOF

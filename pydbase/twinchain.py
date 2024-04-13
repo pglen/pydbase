@@ -1,32 +1,36 @@
 #!/usr/bin/env python3
 
-'''!
-    @mainpage
+'''
+    <pre>
 
-    # Twinchain
+ Block chain layer on top of twincore.
 
-        Block chain layer on top of twincore.
+    |   Time Now    |   Time  Now    |  Time Now     |
+    |   hash256   | |    hash256   | |   hash256   | |
+    |   Header    | |    Header    | |   Header    | |
+    |   Payload   | |    Payload   | |   Payload   | |
+    |   Backlink  | |    Backlink  | |   Backlink  | |
+                  |----->---|      |---->---|     |------
 
-            prev     curr
-                record
-        |   Time Now    |   Time  Now    |  Time Now     |
-        |   hash256   | |    hash256   | |   hash256   | |
-        |   Header    | |    Header    | |   Header    | |
-        |   Payload   | |    Payload   | |   Payload   | |
-        |   Backlink  | |    Backlink  | |   Backlink  | |
-                      |----->---|      |---->---|     |------ ...
+    The sum of fields saved to the next backlink.
 
-        The sum of fields saved to the next backlink.
+    History:
 
-        History:
+    1.1         Tue 20.Feb.2024     Initial release
+    1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
+    1.4.0       Tue 27.Feb.2024     Addedd pgdebug
+    1.4.2       Wed 28.Feb.2024     Fixed multiple instances
+    1.4.3       Wed 28.Feb.2024     ChainAdm added
+    1.4.4       Fri 01.Mar.2024     Tests for chain functions
+    1.4.5       Fri 01.Mar.2024     Misc fixes
+    1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
+    1.4.7       Tue 05.Mar.2024     In place record update
+    1.4.8       Sat 09.Mar.2024     Added new locking mechanism
+    1.4.9       Mon 01.Apr.2024     Updated to run on MSYS2, new locking
+    1.5.0       Tue 02.Apr.2024     Cleaned, pip upload
+    1.5.1       Wed 10.Apr.2024     Dangling lock .. fixed
 
-            0.0.0       Tue 20.Feb.2024     Initial release
-            0.0.0       Sun 26.Mar.2023     More features
-            1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
-            1.4.0       Tue 27.Feb.2024     Addedd pgdebug
-            1.4.2       Wed 28.Feb.2024     Fixed multiple instances
-            1.4.3       Wed 28.Feb.2024     ChainAdm added
-
+    </pre>
 '''
 
 import  os, sys, getopt, signal, select, socket, time, struct
@@ -64,9 +68,9 @@ class TwinChain(TwinCore):
         Derive from database to accomodate block chain.
     '''
 
-    def __init__(self, fname = "pydbchain.pydb", pgdebug = 0, core_verbose = 0):
+    def __init__(self, fname = "pydbchain.pydb", pgdebug = 0, verbose = 0):
 
-        self.core_verbose = core_verbose
+        self.chain_verbose = verbose
 
         # Upper lock name
         ulockname = os.path.splitext(fname)[0] + ".ulock"
@@ -202,9 +206,9 @@ class TwinChain(TwinCore):
             raise
         dic = self._get_fields(decoded[0])
 
-        if self.core_verbose > 2:
+        if self.chain_verbose > 2:
             print(dic)
-        if self.core_verbose > 0:
+        if self.chain_verbose > 0:
             print(dic['header'] + " " + dic['now'], dic['payload'])
 
         return arr[0].decode(), dic['payload']
@@ -245,7 +249,7 @@ class TwinChain(TwinCore):
                 ch = self.checkdata(aa)
                 li = self.linkintegrity(aa)
 
-                if self.core_verbose:
+                if self.chain_verbose:
                     print("li", li, "ch", ch)
 
                 if not ch:
@@ -270,11 +274,11 @@ class TwinChain(TwinCore):
             if self.pgdebug > 5:
                 print("get_header(): empty/deleted record", recnum)
 
-            if self.core_verbose > 1:
+            if self.chain_verbose > 1:
                 print("get_header(): empty/deleted record", recnum)
             return []
 
-        if self.core_verbose > 1:
+        if self.chain_verbose > 1:
             print("arr", arr)
             uuu = uuid.UUID(arr[0].decode())
             ddd = str(uuid2date(uuu))
@@ -286,11 +290,11 @@ class TwinChain(TwinCore):
         ''' Scan one record an its integrity based on the previous one '''
 
         if recnum < 1:
-            if self.core_verbose:
+            if self.chain_verbose:
                 print("Cannot check initial record.")
             return True
 
-        if self.core_verbose > 4:
+        if self.chain_verbose > 4:
             print("Checking link ...", recnum)
 
         arr = self.get_rec(recnum-1)
@@ -304,13 +308,13 @@ class TwinChain(TwinCore):
         try:
             decoded2 = self.packer.decode_data(arr2[1])
         except:
-            if self.core_verbose > 2:
+            if self.chain_verbose > 2:
                 print("Cannot decode curr:", recnum, sys.exc_info())
             return
         dic = self._get_fields(decoded2[0])
         backlink = self._build_backlink(dicold)
         hhh = self._hashtohex(backlink)
-        if self.core_verbose > 2:
+        if self.chain_verbose > 2:
             print("calc      ", hhh)
             print("backlink  ", dic['backlink'])
         return hhh == dic['backlink']
@@ -323,16 +327,16 @@ class TwinChain(TwinCore):
         try:
             decoded = self.packer.decode_data(arr[1])
         except:
-            if self.core_verbose > 2:
+            if self.chain_verbose > 2:
                 print("Cannot decode:", recnum, sys.exc_info())
             return
 
         aaa = self._get_fields(decoded[0])
         sumstr = self._build_sumstr(aaa)
         hhh = self._hashtohex(sumstr)
-        if self.core_verbose > 1:
+        if self.chain_verbose > 1:
             print("data", hhh)
-        if self.core_verbose > 2:
+        if self.chain_verbose > 2:
             print("hash", aaa['hash256'])
         return hhh == aaa['hash256']
 
@@ -346,7 +350,7 @@ class TwinChain(TwinCore):
         #if type(datax) != type(b""):
         #    datax = datax.encode() #errors='strict')
 
-        if self.core_verbose > 0:
+        if self.chain_verbose > 0:
             print("Appendwith", header, datax)
 
         self.ulock.waitlock()    #self.ulockname)
@@ -354,7 +358,7 @@ class TwinChain(TwinCore):
         try:
             uuu = uuid.UUID(header)
         except:
-            if self.core_verbose:
+            if self.chain_verbose:
                 print("Header override must be a valid UUID string.")
 
             self.ulock.unlock() #self.ulockname)
@@ -390,7 +394,7 @@ class TwinChain(TwinCore):
         self.save_data(header, encoded)
         #print("eee", self.getdbsize())
 
-        if self.core_verbose > 1:
+        if self.chain_verbose > 1:
             bbb = self.packer.decode_data(encoded)
             print("Rec", bbb[0])
 
@@ -401,7 +405,7 @@ class TwinChain(TwinCore):
 
         ''' Append data to the end of database '''
 
-        if self.core_verbose > 0:
+        if self.chain_verbose > 0:
             print("Append", datax)
 
         # Get last data from db

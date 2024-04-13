@@ -35,7 +35,7 @@ RECDEL      = b"RECX"
 RECSEP      = b"RECS"
 RECEND      = b"RECE"
 
-version = "1.5.2"
+version = "1.5.3"
 
 # Accessed from the main file as well
 
@@ -68,6 +68,10 @@ class TwinCoreBase():
         #self.fname = "" ;        self.idxname = ""
         #self.lckname = "";
         self.lasterr = ""
+
+    def get_version(self):
+        ''' Return version sting. '''
+        return version
 
     #def __del__(self):
     #    print("Flushing")

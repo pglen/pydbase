@@ -14,7 +14,7 @@ _ = gettext.gettext
 from pydbase import twinchain
 from pydbase import dbutils
 
-version = "0.0.1"
+version = "1.0.0"
 
 #print("hashes", hashlib.algorithms_guaranteed)
 
@@ -43,27 +43,48 @@ class _c():
     headx = ""  ;   gethead = -1
     getby = ""  ;   getoffs = ""
 
+pname = os.path.split(__file__)[1]
+
+chelp = '''\
+Administer pydbase chain data.
+Usage: %s [options]
+   options: -a  data     append data to the end of chain
+            -z           randomize data
+            -g recnum    get record
+            -k reckey    get record by key/header
+            -G recnum    get record offset by key
+            -r recnum    get record header buy position
+            -n           append / show / get number of records
+            -e           override header (checked for valid UUID)
+            -t           print record's UUID date)
+            -s           skip count
+            -x           max record count to list
+            -m           dump chain data
+            -c           check data integrity
+            -i           check link integrity
+            -S           get db size
+            -v           increase verbosity
+            -h           help (this screen) '''  % (pname)
+
+__doc__ = "<pre>" + chelp + "</pre>"
+
 def help():
 
     ''' Deliver program usage information '''
+    print(chelp)
+    sys.exit()
 
-    print("Usage: %s [options]" % os.path.split(sys.argv[0])[1])
-    print("   Options: -a  data   append data to the end of chain")
-    print("            -g recnum  get record")
-    print("            -k reckey  get record by key/header")
-    print("            -G recnum  get record offset by key")
-    print("            -r recnum  get record header")
-    print("            -n         append / show / get number of records")
-    print("            -e         override header (checked for UUID)")
-    print("            -t         print record's UUID date)")
-    print("            -s         skip count")
-    print("            -x         max record count to list")
-    print("            -m         dump chain data")
-    print("            -c         check data integrity")
-    print("            -i         check link integrity")
-    print("            -S         get db size")
-    print("            -v         increase verbosity")
-    print("            -h         help (this screen)")
+# Return a random string based upon length
+
+def randstr(lenx):
+
+    ''' Deliver a random string for testing '''
+    strx = ""
+    for aa in range(lenx):
+        ridx = random.randint(0, len(allstr)-1)
+        rr = allstr[ridx]
+        strx += str(rr)
+    return strx
 
 def mainfunc():
 
@@ -156,10 +177,8 @@ def execfunc():
     core = twinchain.TwinChain(_c.deffile, _c.pgdebug, _c.verbose)
 
     core.base_quiet     = _c.quiet
-    core.base_pgdebug   = _c.pgdebug
-    core.base_showdel   = _c.sdelx
-    core.base_integrity = _c.checkx
-    core.base_pgdebug   = _c.pgdebug
+    core.showdel        = _c.sdelx
+    core.integrity      = _c.checkx
 
     if _c.integx:
         #print("Integrity", _c.integx)
@@ -215,7 +234,7 @@ def execfunc():
         sss = core.getdbsize()
         cnt = _c.skipcnt
         if cnt >= sss:
-            print("Passed EOF")
+            #print("Passed EOF")
             sys.exit(0)
         end = min(sss, _c.maxx + cnt)
         while True:
@@ -232,26 +251,25 @@ def execfunc():
 
     elif _c.append:
         #print("Appending", _c.append)
-        dicx = {}; arrx = []
-        arrx = _c.append.split()
-        if len(arrx) % 2:
-            dicx['unkown'] = _c.append
-        else:
-            for aa in arrx:
-                arrz = aa.split(":")
-                if len(arrz) == 1:
-                    arrx = aa
-                else:
-                    dicx[arrz[0]] = arrz[1]
-        # Array or dic?
-        if len(arrx):
-            dicx =  arrx
-        #print("Appending", dicx)
+        #dicx = {}; arrx = []
+        #arrx = _c.append.split()
+        #if len(arrx) % 2:
+        #    dicx['unkown'] = _c.append
+        #else:
+        #    for aa in arrx:
+        #        arrz = aa.split(":")
+        #        if len(arrz) == 1:
+        #            arrx = aa
+        #        else:
+        #            dicx[arrz[0]] = arrz[1]
+
+        if _c.verbose:
+            print("Appending", _c.append)
         for aaa in range(_c.cntx):
             if _c.headx:
-                core.appendwith(_c.headx, dicx)
+                core.appendwith(_c.headx, _c.append)
             else:
-                core.append(dicx)
+                core.append(_c.append)
 
     elif _c.getby:
         #print("get bykey getby")

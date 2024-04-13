@@ -103,12 +103,15 @@ git:
 	git push
 	#git push local
 
+
+XPATH=PYTHONPATH=../pyvcommon:../  python -W ignore::DeprecationWarning `which pdoc3` --force --html
+
 docs:
-	@pdoc  --force --html -o pydbase/docs pydbase/twinchain.py
-	@pdoc  --force --html -o pydbase/docs pydbase/twincore.py
-	@pdoc  --force --html -o pydbase/docs pydbase/twinbase.py
-	@pdoc  --force --html -o pydbase/docs chainadm.py
-	@pdoc  --force --html -o pydbase/docs dbaseadm.py
+	@${XPATH}  -o pydbase/docs pydbase/twinchain.py
+	@${XPATH}  -o pydbase/docs pydbase/twincore.py
+	@${XPATH}  -o pydbase/docs pydbase/twinbase.py
+	@${XPATH}  -o pydbase/docs chainadm.py
+	@${XPATH}  -o pydbase/docs dbaseadm.py
 
 doxy:
 	doxygen

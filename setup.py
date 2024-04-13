@@ -19,7 +19,6 @@ classx = [
           'Programming Language :: Python',
           'Topic :: Databases',
         ]
-
 # Get version number  from the server support file:
 fp = open("pydbase/twinbase.py", "rt")
 vvv = fp.read(); fp.close()

@@ -18,6 +18,9 @@ def setup_module(module):
     assert ret != 0
     ret = core.save_data("11111", "22222")
     assert ret != 0
+    # This is the record that will be found
+    ret = core.save_data("111111", "222222")
+    assert ret != 0
     ret = core.save_data("111", "222")
     assert ret != 0
 
@@ -42,22 +45,36 @@ def teardown_function(function):
 def test_get():
 
     # Get record, verify
-    ret = core.get_rec(2)
-    assert ret != 0
-    assert ret == [b'111', b'222']
+    ret = core.get_rec(0)
+    assert ret == [b'1111', b'2222']
+    assert ret
+
+    ret = core.get_rec(1)
+    assert ret
+    assert ret == [b'11111', b'22222']
+
+    # Provoke exception
+    err = 0
+    try:
+        ret = core.get_rec(100)
+    except:
+        err = 1
+    assert err == 1
 
 def test_getoffs():
 
-    ret = core.findrecpos('1111', 1)
-    assert ret == [32]
+    ret = core.findrecoffs('111', 1)
+    #print("ret:", ret)
+    assert ret == [134]
     ddd = core.get_rec_byoffs(ret[0])
-    assert ddd == [b'1111', b'2222']
+    assert ddd ==[b'111', b'222']
 
 def test_getoffs2():
 
-    ret = core.findrecpos('11111', 1)
-    assert ret == [64]
-    ddd = core.get_rec_byoffs(ret[0])
-    assert ddd == [b'11111', b'22222']
+    ret2 = core.findrecoffs('11111', 1)
+    #print("ret2:", ret2)
+    assert ret2 == [98]
+    ddd = core.get_rec_byoffs(ret2[0])
+    assert ddd ==[b'111111', b'222222']
 
 # EOF

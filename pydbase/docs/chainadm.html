@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>chainadm API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="&lt;pre&gt;Administer pydbase chain data.
+Usage: chainadm.py [options]
+options: -a
+data
+append data to the end of chain
+-z …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,6 +27,25 @@
 <h1 class="title">Module <code>chainadm</code></h1>
 </header>
 <section id="section-intro">
+<pre>Administer pydbase chain data.
+Usage: chainadm.py [options]
+   options: -a  data     append data to the end of chain
+            -z           randomize data
+            -g recnum    get record
+            -k reckey    get record by key/header
+            -G recnum    get record offset by key
+            -r recnum    get record header buy position
+            -n           append / show / get number of records
+            -e           override header (checked for valid UUID)
+            -t           print record's UUID date)
+            -s           skip count
+            -x           max record count to list
+            -m           dump chain data
+            -c           check data integrity
+            -i           check link integrity
+            -S           get db size
+            -v           increase verbosity
+            -h           help (this screen) </pre>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -42,7 +66,7 @@ _ = gettext.gettext
 from pydbase import twinchain
 from pydbase import dbutils
 
-version = &#34;0.0.1&#34;
+version = &#34;1.0.0&#34;
 
 #print(&#34;hashes&#34;, hashlib.algorithms_guaranteed)
 
@@ -71,27 +95,48 @@ class _c():
     headx = &#34;&#34;  ;   gethead = -1
     getby = &#34;&#34;  ;   getoffs = &#34;&#34;
 
+pname = os.path.split(__file__)[1]
+
+chelp = &#39;&#39;&#39;\
+Administer pydbase chain data.
+Usage: %s [options]
+   options: -a  data     append data to the end of chain
+            -z           randomize data
+            -g recnum    get record
+            -k reckey    get record by key/header
+            -G recnum    get record offset by key
+            -r recnum    get record header buy position
+            -n           append / show / get number of records
+            -e           override header (checked for valid UUID)
+            -t           print record&#39;s UUID date)
+            -s           skip count
+            -x           max record count to list
+            -m           dump chain data
+            -c           check data integrity
+            -i           check link integrity
+            -S           get db size
+            -v           increase verbosity
+            -h           help (this screen) &#39;&#39;&#39;  % (pname)
+
+__doc__ = &#34;&lt;pre&gt;&#34; + chelp + &#34;&lt;/pre&gt;&#34;
+
 def help():
 
     &#39;&#39;&#39; Deliver program usage information &#39;&#39;&#39;
+    print(chelp)
+    sys.exit()
 
-    print(&#34;Usage: %s [options]&#34; % os.path.split(sys.argv[0])[1])
-    print(&#34;   Options: -a  data   append data to the end of chain&#34;)
-    print(&#34;            -g recnum  get record&#34;)
-    print(&#34;            -k reckey  get record by key/header&#34;)
-    print(&#34;            -G recnum  get record offset by key&#34;)
-    print(&#34;            -r recnum  get record header&#34;)
-    print(&#34;            -n         append / show / get number of records&#34;)
-    print(&#34;            -e         override header (checked for UUID)&#34;)
-    print(&#34;            -t         print record&#39;s UUID date)&#34;)
-    print(&#34;            -s         skip count&#34;)
-    print(&#34;            -x         max record count to list&#34;)
-    print(&#34;            -m         dump chain data&#34;)
-    print(&#34;            -c         check data integrity&#34;)
-    print(&#34;            -i         check link integrity&#34;)
-    print(&#34;            -S         get db size&#34;)
-    print(&#34;            -v         increase verbosity&#34;)
-    print(&#34;            -h         help (this screen)&#34;)
+# Return a random string based upon length
+
+def randstr(lenx):
+
+    &#39;&#39;&#39; Deliver a random string for testing &#39;&#39;&#39;
+    strx = &#34;&#34;
+    for aa in range(lenx):
+        ridx = random.randint(0, len(allstr)-1)
+        rr = allstr[ridx]
+        strx += str(rr)
+    return strx
 
 def mainfunc():
 
@@ -184,17 +229,15 @@ def execfunc():
     core = twinchain.TwinChain(_c.deffile, _c.pgdebug, _c.verbose)
 
     core.base_quiet     = _c.quiet
-    core.base_pgdebug   = _c.pgdebug
-    core.base_showdel   = _c.sdelx
-    core.base_integrity = _c.checkx
-    core.base_pgdebug   = _c.pgdebug
+    core.showdel        = _c.sdelx
+    core.integrity      = _c.checkx
 
     if _c.integx:
         #print(&#34;Integrity&#34;, _c.integx)
         errx = False; cnt = []
         sss = core.getdbsize()
         # Remember record zero is the anchor
-        for aa in range(1, sss):
+        for aa in range(0, sss):
             ppp = core.linkintegrity(aa)
             if _c.verbose:
                 print(aa, ppp)
@@ -243,7 +286,7 @@ def execfunc():
         sss = core.getdbsize()
         cnt = _c.skipcnt
         if cnt &gt;= sss:
-            print(&#34;Passed EOF&#34;)
+            #print(&#34;Passed EOF&#34;)
             sys.exit(0)
         end = min(sss, _c.maxx + cnt)
         while True:
@@ -260,26 +303,25 @@ def execfunc():
 
     elif _c.append:
         #print(&#34;Appending&#34;, _c.append)
-        dicx = {}; arrx = []
-        arrx = _c.append.split()
-        if len(arrx) % 2:
-            dicx[&#39;unkown&#39;] = _c.append
-        else:
-            for aa in arrx:
-                arrz = aa.split(&#34;:&#34;)
-                if len(arrz) == 1:
-                    arrx = aa
-                else:
-                    dicx[arrz[0]] = arrz[1]
-        # Array or dic?
-        if len(arrx):
-            dicx =  arrx
-        #print(&#34;Appending&#34;, dicx)
+        #dicx = {}; arrx = []
+        #arrx = _c.append.split()
+        #if len(arrx) % 2:
+        #    dicx[&#39;unkown&#39;] = _c.append
+        #else:
+        #    for aa in arrx:
+        #        arrz = aa.split(&#34;:&#34;)
+        #        if len(arrz) == 1:
+        #            arrx = aa
+        #        else:
+        #            dicx[arrz[0]] = arrz[1]
+
+        if _c.verbose:
+            print(&#34;Appending&#34;, _c.append)
         for aaa in range(_c.cntx):
             if _c.headx:
-                core.appendwith(_c.headx, dicx)
+                core.appendwith(_c.headx, _c.append)
             else:
-                core.append(dicx)
+                core.append(_c.append)
 
     elif _c.getby:
         #print(&#34;get bykey getby&#34;)
@@ -333,17 +375,15 @@ if __name__ == &#34;__main__&#34;:
     core = twinchain.TwinChain(_c.deffile, _c.pgdebug, _c.verbose)
 
     core.base_quiet     = _c.quiet
-    core.base_pgdebug   = _c.pgdebug
-    core.base_showdel   = _c.sdelx
-    core.base_integrity = _c.checkx
-    core.base_pgdebug   = _c.pgdebug
+    core.showdel        = _c.sdelx
+    core.integrity      = _c.checkx
 
     if _c.integx:
         #print(&#34;Integrity&#34;, _c.integx)
         errx = False; cnt = []
         sss = core.getdbsize()
         # Remember record zero is the anchor
-        for aa in range(1, sss):
+        for aa in range(0, sss):
             ppp = core.linkintegrity(aa)
             if _c.verbose:
                 print(aa, ppp)
@@ -392,7 +432,7 @@ if __name__ == &#34;__main__&#34;:
         sss = core.getdbsize()
         cnt = _c.skipcnt
         if cnt &gt;= sss:
-            print(&#34;Passed EOF&#34;)
+            #print(&#34;Passed EOF&#34;)
             sys.exit(0)
         end = min(sss, _c.maxx + cnt)
         while True:
@@ -409,26 +449,25 @@ if __name__ == &#34;__main__&#34;:
 
     elif _c.append:
         #print(&#34;Appending&#34;, _c.append)
-        dicx = {}; arrx = []
-        arrx = _c.append.split()
-        if len(arrx) % 2:
-            dicx[&#39;unkown&#39;] = _c.append
-        else:
-            for aa in arrx:
-                arrz = aa.split(&#34;:&#34;)
-                if len(arrz) == 1:
-                    arrx = aa
-                else:
-                    dicx[arrz[0]] = arrz[1]
-        # Array or dic?
-        if len(arrx):
-            dicx =  arrx
-        #print(&#34;Appending&#34;, dicx)
+        #dicx = {}; arrx = []
+        #arrx = _c.append.split()
+        #if len(arrx) % 2:
+        #    dicx[&#39;unkown&#39;] = _c.append
+        #else:
+        #    for aa in arrx:
+        #        arrz = aa.split(&#34;:&#34;)
+        #        if len(arrz) == 1:
+        #            arrx = aa
+        #        else:
+        #            dicx[arrz[0]] = arrz[1]
+
+        if _c.verbose:
+            print(&#34;Appending&#34;, _c.append)
         for aaa in range(_c.cntx):
             if _c.headx:
-                core.appendwith(_c.headx, dicx)
+                core.appendwith(_c.headx, _c.append)
             else:
-                core.append(dicx)
+                core.append(_c.append)
 
     elif _c.getby:
         #print(&#34;get bykey getby&#34;)
@@ -461,24 +500,8 @@ if __name__ == &#34;__main__&#34;:
 <pre><code class="python">def help():
 
     &#39;&#39;&#39; Deliver program usage information &#39;&#39;&#39;
-
-    print(&#34;Usage: %s [options]&#34; % os.path.split(sys.argv[0])[1])
-    print(&#34;   Options: -a  data   append data to the end of chain&#34;)
-    print(&#34;            -g recnum  get record&#34;)
-    print(&#34;            -k reckey  get record by key/header&#34;)
-    print(&#34;            -G recnum  get record offset by key&#34;)
-    print(&#34;            -r recnum  get record header&#34;)
-    print(&#34;            -n         append / show / get number of records&#34;)
-    print(&#34;            -e         override header (checked for UUID)&#34;)
-    print(&#34;            -t         print record&#39;s UUID date)&#34;)
-    print(&#34;            -s         skip count&#34;)
-    print(&#34;            -x         max record count to list&#34;)
-    print(&#34;            -m         dump chain data&#34;)
-    print(&#34;            -c         check data integrity&#34;)
-    print(&#34;            -i         check link integrity&#34;)
-    print(&#34;            -S         get db size&#34;)
-    print(&#34;            -v         increase verbosity&#34;)
-    print(&#34;            -h         help (this screen)&#34;)</code></pre>
+    print(chelp)
+    sys.exit()</code></pre>
 </details>
 </dd>
 <dt id="chainadm.mainfunc"><code class="name flex">
@@ -574,6 +597,26 @@ if __name__ == &#34;__main__&#34;:
     #print(&#34;Use: pychain.py -h to see options and help&#34;)</code></pre>
 </details>
 </dd>
+<dt id="chainadm.randstr"><code class="name flex">
+<span>def <span class="ident">randstr</span></span>(<span>lenx)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Deliver a random string for testing</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def randstr(lenx):
+
+    &#39;&#39;&#39; Deliver a random string for testing &#39;&#39;&#39;
+    strx = &#34;&#34;
+    for aa in range(lenx):
+        ridx = random.randint(0, len(allstr)-1)
+        rr = allstr[ridx]
+        strx += str(rr)
+    return strx</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -590,6 +633,7 @@ if __name__ == &#34;__main__&#34;:
 <li><code><a title="chainadm.execfunc" href="#chainadm.execfunc">execfunc</a></code></li>
 <li><code><a title="chainadm.help" href="#chainadm.help">help</a></code></li>
 <li><code><a title="chainadm.mainfunc" href="#chainadm.mainfunc">mainfunc</a></code></li>
+<li><code><a title="chainadm.randstr" href="#chainadm.randstr">randstr</a></code></li>
 </ul>
 </li>
 </ul>

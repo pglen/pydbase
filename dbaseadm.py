@@ -27,19 +27,20 @@ gl_lockname = "pydbase.main.lock"
 class _m():
     pgdebug = 0;  verbose = 0
     keyonly = 0;  ncount  = 1
-    skipcnt = 0;  maxdel = 0xffffffff
-    lcount  = twincore.INT_MAX
+    maxdel = 0xffffffff
+    findoff = ""; lcount  = twincore.INT_MAX
     quiet   = 0; writex  = 0;   randx   = 0; skipx   = 0
     offsx   = 0; delx    = 0;   delrx   = 0; delrx2  = 0
     backx   = 0; showdelx = 0;   vacx    = 0; recx    = 0
-    integx  = 0; checkx  = 0;   sizex   = 0; findx   = ""
+    integx  = 0; checkf  = 0;   sizex   = 0; findx   = ""
     retrx   = ""; getit  = "";  keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0;   findrec = ""; getrec = 0
     replace = 0 ; recpos = 0;   inplace = 0
     deffile = "pydbase.pydb"
 
-version = "0.4.1"
-vdate   = "Fri 01.Mar.2024"
+version = "1.0.0"
+vdate   = "Fri 12.Apr.2024"
+
 allstr  =    " " + \
                 string.ascii_lowercase +  string.ascii_uppercase +  \
                     string.digits
@@ -58,10 +59,11 @@ def randstr(lenx):
         strx += str(rr)
     return strx
 
-pname = os.path.split(sys.argv[0])[1]
+pname = os.path.split(__file__)[1]
 
-__doc__ = ''' \
-Usage: %s [options] [arg_key arg_data]
+chelp = '''\
+Administer pydbase data.
+Usage: %s [options] [newkey newdata]
    -h         Help (this screen)   -|-  -E         Replace record in place
    -V         Print version        -|-  -q         Quiet on, less printing
    -d         Debug level (0-10)   -|-  -v         Increment verbosity level
@@ -69,25 +71,26 @@ Usage: %s [options] [arg_key arg_data]
    -z         Dump backwards(s)    -|-  -i         Show deleted record(s)
    -U         Vacuum DB            -|-  -R         Re-index / recover DB
    -I         DB Integrity check   -|-  -c         Set check integrity flag
-   -s         Skip to count recs   -|-  -K         List keys only
    -S         Print num recs       -|-  -m         Dump data to console
-   -n  num    Num of recs (with -w)-|-  -t  keyval Retrieve by key
-   -o  offs   Get data from offset -|-  -G  num    Get record by number
-   -F  subkey Find by sub str      -|-  -g  num    Get number of recs.
+   -K         List all, keys only  -|-  -s  subkey Find file offsets
+   -n  num    Num of recs (with -w)-|-  -t  keyval Retrieve by key value
+   -o  offs   Get data at offset   -|-  -G  num    Get record by abs pos
+   -F  subkey Find rec. by subkey  -|-  -g  num    Get num of recs, skip aware
    -k  keyval Key to save          -|-  -a  str    Data to save
-   -y  keyval Find by key          -|-  -D  keyval Delete by key
+   -y  keyval Get rec offset       -|-  -D  keyval Delete by key
    -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum
    -l  lim    Limit get records    -|-  -e  offs   Delete at offset
    -Z  keyval Get record position  -|-  -X  max    Limit recs on delete
    -f  file   DB file for save/retrieve default: 'pydbase.pydb')
 The verbosity / debug  level influences the amount of printout presented.
-Use quotes for multi word arguments.''' \
-     % (pname)
+Use quotes for multi word arguments.'''  % (pname)
+
+__doc__ = "<pre>" + chelp + "</pre>"
 
 def help():
 
     ''' Program usage information '''
-    print(__doc__)
+    print(chelp)
     sys.exit(0)
 
 def mainfunc():
@@ -147,8 +150,6 @@ def mainfunc():
             _m.lcount = int(aa[1])
         if aa[0] == "-X":
             _m.maxdel = int(aa[1])
-        if aa[0] == "-s":
-            _m.skipcnt = int(aa[1])
         if aa[0] == "-f":
             _m.deffile = aa[1]
         if aa[0] == "-g":
@@ -182,9 +183,11 @@ def mainfunc():
         if aa[0] == "-E":
             _m.replace = True
         if aa[0] == "-c":
-            _m.checkx = True
+            _m.checkf = True
         if aa[0] == "-S":
             _m.sizex = True
+        if aa[0] == "-s":
+            _m.findoff = aa[1]
         if aa[0] == "-I":
             _m.integx = True
         if aa[0] == "-m":
@@ -209,7 +212,7 @@ def mainfunc():
     core = twincore.TwinCore(_m.deffile, _m.pgdebug)
     core.verbose   = _m.verbose
     core.showdel   = _m.showdelx
-    core.integrity = _m.checkx
+    core.integrity = _m.checkf
 
     # See if we have two arguments, save it as data
     if len(args) == 2:
@@ -217,6 +220,7 @@ def mainfunc():
         curr = core.save_data(args[0], args[1])
         sys.exit(0)
 
+    #print("version", core.get_version())
     #print(dir(core))
 
     dbsize = core.getdbsize()
@@ -251,7 +255,7 @@ def mainfunc():
     elif _m.findx:
         if _m.lcount == 0: _m.lcount = 1
         ddd = core.find_key(_m.findx, _m.lcount)
-        print("Found records:", ddd)
+        print("Found record offsets:", ddd)
     elif _m.getrec:
         ddd = core.get_rec(int(_m.getrec))
         print(_m.getrec, "Got:", ddd)
@@ -260,30 +264,32 @@ def mainfunc():
         cnt = 0
         if _m.lcount + _m.skipx > dbsize:
             _m.lcount = dbsize - _m.skipx
-        for aa in range(_m.skipx, _m.lcount):
+        for aa in range( _m.lcount-1, _m.skipx-1, -1):
             ddd = core.get_rec(aa)
             print(aa, ddd)
             cnt += 1
 
     elif _m.getit:
         getx = int(_m.getit)
-        #skipx = dbsize - skipx
         if getx + _m.skipx > dbsize:
             getx = dbsize - _m.skipx
+
+        if getx < 0:
+            getx = 0
+            print("Clipping getx to dbsize of", dbsize)
         if _m.skipx < 0:
             _m.skipx = 0
             print("Clipping to dbsize of", dbsize)
-        if _m.verbose:
-            print("Getting %d records" % getx);
-            if _m.skipx:
-                print("With skipping %d records" % skipx);
 
-        for aa in range(_m.skipx, getx + _m.skipx):
+        if _m.verbose:
+            print("Getting %d records, skipping %d " % (getx, _m.skipx))
+
+        for aa in range(dbsize - 1 - _m.skipx, dbsize - 1 - getx - _m.skipx, -1):
+            #_m.skipx, getx + _m.skipx):
             ddd = core.get_rec(aa)
             print(aa, ddd)
 
     elif _m.retrx != "":
-        if _m.ncount == 0: _m.ncount = 1
         ddd = core.retrieve(_m.retrx, _m.ncount)
         if not ddd:
             print("Record:", "'" + _m.retrx + "'", "is not found.")
@@ -319,6 +325,11 @@ def mainfunc():
             core.revdump_data(_m.lcount, _m.skipx)
     elif _m.findrec:
             ret = core.findrec(_m.findrec, _m.lcount, _m.skipx)
+            if _m.verbose:
+                print("Found:", end = "")
+            print(ret)
+    elif _m.findoff:
+            ret = core.findrecoffs(_m.findoff, _m.lcount, _m.skipx)
             if _m.verbose:
                 print("Found:", end = "")
             print(ret)
