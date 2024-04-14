@@ -40,7 +40,7 @@ class _m():
     integx  = 0; checkf  = 0;   sizex   = 0; findx   = ""
     retrx   = ""; getit  = "";  keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0;   findrec = ""; getrec = 0
-    replace = 0 ; recpos = 0;   inplace = 0
+    replace = 0 ; recpos = 0;   inplace = 0; decode = 0
     deffile = "pydbase.pydb"
 
 version = "1.0.0"
@@ -87,6 +87,7 @@ Usage: %s [options] [newkey newdata]
    -l  lim    Limit get records    -|-  -e  offs   Delete at offset
    -Z  keyval Get record position  -|-  -X  max    Limit recs on delete
    -f  file   DB file for save/retrieve default: 'pydbase.pydb')
+   -D  decode pyvpacker data (if encoded)
 The verbosity / debug  level influences the amount of printout presented.
 Use quotes for multi word arguments.'''  % (pname)
 
@@ -107,7 +108,7 @@ def mainfunc():
 
     # Old fashioned parsing
     opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:X:Z:"
-    opts_normal = "mchiVrwzvqURIK?SE"
+    opts_normal = "mchiVrwzvqURIK?SED"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
@@ -199,6 +200,8 @@ def mainfunc():
             _m.integx = True
         if aa[0] == "-m":
             _m.dumpx = True
+        if aa[0] == "-D":
+            _m.decode = True
         if aa[0] == "-F":
             _m.findrec = aa[1]
         if aa[0] == "-Z":

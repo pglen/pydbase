@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# pylint: disable=C0321
+# pylint: disable=C0209
+# pylint: disable=C0103
+
 '''
     <pre>
     Database with two files. One for data, one for index;
@@ -65,9 +69,10 @@
         </pre>
 '''
 
-import  os, sys, getopt, signal, select, socket, time, struct
-import  random, stat, os.path, datetime, threading
-import  struct, io
+import  os
+import  sys
+import  struct
+import  threading
 
 base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base))
@@ -241,7 +246,7 @@ class TwinCore(TwinCoreBase):
                 print(" Damaged data (sep) '%s' at" % endd, rec)
             return arr
 
-        rec2 = rec + 16 + blen;
+        rec2 = rec + 16 + blen
         hash2 = self.getbuffint(rec2)
         blen2 = self.getbuffint(rec2+4)
         data2 = self.getbuffstr(rec2+8, blen2)
@@ -283,14 +288,14 @@ class TwinCore(TwinCoreBase):
             if self.showdel:
                 klen = self.getbuffint(rec+8)
                 kdata = self.getbuffstr(rec+12, klen)
-                rec2 = rec + 16 + klen;
+                rec2 = rec + 16 + klen
                 blen = self.getbuffint(rec2+4)
                 data = self.getbuffstr(rec2+8, blen)
                 print(" Del at", rec, "key:", kdata, "data:", truncs(data))
             if self.verbose > 1:
                 klen = self.getbuffint(rec+8)
                 kdata = self.getbuffstr(rec+12, klen)
-                rec2 = rec + 16 + klen;
+                rec2 = rec + 16 + klen
                 blen = self.getbuffint(rec2+4)
                 data = self.getbuffstr(rec2+8, blen)
                 if self.verbose > 2:
@@ -329,7 +334,7 @@ class TwinCore(TwinCoreBase):
                 print(" Damaged data (sep) '%s' at" % endd, rec)
             return cnt2
 
-        rec2 = rec + 16 + blen;
+        rec2 = rec + 16 + blen
         hash2 = self.getbuffint(rec2)
         blen2 = self.getbuffint(rec2+4)
 
@@ -358,7 +363,9 @@ class TwinCore(TwinCoreBase):
         elif self.verbose:
             print("%-5d pos %5d" % (cnt, rec),  data, data2)
         else:
-            print("%-5d pos %5d" % (cnt, rec), "Data:", truncs(data, 18), "Data2:", truncs(data2, 18))
+            print("%-5d pos %5d" % (cnt, rec),
+                    "Data:", truncs(data, 18),
+                            "Data2:", truncs(data2, 18))
 
         cnt2 += 1
         return cnt2
@@ -401,7 +408,6 @@ class TwinCore(TwinCoreBase):
             elif self.verbose > 0:
                 print("Error on hash at rec", rec, cnt2, "hash",
                                             hex(hash), "check", hex(ccc))
-
             return ret
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
@@ -410,7 +416,7 @@ class TwinCore(TwinCoreBase):
                 print(" Damaged data (sep) '%s' at %d %d %d" % (endd, rec, cnt2))
             return ret
 
-        rec2 = rec + 16 + blen;
+        rec2 = rec + 16 + blen
         hash2 = self.getbuffint(rec2)
         blen2 = self.getbuffint(rec2+4)
 
@@ -516,7 +522,7 @@ class TwinCore(TwinCoreBase):
         dlen = self.getsize(self.fp)
 
         if self.verbose > 2:
-           print("curr", curr, "dlen", dlen)
+            print("curr", curr, "dlen", dlen)
 
         aa =  HEADSIZE
         while 1:
@@ -722,7 +728,7 @@ class TwinCore(TwinCoreBase):
 
             # Now move files
             try:
-                os.remove(self.fname);
+                os.remove(self.fname)
             except:
                 if self.verbose > 0:
                     print("vacuum remove", self.fname, sys.exc_info())
@@ -781,7 +787,7 @@ class TwinCore(TwinCoreBase):
         rsize = self._getdbsize(self.ifp)
         if recnum >= rsize:
             if self.verbose > 0:
-                print("Past end of data.");
+                print("Past end of data.")
             errx =  "Past end of Data. (ask: %d max: %d)"  % (recnum, rsize-1)
             raise  RuntimeError(errx)
             return []
@@ -852,7 +858,7 @@ class TwinCore(TwinCoreBase):
         rsize = self._getdbsize(self.ifp)
         if recnum >= rsize:
             if self.verbose:
-                print("Past end of data.");
+                print("Past end of data.")
             return False
         chash = self.getidxint(CURROFFS)
         #print("chash", chash)
@@ -861,7 +867,7 @@ class TwinCore(TwinCoreBase):
         old = self.getbuffstr(offs, self.INTSIZE)
         if old == RECDEL:
             if self.verbose:
-                print("Record at %d already deleted." % offs);
+                print("Record at %d already deleted." % offs)
             return False
 
         self.putbuffstr(offs, RECDEL)
@@ -897,7 +903,7 @@ class TwinCore(TwinCoreBase):
         '''
 
         self.lock.waitlock()
-        ret = 0; cnt2 = 0; cnt3 = 0;
+        ret = 0; cnt2 = 0; cnt3 = 0
         #chash = self.getidxint(CURROFFS)        #;print("chash", chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         # Direction sensitivity
@@ -962,7 +968,7 @@ class TwinCore(TwinCoreBase):
         rec = 0; blen = 0; data = ""
         arr = []
         if type(strx) != type(b""):
-            strx2 = strx.encode(errors='strict');
+            strx2 = strx.encode(errors='strict')
         else:
             strx2 = strx
 
@@ -1003,7 +1009,7 @@ class TwinCore(TwinCoreBase):
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
 
         arr = []
-        strx2 = strx.encode(errors='strict');
+        strx2 = strx.encode(errors='strict')
 
         #print("findrec", strx2)
 
@@ -1042,7 +1048,7 @@ class TwinCore(TwinCoreBase):
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         arr = []
         if type(strx) != type(b""):
-            strx = strx.encode(errors='strict');
+            strx = strx.encode(errors='strict')
 
         for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
             rec = self.getidxint(aa)
@@ -1067,41 +1073,41 @@ class TwinCore(TwinCoreBase):
 
     def  findrecoffs(self, strx, limx = INT_MAX, skipx = 0):
 
-            ''' Find record by matching substring.
-                Return array of offsets.
-            '''
+        ''' Find record by matching substring.
+            Return array of offsets.
+        '''
 
-            self.lock.waitlock()
-            chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
-            arr = []
-            if type(strx) != type(b""):
-                strx2 = strx.encode(errors='strict');
+        self.lock.waitlock()
+        chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
+        arr = []
+        if type(strx) != type(b""):
+            strx2 = strx.encode(errors='strict')
 
-            #print("findrec", strx2)
+        #print("findrec", strx2)
 
-            #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
-            for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
-                rec = self.getidxint(aa)
-                sig = self.getbuffstr(rec, self.INTSIZE)
-                if sig == RECDEL:
-                    if self.showdel:
-                        print(" Deleted record '%s' at" % sig, rec)
-                elif sig != RECSIG:
-                    if self.verbose > 0:
-                        print(" Damaged data '%s' at" % sig, rec)
-                else:
-                    blen = self.getbuffint(rec+8)
-                    data = self.getbuffstr(rec + 12, blen)
-                    if self.verbose > 1:
-                        print("find", data)
-                    #if str(strx2) in str(data):
-                    if strx2 in data:
-                        #arr.append(self.get_key_offs(rec))
-                        arr.append(rec)
-                        if len(arr) >= limx:
-                            break
-            self.lock.unlock()
-            return arr
+        #for aa in range(HEADSIZE + self.INTSIZE * 2, chash, self.INTSIZE * 2):
+        for aa in range(chash - self.INTSIZE * 2, HEADSIZE  - self.INTSIZE * 2, -self.INTSIZE * 2):
+            rec = self.getidxint(aa)
+            sig = self.getbuffstr(rec, self.INTSIZE)
+            if sig == RECDEL:
+                if self.showdel:
+                    print(" Deleted record '%s' at" % sig, rec)
+            elif sig != RECSIG:
+                if self.verbose > 0:
+                    print(" Damaged data '%s' at" % sig, rec)
+            else:
+                blen = self.getbuffint(rec+8)
+                data = self.getbuffstr(rec + 12, blen)
+                if self.verbose > 1:
+                    print("find", data)
+                #if str(strx2) in str(data):
+                if strx2 in data:
+                    #arr.append(self.get_key_offs(rec))
+                    arr.append(rec)
+                    if len(arr) >= limx:
+                        break
+        self.lock.unlock()
+        return arr
 
         # --------------------------------------------------------------------
     # List all active records
@@ -1132,13 +1138,13 @@ class TwinCore(TwinCoreBase):
                 if 1: #self.verbose > 0:
                     print(" Damaged data '%s' at" % sig, rec)
             else:
-                    hhh = self.getbuffint(rec+4)
-                    print(" Good data '%s' at" % sig, rec, hhh)
-                    if hhh not in keys:
-                        keys.append(hhh)
-                        # as we are going backwards
-                        arr.append(rsize - cnt)
-                        #print("found", hhh)
+                hhh = self.getbuffint(rec+4)
+                print(" Good data '%s' at" % sig, rec, hhh)
+                if hhh not in keys:
+                    keys.append(hhh)
+                    # as we are going backwards
+                    arr.append(rsize - cnt)
+                    #print("found", hhh)
             cnt += 1
 
         keys = []
@@ -1424,16 +1430,16 @@ class TwinCore(TwinCoreBase):
         #self.flush()
 
         if hasattr(self, "fp"):
-                if self.fp:
-                    if not self.fp.closed:
-                        self.fp.flush()
-                        self.fp.close()
+            if self.fp:
+                if not self.fp.closed:
+                    self.fp.flush()
+                    self.fp.close()
 
         if hasattr(self, "ifp"):
-                if self.ifp:
-                    if not self.ifp.closed:
-                        self.ifp.flush()
-                        self.ifp.close()
+            if self.ifp:
+                if not self.ifp.closed:
+                    self.ifp.flush()
+                    self.ifp.close()
 
         # remove lockfile
         if hasattr(self, "lock"):

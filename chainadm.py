@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
 
-import  os, sys, getopt, signal, select, socket, time, struct
-import  random, stat, os.path, datetime, threading, warnings
-import  string, hashlib, uuid
+# pylint: disable=C0321
+# pylint: disable=C0209
+# pylint: disable=C0103
 
-import pyvpacker
+''' Drive chain database '''
+
+import  os
+import  sys
+import  getopt
+import  socket
+import  random
+import  string
+import  uuid
 
 import gettext
 gettext.bindtextdomain('thisapp', './locale/')
@@ -12,18 +20,23 @@ gettext.textdomain('thisapp')
 _ = gettext.gettext
 
 from pydbase import twinchain
+from pydbase import twincore
 from pydbase import dbutils
+
+INT_MAX = 0xffffffff
 
 version = "1.0.0"
 
-#print("hashes", hashlib.algorithms_guaranteed)
+allstr  =    " " + \
+                string.ascii_lowercase +  string.ascii_uppercase +  \
+                    string.digits
 
 # Module variables (pushed to a class)
 
 class _c():
     deffile = "pydbchain.pydb"
     maxx    = 0xffffffff
-    lcount  = twinchain.INT_MAX
+    lcount  = INT_MAX
     quiet   = 0;    writex  = 0
     randx   = 0;    skipx   = 0
     offsx   = 0;    delx    = 0
@@ -68,7 +81,7 @@ Usage: %s [options]
 
 __doc__ = "<pre>" + chelp + "</pre>"
 
-def help():
+def phelp():
 
     ''' Deliver program usage information '''
     print(chelp)
@@ -104,12 +117,13 @@ def mainfunc():
     # Scan twice so verbose shows up early
     for aa in opts:
         if aa[0] == "-h" or aa[0] == "-?":
-            help(); exit(1)
+            phelp()
+            sys.exit(1)
 
         if aa[0] == "-V":
-            print("Script Version:", version);
-            print("Engine Version:", twincore.version);
-            exit(0)
+            print("Script Version:", version)
+            print("Engine Version:", twincore.version)
+            sys.exit(0)
 
         if aa[0] == "-f":
             _c.deffile = aa[1]
@@ -223,7 +237,9 @@ def execfunc():
             ppp = core.checkdata(aa)
             if _c.verbose:
                 print(aa, ppp)
-            if not ppp: errx = True; cnt = aa
+            if not ppp:
+                errx = True
+                cnt = aa
         if errx:
             print("error on rec", cnt)
         else:
