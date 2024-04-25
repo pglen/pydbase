@@ -3,6 +3,7 @@
 # pylint: disable=C0321
 # pylint: disable=C0209
 # pylint: disable=C0103
+# pylint: disable=E0602
 
 '''
     <pre>
@@ -60,6 +61,9 @@
         1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
         1.4.7       Tue 05.Mar.2024     In place record update
         1.4.8       Sat 09.Mar.2024     Added new locking mechanism
+         ...
+        1.6.0       Thu 25.Apr.2024     Added pre and postt callbacks
+
         ... more ... see README.md
 
     In the code the term positions and absolute positions refer to
@@ -103,6 +107,10 @@ class TwinCore(TwinCoreBase):
         self.integrity = 0
         self.devmode = devmode
         self.lock = FileLock(self.lckname)
+
+        # Thu 25.Apr.2024 these are added for index creation
+        self.preexec = None
+        self.postexec = None
 
         # Make sure only one process can use this
         self.lock.waitlock()
@@ -171,6 +179,9 @@ class TwinCore(TwinCoreBase):
 
         #print("buffsize", buffsize, "indexsize", indexsize)
         self.lock.unlock()
+
+    def version(self):
+        return VERSION
 
     def flush(self):
 
@@ -392,7 +403,7 @@ class TwinCore(TwinCoreBase):
 
             return ret
 
-        hash = self.getbuffint(rec+4)
+        hashx = self.getbuffint(rec+4)
         blen = self.getbuffint(rec+8)
 
         if blen <= 0:
@@ -402,12 +413,12 @@ class TwinCore(TwinCoreBase):
 
         data = self.getbuffstr(rec+12, blen)
         ccc = self.hash32(data)
-        if hash != ccc:
+        if hashx != ccc:
             if self.verbose > 1:
                 print("Data", data)
             elif self.verbose > 0:
                 print("Error on hash at rec", rec, cnt2, "hash",
-                                            hex(hash), "check", hex(ccc))
+                                            hex(hashx), "check", hex(ccc))
             return ret
 
         endd = self.getbuffstr(rec + 12 + blen, self.INTSIZE)
@@ -966,7 +977,7 @@ class TwinCore(TwinCoreBase):
         #;print("chash", chash)
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         rec = 0; blen = 0; data = ""
-        arr = []
+        #arr = []
         if type(strx) != type(b""):
             strx2 = strx.encode(errors='strict')
         else:
@@ -1304,7 +1315,7 @@ class TwinCore(TwinCoreBase):
             (like: int())
             This feature allows the database update wthout creating new records.
             Useful for counters or dynamically changing data. To be useful,
-            use  create fixed size data. Like sprintf(%12d).
+            use  / create fixed size data. Like: "%12d" % (var).
 
                     Input:
                         header     Header
@@ -1318,6 +1329,10 @@ class TwinCore(TwinCoreBase):
             print("Save_data()", header, datax)
 
         self.lock.waitlock()
+
+        if self.preexec:
+            self.preexec(self, header)
+
         ret = 0 ; was = False
         # Put new data in place
         if replace:
@@ -1343,6 +1358,9 @@ class TwinCore(TwinCoreBase):
         if not was:
             #print("Saving longer data", header, datax)
             ret = self._save_data2(header, datax)
+
+        if self.postexec:
+            self.postexec(self, header)
 
         self.lock.unlock()
 
@@ -1374,7 +1392,7 @@ class TwinCore(TwinCoreBase):
 
     def __save_data(self, hhh2, arg2e, hhh3, arg3e):
 
-        # Update / Append data
+        ''' Update / Append data. Note the doyuble underscore '''
 
         # Building array added some efficiency
         arr = []

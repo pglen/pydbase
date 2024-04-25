@@ -40,11 +40,14 @@ class _m():
     integx  = 0; checkf  = 0;   sizex   = 0; findx   = ""
     retrx   = ""; getit  = "";  keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0;   findrec = ""; getrec = 0
-    replace = 0 ; recpos = 0;   inplace = 0; decode = 0
+    replace = 0 ; recpos = 0;    decode = 0
+
+    #inplace = 0;
+
     deffile = "pydbase.pydb"
 
-version = "1.0.0"
-vdate   = "Fri 12.Apr.2024"
+VERSION = "1.0.0"
+VDATE   = "Thu 25.Apr.2024"
 
 allstr  =    " " + \
                 string.ascii_lowercase +  string.ascii_uppercase +  \
@@ -78,6 +81,7 @@ Usage: %s [options] [newkey newdata]
    -I         DB Integrity check   -|-  -c         Set check integrity flag
    -S         Print num recs       -|-  -m         Dump data to console
    -K         List all, keys only  -|-  -s  subkey Find file offsets
+   -D  decode pyvpacker data       -|-  -C         save in place
    -n  num    Num of recs (with -w)-|-  -t  keyval Retrieve by key value
    -o  offs   Get data at offset   -|-  -G  num    Get record by abs pos
    -F  subkey Find rec. by subkey  -|-  -g  num    Get num of recs, skip aware
@@ -87,7 +91,6 @@ Usage: %s [options] [newkey newdata]
    -l  lim    Limit get records    -|-  -e  offs   Delete at offset
    -Z  keyval Get record position  -|-  -X  max    Limit recs on delete
    -f  file   DB file for save/retrieve default: 'pydbase.pydb')
-   -D  decode pyvpacker data (if encoded)
 The verbosity / debug  level influences the amount of printout presented.
 Use quotes for multi word arguments.'''  % (pname)
 
@@ -108,7 +111,7 @@ def mainfunc():
 
     # Old fashioned parsing
     opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:X:Z:"
-    opts_normal = "mchiVrwzvqURIK?SED"
+    opts_normal = "mchiVrwzvqURIK?SEDC"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
@@ -131,11 +134,13 @@ def mainfunc():
 
     for aa in opts:
         if aa[0] == "-V":
+            core = twincore.TwinCore(_m.deffile, _m.pgdebug)
             print("Script Version:", version)
             print("Engine Version:", twincore.version)
+            print("Vers.from  API:", core.version())
 
             if _m.verbose > 0:
-                print("Compiled:", vdate)
+                print("Compiled:", VDATE)
             sys.exit(1)
 
         # Action flags, one at a time
@@ -206,6 +211,8 @@ def mainfunc():
             _m.findrec = aa[1]
         if aa[0] == "-Z":
             _m.recpos = aa[1]
+        if aa[0] == "-C":
+            _m.inplace = True
 
     #print("args", len(args), args)
 

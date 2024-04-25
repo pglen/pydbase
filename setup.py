@@ -24,7 +24,7 @@ fp = open("pydbase/twinbase.py", "rt")
 vvv = fp.read(); fp.close()
 loc_vers =  '1.0.0'     # Default
 for aa in vvv.split("\n"):
-    idx = aa.find("version =")
+    idx = aa.find("VERSION =")
     if idx == 0:        # At the beginning of line
         try:
             loc_vers = aa.split()[2].replace('"', "")

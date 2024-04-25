@@ -5,7 +5,7 @@
 '''
 
 import  os, sys, getopt, signal, select, socket, time, struct
-import  random, stat, os.path, datetime, threading
+import  random, stat, os.path, datetime
 import  struct, io, traceback, hashlib, traceback
 
 try:
@@ -35,7 +35,7 @@ RECDEL      = b"RECX"
 RECSEP      = b"RECS"
 RECEND      = b"RECE"
 
-version = "1.5.3"
+VERSION = "1.6.0"
 
 # Accessed from the main file as well
 
@@ -71,7 +71,7 @@ class TwinCoreBase():
 
     def get_version(self):
         ''' Return version sting. '''
-        return version
+        return VERSION
 
     #def __del__(self):
     #    print("Flushing")
