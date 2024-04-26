@@ -12,6 +12,7 @@ base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base, 'pydbase'))
 
 from pydbase import twincore
+import pyvpacker
 
 import gettext
 gettext.bindtextdomain('thisapp', './locale/')
@@ -38,16 +39,14 @@ class _m():
     offsx   = 0; delx    = 0;   delrx   = 0; delrx2  = 0
     backx   = 0; showdelx = 0;   vacx    = 0; recx    = 0
     integx  = 0; checkf  = 0;   sizex   = 0; findx   = ""
-    retrx   = ""; getit  = "";  keyx    = ""; datax  = ""
+    retrx   = ""; keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0;   findrec = ""; getrec = 0
     replace = 0 ; recpos = 0;    decode = 0
 
-    #inplace = 0;
-
     deffile = "pydbase.pydb"
 
-VERSION = "1.0.0"
-VDATE   = "Thu 25.Apr.2024"
+VERSION = "1.1.0"
+VDATE   = "Fri 26.Apr.2024"
 
 allstr  =    " " + \
                 string.ascii_lowercase +  string.ascii_uppercase +  \
@@ -70,7 +69,7 @@ def randstr(lenx):
 pname = os.path.split(__file__)[1]
 
 chelp = '''\
-Administer pydbase data.
+Administer pydbase data.  Version: %s
 Usage: %s [options] [newkey newdata]
    -h         Help (this screen)   -|-  -E         Replace record in place
    -V         Print version        -|-  -q         Quiet on, less printing
@@ -79,20 +78,21 @@ Usage: %s [options] [newkey newdata]
    -z         Dump backwards(s)    -|-  -i         Show deleted record(s)
    -U         Vacuum DB            -|-  -R         Re-index / recover DB
    -I         DB Integrity check   -|-  -c         Set check integrity flag
-   -S         Print num recs       -|-  -m         Dump data to console
-   -K         List all, keys only  -|-  -s  subkey Find file offsets
-   -D  decode pyvpacker data       -|-  -C         save in place
+   -S         Print dbase size     -|-  -m         Dump data to console
+   -K         List all, keys only  -|-  -F  subkey Find rec. by subkey
+   -O         Decode pyvpacker     -|-  -s  subkey Find file offsets
    -n  num    Num of recs (with -w)-|-  -t  keyval Retrieve by key value
-   -o  offs   Get data at offset   -|-  -G  num    Get record by abs pos
-   -F  subkey Find rec. by subkey  -|-  -g  num    Get num of recs, skip aware
+   -o  offs   Get data at offset   -|-  -g         Get records. skip/lim/dec
    -k  keyval Key to save          -|-  -a  str    Data to save
    -y  keyval Get rec offset       -|-  -D  keyval Delete by key
    -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum
    -l  lim    Limit get records    -|-  -e  offs   Delete at offset
    -Z  keyval Get record position  -|-  -X  max    Limit recs on delete
    -f  file   DB file for save/retrieve default: 'pydbase.pydb')
-The verbosity / debug  level influences the amount of printout presented.
-Use quotes for multi word arguments.'''  % (pname)
+The verbosity / debug  level influences the amount of printout presented.\
+'''  % (VERSION, pname, )
+
+#   -C  num    Get and print num of records. Skip aware, decode aware
 
 __doc__ = "<pre>" + chelp + "</pre>"
 
@@ -110,8 +110,8 @@ def mainfunc():
     args = []
 
     # Old fashioned parsing
-    opts_args   = "a:d:e:f:g:k:l:n:o:s:t:u:x:y:p:D:F:G:X:Z:"
-    opts_normal = "mchiVrwzvqURIK?SEDC"
+    opts_args   = "a:d:e:f:k:l:n:o:s:t:u:x:y:p:D:F:G:X:Z:"
+    opts_normal = "mchiVrwzvgqURIK?SEDCO"
     try:
         opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
     except getopt.GetoptError as err:
@@ -166,9 +166,7 @@ def mainfunc():
         if aa[0] == "-f":
             _m.deffile = aa[1]
         if aa[0] == "-g":
-            _m.getit = aa[1]
-        if aa[0] == "-G":
-            _m.getrec = aa[1]
+            _m.getrec = True
         if aa[0] == "-k":
             _m.keyx = aa[1]
         if aa[0] == "-D":
@@ -205,14 +203,14 @@ def mainfunc():
             _m.integx = True
         if aa[0] == "-m":
             _m.dumpx = True
-        if aa[0] == "-D":
+        if aa[0] == "-O":
             _m.decode = True
+            global packer
+            packer = pyvpacker.packbin()
         if aa[0] == "-F":
             _m.findrec = aa[1]
         if aa[0] == "-Z":
             _m.recpos = aa[1]
-        if aa[0] == "-C":
-            _m.inplace = True
 
     #print("args", len(args), args)
 
@@ -273,10 +271,6 @@ def mainfunc():
         if _m.lcount == 0: _m.lcount = 1
         ddd = core.find_key(_m.findx, _m.lcount)
         print("Found record offsets:", ddd)
-    elif _m.getrec:
-        ddd = core.get_rec(int(_m.getrec))
-        print(_m.getrec, "Got:", ddd)
-
     elif _m.keyonly:
         cnt = 0
         if _m.lcount + _m.skipx > dbsize:
@@ -286,25 +280,43 @@ def mainfunc():
             print(aa, ddd)
             cnt += 1
 
-    elif _m.getit:
-        getx = int(_m.getit)
+    elif _m.getrec:
+        getx = 0xffff
         if getx + _m.skipx > dbsize:
             getx = dbsize - _m.skipx
-
         if getx < 0:
             getx = 0
-            print("Clipping getx to dbsize of", dbsize)
+            #print("Clipping getx to dbsize of", dbsize)
         if _m.skipx < 0:
             _m.skipx = 0
-            print("Clipping to dbsize of", dbsize)
+            #print("Clipping to dbsize of", dbsize)
 
         if _m.verbose:
             print("Getting %d records, skipping %d " % (getx, _m.skipx))
 
+        cnt = 0
         for aa in range(dbsize - 1 - _m.skipx, dbsize - 1 - getx - _m.skipx, -1):
             #_m.skipx, getx + _m.skipx):
             ddd = core.get_rec(aa)
-            print(aa, ddd)
+            if not ddd:
+                continue
+            if cnt >= _m.lcount:
+                break
+
+            if _m.decode:
+                try:
+                    dec = packer.decode_data(ddd[1])[0]
+                    # attempt to do second level
+                    if type(dec) == type({}):
+                        for aa in dec.keys():
+                            if dec[aa][:2] == "pg":
+                                dec[aa] = packer.decode_data(dec[aa])[0]
+                except:
+                    pass
+                print(dec)
+            else:
+                print(ddd)
+            cnt += 1
 
     elif _m.retrx != "":
         ddd = core.retrieve(_m.retrx, _m.ncount)
