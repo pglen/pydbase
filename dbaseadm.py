@@ -111,9 +111,9 @@ def mainfunc():
 
     # Old fashioned parsing
     opts_args   = "a:d:e:f:k:l:n:o:s:t:u:x:y:p:D:F:G:X:Z:"
-    opts_normal = "mchiVrwzvgqURIK?SEDCO"
+    opts_normal = "mchiVrwzvgqURIK?SECO"
     try:
-        opts, args = getopt.getopt(sys.argv[1:],  opts_normal + opts_args)
+        opts, args = getopt.getopt(sys.argv[1:],  opts_args + opts_normal )
     except getopt.GetoptError as err:
         print(_("Invalid option(s) on command line:"), err)
         sys.exit(1)
@@ -135,8 +135,8 @@ def mainfunc():
     for aa in opts:
         if aa[0] == "-V":
             core = twincore.TwinCore(_m.deffile, _m.pgdebug)
-            print("Script Version:", version)
-            print("Engine Version:", twincore.version)
+            print("Script Version:", VERSION)
+            print("Engine Version:", twincore.VERSION)
             print("Vers.from  API:", core.version())
 
             if _m.verbose > 0:
@@ -312,7 +312,9 @@ def mainfunc():
                             if dec[aa][:2] == "pg":
                                 dec[aa] = packer.decode_data(dec[aa])[0]
                 except:
-                    pass
+                    # Cannot decode, Just show record
+                    dec = ddd
+
                 print(dec)
             else:
                 print(ddd)

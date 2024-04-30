@@ -61,8 +61,11 @@
         1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
         1.4.7       Tue 05.Mar.2024     In place record update
         1.4.8       Sat 09.Mar.2024     Added new locking mechanism
-         ...
-        1.6.0       Thu 25.Apr.2024     Added pre and postt callbacks
+        1.4.9       Mon 01.Apr.2024     Updated to run on MSYS2, new locking
+        1.5.0       Tue 02.Apr.2024     Cleaned, pip upload
+        1.5.1       Wed 10.Apr.2024     Dangling lock .. fixed
+        1.6.0       Thu 25.Apr.2024     Added IDX pre and post callbacks
+        1.6.1       Mon 29.Apr.2024     D: option corrected
 
         ... more ... see README.md
 
