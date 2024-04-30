@@ -37,7 +37,7 @@ class _m():
     findoff = ""; lcount  = twincore.INT_MAX
     quiet   = 0; writex  = 0;   randx   = 0; skipx   = 0
     offsx   = 0; delx    = 0;   delrx   = 0; delrx2  = 0
-    backx   = 0; showdelx = 0;   vacx    = 0; recx    = 0
+    revx   = 0; showdelx = 0;   vacx    = 0; recx    = 0
     integx  = 0; checkf  = 0;   sizex   = 0; findx   = ""
     retrx   = ""; keyx    = ""; datax  = ""
     dkeyx   = ""; dumpx  = 0;   findrec = ""; getrec = 0
@@ -84,7 +84,7 @@ Usage: %s [options] [newkey newdata]
    -n  num    Num of recs (with -w)-|-  -t  keyval Retrieve by key value
    -o  offs   Get data at offset   -|-  -g         Get records. skip/lim/dec
    -k  keyval Key to save          -|-  -a  str    Data to save
-   -y  keyval Get rec offset       -|-  -D  keyval Delete by key
+   -y  keyval Get rec offset       -|-  -D  keyval Delete by key skip/rev/lim
    -p  num    Skip number of recs  -|-  -u  recnum Delete at recnum
    -l  lim    Limit get records    -|-  -e  offs   Delete at offset
    -Z  keyval Get record position  -|-  -X  max    Limit recs on delete
@@ -145,7 +145,7 @@ def mainfunc():
 
         # Action flags, one at a time
         if aa[0] == "-z":
-            _m.backx = True
+            _m.revx = True
         if aa[0] == "-u":
             _m.delrx2 = 1
             _m.delrx = int(aa[1])
@@ -338,7 +338,7 @@ def mainfunc():
         ddd = core.del_rec(int(_m.delrx))
         print(ddd)
     elif _m.dkeyx:
-        ddd = core.del_rec_bykey(_m.dkeyx, maxdelrec = _m.maxdel)
+        ddd = core.del_rec_bykey(_m.dkeyx, _m.maxdel, _m.skipx, _m.revx)
         print("Deleted:", ddd, "records.")
     elif _m.recx:
         ddd = core.reindex()
@@ -350,7 +350,7 @@ def mainfunc():
         ddd = core.integrity_check()
         print("Integrity check found good:", ddd[0], "of", ddd[1], "record(s)")
     elif _m.dumpx:
-        if _m.backx:
+        if _m.revx:
             core.dump_data(_m.lcount, _m.skipx)
         else:
             core.revdump_data(_m.lcount, _m.skipx)
