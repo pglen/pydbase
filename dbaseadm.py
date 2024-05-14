@@ -12,6 +12,8 @@ base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base, 'pydbase'))
 
 from pydbase import twincore
+from pydbase import dbutils
+
 import pyvpacker
 
 import gettext
@@ -302,19 +304,29 @@ def mainfunc():
                 continue
             if cnt >= _m.lcount:
                 break
-
+            #print("ddd", ddd)
             if _m.decode:
                 try:
                     dec = packer.decode_data(ddd[1])[0]
                     # attempt to do second level
-                    if type(dec) == type({}):
-                        for aa in dec.keys():
-                            if dec[aa][:2] == "pg":
-                                dec[aa] = packer.decode_data(dec[aa])[0]
                 except:
                     # Cannot decode, Just show record
+                    if _m.verbose:
+                        print("cannot decode:", sys.exc_info())
+                    if _m.pgdebug > 2:
+                            dbutils.put_exception("pyvpacker")
                     dec = ddd
-
+                try:
+                    if type(dec) == type({}):
+                        for aa in dec.keys():
+                            if str(dec[aa])[:2] == "pg":
+                                dec[aa] = packer.decode_data(dec[aa])[0]
+                except:
+                    # Cannot decode second level
+                    if _m.verbose:
+                        print("cannot decode second level:", sys.exc_info())
+                    if _m.pgdebug > 2:
+                        dbutils.put_exception("second level")
                 print(dec)
             else:
                 print(ddd)

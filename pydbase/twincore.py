@@ -1057,7 +1057,9 @@ class TwinCore(TwinCoreBase):
 
         ''' Find record by key, return array of positions. '''
 
-        print("findrecpos", strx)
+        if self.verbose > 1:
+            print("findrecpos", strx)
+
         self.lock.waitlock()
         chash =  HEADSIZE  + self._getdbsize(self.ifp) * self.INTSIZE * 2
         arr = []
@@ -1214,6 +1216,9 @@ class TwinCore(TwinCoreBase):
 
         return arr
 
+    def idx2offs(self, idx):
+        offs = self.getidxint(HEADSIZE + idx * self.INTSIZE * 2)
+        return offs
 
     def  del_data(self, hash, skip = 1):
 
