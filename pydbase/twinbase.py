@@ -35,7 +35,7 @@ RECDEL      = b"RECX"
 RECSEP      = b"RECS"
 RECEND      = b"RECE"
 
-VERSION = "1.7.0"
+VERSION = "1.7.1"
 
 # Accessed from the main file as well
 

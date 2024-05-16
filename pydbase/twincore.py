@@ -869,6 +869,9 @@ class TwinCore(TwinCoreBase):
             Use 'vacuum' to actually remove record.
         '''
 
+        if recnum < 0:
+            raise  RuntimeError("Invalid recnum %d" % recoffs)
+
         rsize = self._getdbsize(self.ifp)
         if recnum >= rsize:
             if self.verbose:
@@ -890,6 +893,9 @@ class TwinCore(TwinCoreBase):
     def  del_rec_offs(self, recoffs):
 
         ''' Delete record by file offset. '''
+
+        if recoffs < 0:
+            raise  RuntimeError("Invalid offset %d" % recoffs)
 
         rsize = self.getsize(self.fp)
         if recoffs >= rsize:
