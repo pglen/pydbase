@@ -8,33 +8,64 @@ class \mbox{\hyperlink{classchainadm_1_1__c}{\+\_\+c}}
 \doxysubsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-def \mbox{\hyperlink{namespacechainadm_a62ba5696d5ff13b251a859d999b090bd}{help}} ()
+def \mbox{\hyperlink{namespacechainadm_af29b6ee944aa7a3e4c4fcda489b9f635}{phelp}} ()
+\item 
+def \mbox{\hyperlink{namespacechainadm_a373caead758c02003c510dbac4caa1a8}{randstr}} (lenx)
 \item 
 def \mbox{\hyperlink{namespacechainadm_a1b8b10deace0d1d607dc458d8b6bce8a}{mainfunc}} ()
+\item 
+def \mbox{\hyperlink{namespacechainadm_acc4b1cf5777f5a7f67735c25cf80843e}{execfunc}} ()
 \end{DoxyCompactItemize}
 \doxysubsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
 gettext \mbox{\hyperlink{namespacechainadm_abd08ac713821760db0a9d43e4d149eae}{\+\_\+}} = gettext.\+gettext
 \item 
-str \mbox{\hyperlink{namespacechainadm_afe3537f43396b79764125ee07a4ebbd4}{version}} = \char`\"{}0.\+0.\+1\char`\"{}
+int \mbox{\hyperlink{namespacechainadm_a3590c79b6414dceeb29bc27ad1f12fbd}{INT\+\_\+\+MAX}} = 0xffffffff
+\item 
+str \mbox{\hyperlink{namespacechainadm_afe3537f43396b79764125ee07a4ebbd4}{version}} = \char`\"{}1.\+0.\+0\char`\"{}
+\item 
+str \mbox{\hyperlink{namespacechainadm_a2dc7e300e38d0c992f1b4d1884d150e7}{allstr}}
+\item 
+os \mbox{\hyperlink{namespacechainadm_a567a909768cdb41ccce1bf785e8c8e0b}{pname}} = os.\+path.\+split(\+\_\+\+\_\+file\+\_\+\+\_\+)\mbox{[}1\mbox{]}
+\item 
+str \mbox{\hyperlink{namespacechainadm_abcbbc207e97f2f233d5648487ed83254}{chelp}}
 \end{DoxyCompactItemize}
 
 
-\doxysubsection{Function Documentation}
-\mbox{\Hypertarget{namespacechainadm_a62ba5696d5ff13b251a859d999b090bd}\label{namespacechainadm_a62ba5696d5ff13b251a859d999b090bd}} 
-\index{chainadm@{chainadm}!help@{help}}
-\index{help@{help}!chainadm@{chainadm}}
-\doxysubsubsection{\texorpdfstring{help()}{help()}}
-{\footnotesize\ttfamily def chainadm.\+help (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb} Drive chain database \end{DoxyVerb}
+ 
 
-\mbox{\Hypertarget{namespacechainadm_a1b8b10deace0d1d607dc458d8b6bce8a}\label{namespacechainadm_a1b8b10deace0d1d607dc458d8b6bce8a}} 
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespacechainadm_acc4b1cf5777f5a7f67735c25cf80843e}\label{namespacechainadm_acc4b1cf5777f5a7f67735c25cf80843e}} 
+\index{chainadm@{chainadm}!execfunc@{execfunc}}
+\index{execfunc@{execfunc}!chainadm@{chainadm}}
+\doxysubsubsection{\texorpdfstring{execfunc()}{execfunc()}}
+{\footnotesize\ttfamily def chainadm.\+execfunc (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Execute individual function from command line \end{DoxyVerb}
+ \mbox{\Hypertarget{namespacechainadm_a1b8b10deace0d1d607dc458d8b6bce8a}\label{namespacechainadm_a1b8b10deace0d1d607dc458d8b6bce8a}} 
 \index{chainadm@{chainadm}!mainfunc@{mainfunc}}
 \index{mainfunc@{mainfunc}!chainadm@{chainadm}}
 \doxysubsubsection{\texorpdfstring{mainfunc()}{mainfunc()}}
 {\footnotesize\ttfamily def chainadm.\+mainfunc (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
 
 \begin{DoxyVerb} Exersize funtions of the twinchain library. \end{DoxyVerb}
+ \mbox{\Hypertarget{namespacechainadm_af29b6ee944aa7a3e4c4fcda489b9f635}\label{namespacechainadm_af29b6ee944aa7a3e4c4fcda489b9f635}} 
+\index{chainadm@{chainadm}!phelp@{phelp}}
+\index{phelp@{phelp}!chainadm@{chainadm}}
+\doxysubsubsection{\texorpdfstring{phelp()}{phelp()}}
+{\footnotesize\ttfamily def chainadm.\+phelp (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Deliver program usage information \end{DoxyVerb}
+ \mbox{\Hypertarget{namespacechainadm_a373caead758c02003c510dbac4caa1a8}\label{namespacechainadm_a373caead758c02003c510dbac4caa1a8}} 
+\index{chainadm@{chainadm}!randstr@{randstr}}
+\index{randstr@{randstr}!chainadm@{chainadm}}
+\doxysubsubsection{\texorpdfstring{randstr()}{randstr()}}
+{\footnotesize\ttfamily def chainadm.\+randstr (\begin{DoxyParamCaption}\item[{}]{lenx }\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Deliver a random string for testing \end{DoxyVerb}
  
 
 \doxysubsection{Variable Documentation}
@@ -44,9 +75,64 @@ str \mbox{\hyperlink{namespacechainadm_afe3537f43396b79764125ee07a4ebbd4}{versio
 \doxysubsubsection{\texorpdfstring{\_}{\_}}
 {\footnotesize\ttfamily gettext chainadm.\+\_\+ = gettext.\+gettext\hspace{0.3cm}{\ttfamily [protected]}}
 
+\mbox{\Hypertarget{namespacechainadm_a2dc7e300e38d0c992f1b4d1884d150e7}\label{namespacechainadm_a2dc7e300e38d0c992f1b4d1884d150e7}} 
+\index{chainadm@{chainadm}!allstr@{allstr}}
+\index{allstr@{allstr}!chainadm@{chainadm}}
+\doxysubsubsection{\texorpdfstring{allstr}{allstr}}
+{\footnotesize\ttfamily str chainadm.\+allstr}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \ \ \ \textcolor{stringliteral}{"{}\ "{}}\ +\ \(\backslash\)}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ string.ascii\_lowercase\ +\ \ string.ascii\_uppercase\ +\ \ \(\backslash\)}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ string.digits}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{namespacechainadm_abcbbc207e97f2f233d5648487ed83254}\label{namespacechainadm_abcbbc207e97f2f233d5648487ed83254}} 
+\index{chainadm@{chainadm}!chelp@{chelp}}
+\index{chelp@{chelp}!chainadm@{chainadm}}
+\doxysubsubsection{\texorpdfstring{chelp}{chelp}}
+{\footnotesize\ttfamily str chainadm.\+chelp}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \textcolor{stringliteral}{'''\(\backslash\)}}
+\DoxyCodeLine{00002\ \textcolor{stringliteral}{Administer\ pydbase\ chain\ data.}}
+\DoxyCodeLine{00003\ \textcolor{stringliteral}{Usage:\ \%s\ [options]}}
+\DoxyCodeLine{00004\ \textcolor{stringliteral}{\ \ \ options:\ -\/a\ \ data\ \ \ \ \ append\ data\ to\ the\ end\ of\ chain}}
+\DoxyCodeLine{00005\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/z\ \ \ \ \ \ \ \ \ \ \ randomize\ data}}
+\DoxyCodeLine{00006\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/g\ recnum\ \ \ \ get\ record}}
+\DoxyCodeLine{00007\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/k\ reckey\ \ \ \ get\ record\ by\ key/header}}
+\DoxyCodeLine{00008\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/G\ recnum\ \ \ \ get\ record\ offset\ by\ key}}
+\DoxyCodeLine{00009\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/r\ recnum\ \ \ \ get\ record\ header\ buy\ position}}
+\DoxyCodeLine{00010\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/n\ \ \ \ \ \ \ \ \ \ \ append\ /\ show\ /\ get\ number\ of\ records}}
+\DoxyCodeLine{00011\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/e\ \ \ \ \ \ \ \ \ \ \ override\ header\ (checked\ }\textcolor{keywordflow}{for}\ valid\ UUID)}
+\DoxyCodeLine{00012\ \ \ \ \ \ \ \ \ \ \ \ \ -\/t\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{print}\ record\textcolor{stringliteral}{'s\ UUID\ date)}}
+\DoxyCodeLine{00013\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/s\ \ \ \ \ \ \ \ \ \ \ skip\ count}}
+\DoxyCodeLine{00014\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/x\ \ \ \ \ \ \ \ \ \ \ max\ record\ count\ to\ list}}
+\DoxyCodeLine{00015\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/m\ \ \ \ \ \ \ \ \ \ \ dump\ chain\ data}}
+\DoxyCodeLine{00016\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/c\ \ \ \ \ \ \ \ \ \ \ check\ data\ integrity}}
+\DoxyCodeLine{00017\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/i\ \ \ \ \ \ \ \ \ \ \ check\ link\ integrity}}
+\DoxyCodeLine{00018\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/S\ \ \ \ \ \ \ \ \ \ \ get\ db\ size}}
+\DoxyCodeLine{00019\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/v\ \ \ \ \ \ \ \ \ \ \ increase\ verbosity}}
+\DoxyCodeLine{00020\ \textcolor{stringliteral}{\ \ \ \ \ \ \ \ \ \ \ \ -\/h\ \ \ \ \ \ \ \ \ \ \ help\ (this\ screen)\ '''\ \ \%\ (pname)}}
+
+\end{DoxyCode}
+\mbox{\Hypertarget{namespacechainadm_a3590c79b6414dceeb29bc27ad1f12fbd}\label{namespacechainadm_a3590c79b6414dceeb29bc27ad1f12fbd}} 
+\index{chainadm@{chainadm}!INT\_MAX@{INT\_MAX}}
+\index{INT\_MAX@{INT\_MAX}!chainadm@{chainadm}}
+\doxysubsubsection{\texorpdfstring{INT\_MAX}{INT\_MAX}}
+{\footnotesize\ttfamily int chainadm.\+INT\+\_\+\+MAX = 0xffffffff}
+
+\mbox{\Hypertarget{namespacechainadm_a567a909768cdb41ccce1bf785e8c8e0b}\label{namespacechainadm_a567a909768cdb41ccce1bf785e8c8e0b}} 
+\index{chainadm@{chainadm}!pname@{pname}}
+\index{pname@{pname}!chainadm@{chainadm}}
+\doxysubsubsection{\texorpdfstring{pname}{pname}}
+{\footnotesize\ttfamily os chainadm.\+pname = os.\+path.\+split(\+\_\+\+\_\+file\+\_\+\+\_\+)\mbox{[}1\mbox{]}}
+
 \mbox{\Hypertarget{namespacechainadm_afe3537f43396b79764125ee07a4ebbd4}\label{namespacechainadm_afe3537f43396b79764125ee07a4ebbd4}} 
 \index{chainadm@{chainadm}!version@{version}}
 \index{version@{version}!chainadm@{chainadm}}
 \doxysubsubsection{\texorpdfstring{version}{version}}
-{\footnotesize\ttfamily str chainadm.\+version = \char`\"{}0.\+0.\+1\char`\"{}}
+{\footnotesize\ttfamily str chainadm.\+version = \char`\"{}1.\+0.\+0\char`\"{}}
 

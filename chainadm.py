@@ -167,6 +167,9 @@ def mainfunc():
         if aa[0] == "-v":
             _c.verbose += 1
 
+        if aa[0] == "-z":
+            _c.randx += 1
+
         if aa[0] == "-d":
             try:
                 _c.pgdebug = int(aa[1])
@@ -262,7 +265,11 @@ def execfunc():
             if  _c.datex:
                 ddd = dbutils.uuid2date(uuid.UUID(ppp[0]))
             if hhh:
-                print(cnt, hhh, ddd, ppp)
+                if _c.verbose:
+                    print(cnt, hhh, ddd, ppp)
+                else:
+                    print(cnt, ppp)
+
             cnt = cnt + 1
 
     elif _c.append:
@@ -282,6 +289,9 @@ def execfunc():
         if _c.verbose:
             print("Appending", _c.append)
         for aaa in range(_c.cntx):
+            if _c.randx:
+               _c.append = randstr(random.randint(4, 12))
+
             if _c.headx:
                 core.appendwith(_c.headx, _c.append)
             else:

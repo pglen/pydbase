@@ -8,6 +8,8 @@ import  random
 import  string
 import  getopt
 
+#print("path", sys.path)
+
 base = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(base, 'pydbase'))
 
@@ -369,7 +371,7 @@ def mainfunc():
     elif _m.findrec:
         ret = core.findrec(_m.findrec, _m.lcount, _m.skipx)
         if _m.verbose:
-            print("Found:", end = "")
+            print("Found:", end="")
         print(ret)
     elif _m.findoff:
         ret = core.findrecoffs(_m.findoff, _m.lcount, _m.skipx)

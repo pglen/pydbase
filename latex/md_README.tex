@@ -2,13 +2,7 @@
 \hypertarget{md_README_autotoc_md2}{}\doxysubsubsection{see\+: blockchain functions at the end}\label{md_README_autotoc_md2}
 ~ The motivation was to create a no frills way of saving / retrieving data. It is fast, and the time test shows that this is an order of magnitude faster than most mainstream databases. This is due to the engine\textquotesingle{}s simplicity. It avoids expensive computations in favor of quickly saving data.\hypertarget{md_README_autotoc_md3}{}\doxysubsection{Fast data save / retrieve}\label{md_README_autotoc_md3}
 ~ Mostly ready for production. All tests pass. Please use caution, as this is new. The command line tester can drive most aspects of this API; and it is somewhat complete. It is also good way to see the API / Module in action.\hypertarget{md_README_autotoc_md4}{}\doxysection{API}\label{md_README_autotoc_md4}
-~ The module \textquotesingle{}twincore\textquotesingle{} uses two data files and a lock file. The file names are generated from the base name of the data file; name.\+pydb for data; name.\+pidx for the index, name.\+lock for the lock file. In case of frozen process the lock file times out in xx seconds and breaks the lock. If the locking process (id in lockfile) does not exist, the lock breaks immediately.\hypertarget{md_README_autotoc_md5}{}\doxysubsection{Setting verbosity and debug level\+:}\label{md_README_autotoc_md5}
-\begin{DoxyVerb}twincore.core_quiet   = quiet
-twincore.core_verbose = verbose
-twincore.core_pgdebug = pgdebug
-twincore.core_showdel = sdelx
-\end{DoxyVerb}
- (Setting before data creation will display mesages from the construtor)
+~ The module \textquotesingle{}twincore\textquotesingle{} uses two data files and a lock file. The file names are generated from the base name of the data file; name.\+pydb for data; name.\+pidx for the index, name.\+lock for the lock file. In case of frozen process the lock file times out in xx seconds and breaks the lock. If the locking process (id in lockfile) does not exist, the lock breaks immediately.
 
 Example DB creation\+: \begin{DoxyVerb}core = twincore.TwinCore(datafile_name)
 \end{DoxyVerb}
@@ -24,7 +18,12 @@ recnum = core.getdbsize()
 rec = core.get_payload(recnum)
 print(recnum, rec)
 \end{DoxyVerb}
- \hypertarget{md_README_autotoc_md6}{}\doxysubsection{Structure of the data\+:}\label{md_README_autotoc_md6}
+ \hypertarget{md_README_autotoc_md5}{}\doxysubsection{Setting verbosity and debug level\+:}\label{md_README_autotoc_md5}
+\begin{DoxyVerb}twincore.core_quiet   = quiet
+twincore.core_verbose = verbose
+twincore.core_pgdebug = pgdebug
+\end{DoxyVerb}
+ (Setting before data creation will display mesages from the construtor)\hypertarget{md_README_autotoc_md6}{}\doxysubsection{Structure of the data\+:}\label{md_README_autotoc_md6}
 \begin{DoxyVerb}32 byte header, starting with FILESIG
 
 4 bytes    4 bytes          4 bytes         Variable
@@ -119,13 +118,13 @@ real    0m1.465s
 user    0m0.130s
 sys 0m0.292s
 \end{DoxyVerb}
- Please mind the fact that the sqlite engine has to do a lot of parsing which we skip doing; That is why pydbase is more than an order of magnitude faster ... even with all the hashing for data integrity check\hypertarget{md_README_autotoc_md11}{}\doxysubsection{Saving more complex data}\label{md_README_autotoc_md11}
+ Please note that the sqlite engine has to do a lot of parsing which we skip doing; That is why pydbase is more than an order of magnitude faster ... even with all the hashing for data integrity check\hypertarget{md_README_autotoc_md11}{}\doxysubsection{Saving more complex data}\label{md_README_autotoc_md11}
 The database saves a key / value pair. However, the key can be mutated to contain more sophisticated data. For example\+: adding a string in front of it. \mbox{[} Like\+: the string CUST\+\_\+ for customer data / details\mbox{]}. Also the key can be made unique by adding a UUID to it, or using pyvpacker to construct it. (see below)
 
-The data may consist of any text / binary. The library pyvpacker and can pack any data into a string; It is installed as a dependency, and a copy of pyvpacker can be obtained from pip or github.\hypertarget{md_README_autotoc_md12}{}\doxysection{pyvpacker.\+py}\label{md_README_autotoc_md12}
-This module can pack arbitrary python data into a string; which can be used to store anything in the pydbase\textquotesingle{}s key / data sections.
-
-Example from running testpacker.\+py\+: \begin{DoxyVerb}org: (1, 2, 'aa', ['bb', b'dd'])
+~ The data may consist of any text / binary. The library pyvpacker and can pack any data into a string; It is installed as a dependency, and a copy of pyvpacker can be obtained from pip or github.\hypertarget{md_README_autotoc_md12}{}\doxysection{the pyvpacker.\+py module\+:}\label{md_README_autotoc_md12}
+This module can pack arbitrary python data into a string; which can be used to store anything in the pydbase\textquotesingle{}s key / data sections. Note that data type is limited to the python native data types and compounds thereof. \begin{DoxyVerb}    Types: (int, real, str, array, hash)
+\end{DoxyVerb}
+ Example from running testpacker.\+py\+: \begin{DoxyVerb}org: (1, 2, 'aa', ['bb', b'dd'])
 packed: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
 unpacked: [1, 2, 'aa', ['bb', b'dd']]
 rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
@@ -146,7 +145,7 @@ The database grows with every record added to it. It does not check if the parti
 To clean the old record history, one may delete all the records with this same key, except the last one.\hypertarget{md_README_autotoc_md14}{}\doxysection{Blockchain implementation}\label{md_README_autotoc_md14}
 The database is extended with a blockhcain implementation. The new class is called twinchain; and it is a class derived from twincore.
 
-To drive the blockchain, just use the append method. Th database will calculate all the hashes, integrate it into the existing chain with the new item getting a backlink field. This field is calulated based upon the previous record\textquotesingle{}s hash and the previous record\textquotesingle{}s frozen date. This assures that identical data will have a different hash, so data cannot be anticipated based upon its hash alone. The hash is done with 256 bits, and assumed to be very secure.
+To drive the blockchain, just use the append method. The database will calculate all the hashes, integrate it into the existing chain with the new item getting a backlink field. This field is calculated based upon the previous record\textquotesingle{}s hash and the previous record\textquotesingle{}s frozen date. This assures that identical data will have a different hash, so data cannot be anticipated based upon its hash alone. The hash is done with 256 bits, and assumed to be very secure.
 
 To drive it\+: \begin{DoxyVerb}    core = twinchain.TwinChain()    # Takes an optional file name
     core.append("The payload")      # Arbitrary data
@@ -165,11 +164,7 @@ Block chain layer on top of twincore.
 The hashed sum of fields saved to the next backlink.
 \end{DoxyVerb}
  \hypertarget{md_README_autotoc_md15}{}\doxysection{Integrity check}\label{md_README_autotoc_md15}
-Two levels; Level one is checking if the record checksums are correct; Level two checks if the linkage is correct.\hypertarget{md_README_autotoc_md16}{}\doxysubsection{TODO}\label{md_README_autotoc_md16}
-\begin{DoxyVerb}Speed this up by implementing this as a 'C' module
-\end{DoxyVerb}
- \hypertarget{md_README_autotoc_md17}{}\doxysection{Py\+Test}\label{md_README_autotoc_md17}
-The pytest passes with no errors; The following (and more) test are created / executed\+:\hypertarget{md_README_autotoc_md18}{}\doxysection{The in-\/place update}\label{md_README_autotoc_md18}
+Two levels; Level one is checking if the record checksums are correct; Level two checks if the linkage is correct.\hypertarget{md_README_autotoc_md16}{}\doxysection{The in-\/place update}\label{md_README_autotoc_md16}
 The save operation has a flag for in-\/place update. This is useful for updating without the data storage extending. Useful for counts and timers. The in-\/place update operates as a record overwrite, and has to be equal length than the existing record. If shorter, the record is padded to the original data\textquotesingle{}s length by appending spaces. Below is an example to update a counter in the database, which will execute in a microsecond time range. \begin{DoxyVerb}dbcore = twinchain.TwinCore(filename)
 rec = dbcore.get_rec(xxx)
 # Increment count:
@@ -178,37 +173,39 @@ arr[0] = "%05d" % (int(arr[0]) + 1)
 strx = str(self.packer.encode_data("", arr))
 ret = dbcore.save_data(rec[0], strx, True)
 \end{DoxyVerb}
- If the in-\/place data is longer, a new record is created, just like a normal operation. This new, longer record than accommodates all the new in-\/place requests. It is recommended that one produces a fixed record size for consistent results. (See\+: sprintf (python \% operator) in the example above.)\hypertarget{md_README_autotoc_md19}{}\doxysubsection{Test results\+:}\label{md_README_autotoc_md19}
+ If the new data (relativeto the in-\/place data) is longer, a new record is created, just like a normal operation. This new, longer record than accommodates all the new in-\/place requests. It is recommended that one produces a fixed record size for consistent results. (See\+: sprintf (python \% operator) in the example above.)\hypertarget{md_README_autotoc_md17}{}\doxysection{Py\+Test}\label{md_README_autotoc_md17}
+The pytest passes with no errors; The following (and more) test are created / executed\+:\hypertarget{md_README_autotoc_md18}{}\doxysubsection{Test results\+:}\label{md_README_autotoc_md18}
 \begin{DoxyVerb}============================= test session starts ==============================
 platform linux -- Python 3.10.12, pytest-7.4.3, pluggy-1.0.0
 rootdir: /home/peterglen/pgpygtk/pydbase
-collected 43 items
+collected 44 items
 
-test_acreate.py .....                                                    [ 11%]
-test_bindata.py .                                                        [ 13%]
-test_chain.py .                                                          [ 16%]
-test_chain_integ.py ..                                                   [ 20%]
-test_chain_link.py ..                                                    [ 25%]
-test_del.py .                                                            [ 27%]
-test_dump.py .                                                           [ 30%]
-test_find.py ..                                                          [ 34%]
-test_findrec.py ..                                                       [ 39%]
-test_getoffs.py ...                                                      [ 46%]
-test_getrec.py .                                                         [ 48%]
-test_inplace.py ...                                                      [ 55%]
-test_integrity.py .                                                      [ 58%]
-test_list.py ..                                                          [ 62%]
-test_lockrel.py ..                                                       [ 67%]
-test_multi.py ..                                                         [ 72%]
-test_packer.py ......                                                    [ 86%]
-test_randdata.py .                                                       [ 88%]
+test_acreate.py ...                                                      [  6%]
+test_bigdata.py .                                                        [  9%]
+test_bindata.py .                                                        [ 11%]
+test_chain.py .                                                          [ 13%]
+test_chain_data.py .                                                     [ 15%]
+test_chain_link.py ..                                                    [ 20%]
+test_del.py .                                                            [ 22%]
+test_dump.py .                                                           [ 25%]
+test_find.py ..                                                          [ 29%]
+test_findrec.py ..                                                       [ 34%]
+test_getoffs.py ...                                                      [ 40%]
+test_getrec.py .                                                         [ 43%]
+test_handles.py .....                                                    [ 54%]
+test_inplace.py ...                                                      [ 61%]
+test_integrity.py .                                                      [ 63%]
+test_list.py ..                                                          [ 68%]
+test_lockrel.py .                                                        [ 70%]
+test_multi.py ..                                                         [ 75%]
+test_packer.py ......                                                    [ 88%]
 test_reindex.py .                                                        [ 90%]
 test_search.py ...                                                       [ 97%]
 test_vacuum.py .                                                         [100%]
 
-============================== 43 passed in 0.68s ==============================
+============================== 44 passed in 0.57s ==============================
 \end{DoxyVerb}
- \hypertarget{md_README_autotoc_md20}{}\doxysection{History}\label{md_README_autotoc_md20}
+ \hypertarget{md_README_autotoc_md19}{}\doxysection{History}\label{md_README_autotoc_md19}
 \begin{DoxyVerb}1.1         Tue 20.Feb.2024     Initial release
 1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
 1.4.0       Tue 27.Feb.2024     Addedd pgdebug
@@ -219,9 +216,10 @@ test_vacuum.py .                                                         [100%]
 1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
 1.4.7       Tue 05.Mar.2024     In place record update
 1.4.8       Sat 09.Mar.2024     Added new locking mechanism
-\end{DoxyVerb}
- \hypertarget{md_README_autotoc_md21}{}\doxysection{Errata}\label{md_README_autotoc_md21}
-\begin{DoxyVerb}Chain is still in development, most of it functions well.
-Not for production.
+1.4.9       Mon 01.Apr.2024     Updated to run on MSYS2, new locking
+1.5.0       Tue 02.Apr.2024     Cleaned, pip upload
+1.5.1       Wed 10.Apr.2024     Dangling lock .. fixed
+1.6.0       Thu 25.Apr.2024     Added IDX pre and post callbacks
+1.6.1       Mon 29.Apr.2024     D: option corrected
 \end{DoxyVerb}
  // EOF 

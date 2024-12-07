@@ -83,13 +83,6 @@ Fast data save / retrieve</h2>
 <h1><a class="anchor" id="autotoc_md4"></a>
 API</h1>
 <p>&#160; The module 'twincore' uses two data files and a lock file. The file names are generated from the base name of the data file; name.pydb for data; name.pidx for the index, name.lock for the lock file. In case of frozen process the lock file times out in xx seconds and breaks the lock. If the locking process (id in lockfile) does not exist, the lock breaks immediately.</p>
-<h2><a class="anchor" id="autotoc_md5"></a>
-Setting verbosity and debug level:</h2>
-<pre class="fragment">twincore.core_quiet   = quiet
-twincore.core_verbose = verbose
-twincore.core_pgdebug = pgdebug
-twincore.core_showdel = sdelx
-</pre><p> (Setting before data creation will display mesages from the construtor)</p>
 <p>Example DB creation: </p><pre class="fragment">core = twincore.TwinCore(datafile_name)
 </pre><p> Some basic ops: </p><pre class="fragment">dbsize = core.getdbsize()
 
@@ -101,7 +94,13 @@ core.append(keyx, datax)
 recnum = core.getdbsize()
 rec = core.get_payload(recnum)
 print(recnum, rec)
-</pre> <h2><a class="anchor" id="autotoc_md6"></a>
+</pre> <h2><a class="anchor" id="autotoc_md5"></a>
+Setting verbosity and debug level:</h2>
+<pre class="fragment">twincore.core_quiet   = quiet
+twincore.core_verbose = verbose
+twincore.core_pgdebug = pgdebug
+</pre><p> (Setting before data creation will display mesages from the construtor)</p>
+<h2><a class="anchor" id="autotoc_md6"></a>
 Structure of the data:</h2>
 <pre class="fragment">32 byte header, starting with FILESIG
 
@@ -195,15 +194,15 @@ sqlite time test, writing 500 records ...
 real    0m1.465s
 user    0m0.130s
 sys 0m0.292s
-</pre><p> Please mind the fact that the sqlite engine has to do a lot of parsing which we skip doing; That is why pydbase is more than an order of magnitude faster ... even with all the hashing for data integrity check</p>
+</pre><p> Please note that the sqlite engine has to do a lot of parsing which we skip doing; That is why pydbase is more than an order of magnitude faster ... even with all the hashing for data integrity check</p>
 <h2><a class="anchor" id="autotoc_md11"></a>
 Saving more complex data</h2>
 <p>The database saves a key / value pair. However, the key can be mutated to contain more sophisticated data. For example: adding a string in front of it. [ Like: the string CUST_ for customer data / details]. Also the key can be made unique by adding a UUID to it, or using pyvpacker to construct it. (see below)</p>
-<p>The data may consist of any text / binary. The library pyvpacker and can pack any data into a string; It is installed as a dependency, and a copy of pyvpacker can be obtained from pip or github.</p>
+<p>&#160; The data may consist of any text / binary. The library pyvpacker and can pack any data into a string; It is installed as a dependency, and a copy of pyvpacker can be obtained from pip or github.</p>
 <h1><a class="anchor" id="autotoc_md12"></a>
-pyvpacker.py</h1>
-<p>This module can pack arbitrary python data into a string; which can be used to store anything in the pydbase's key / data sections.</p>
-<p>Example from running testpacker.py: </p><pre class="fragment">org: (1, 2, 'aa', ['bb', b'dd'])
+the pyvpacker.py module:</h1>
+<p>This module can pack arbitrary python data into a string; which can be used to store anything in the pydbase's key / data sections. Note that data type is limited to the python native data types and compounds thereof. </p><pre class="fragment">    Types: (int, real, str, array, hash)
+</pre><p> Example from running testpacker.py: </p><pre class="fragment">org: (1, 2, 'aa', ['bb', b'dd'])
 packed: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
 unpacked: [1, 2, 'aa', ['bb', b'dd']]
 rec_arr: pg s4 'iisa' i4 1 i4 2 s2 'aa' a29 'pg s2 'sb' s2 'bb' b4 'ZGQ=' '
@@ -221,7 +220,7 @@ Maintenance</h1>
 <h1><a class="anchor" id="autotoc_md14"></a>
 Blockchain implementation</h1>
 <p>The database is extended with a blockhcain implementation. The new class is called twinchain; and it is a class derived from twincore.</p>
-<p>To drive the blockchain, just use the append method. Th database will calculate all the hashes, integrate it into the existing chain with the new item getting a backlink field. This field is calulated based upon the previous record's hash and the previous record's frozen date. This assures that identical data will have a different hash, so data cannot be anticipated based upon its hash alone. The hash is done with 256 bits, and assumed to be very secure.</p>
+<p>To drive the blockchain, just use the append method. The database will calculate all the hashes, integrate it into the existing chain with the new item getting a backlink field. This field is calculated based upon the previous record's hash and the previous record's frozen date. This assures that identical data will have a different hash, so data cannot be anticipated based upon its hash alone. The hash is done with 256 bits, and assumed to be very secure.</p>
 <p>To drive it: </p><pre class="fragment">    core = twinchain.TwinChain()    # Takes an optional file name
     core.append("The payload")      # Arbitrary data
 
@@ -240,13 +239,7 @@ The hashed sum of fields saved to the next backlink.
 </pre> <h1><a class="anchor" id="autotoc_md15"></a>
 Integrity check</h1>
 <p>Two levels; Level one is checking if the record checksums are correct; Level two checks if the linkage is correct.</p>
-<h2><a class="anchor" id="autotoc_md16"></a>
-TODO</h2>
-<pre class="fragment">Speed this up by implementing this as a 'C' module
-</pre> <h1><a class="anchor" id="autotoc_md17"></a>
-PyTest</h1>
-<p>The pytest passes with no errors; The following (and more) test are created / executed:</p>
-<h1><a class="anchor" id="autotoc_md18"></a>
+<h1><a class="anchor" id="autotoc_md16"></a>
 The in-place update</h1>
 <p>The save operation has a flag for in-place update. This is useful for updating without the data storage extending. Useful for counts and timers. The in-place update operates as a record overwrite, and has to be equal length than the existing record. If shorter, the record is padded to the original data's length by appending spaces. Below is an example to update a counter in the database, which will execute in a microsecond time range. </p><pre class="fragment">dbcore = twinchain.TwinCore(filename)
 rec = dbcore.get_rec(xxx)
@@ -255,38 +248,42 @@ arr = self.packer.decode_data(rec[1])[0]
 arr[0] = "%05d" % (int(arr[0]) + 1)
 strx = str(self.packer.encode_data("", arr))
 ret = dbcore.save_data(rec[0], strx, True)
-</pre><p> If the in-place data is longer, a new record is created, just like a normal operation. This new, longer record than accommodates all the new in-place requests. It is recommended that one produces a fixed record size for consistent results. (See: sprintf (python % operator) in the example above.)</p>
-<h2><a class="anchor" id="autotoc_md19"></a>
+</pre><p> If the new data (relativeto the in-place data) is longer, a new record is created, just like a normal operation. This new, longer record than accommodates all the new in-place requests. It is recommended that one produces a fixed record size for consistent results. (See: sprintf (python % operator) in the example above.)</p>
+<h1><a class="anchor" id="autotoc_md17"></a>
+PyTest</h1>
+<p>The pytest passes with no errors; The following (and more) test are created / executed:</p>
+<h2><a class="anchor" id="autotoc_md18"></a>
 Test results:</h2>
 <pre class="fragment">============================= test session starts ==============================
 platform linux -- Python 3.10.12, pytest-7.4.3, pluggy-1.0.0
 rootdir: /home/peterglen/pgpygtk/pydbase
-collected 43 items
+collected 44 items
 
-test_acreate.py .....                                                    [ 11%]
-test_bindata.py .                                                        [ 13%]
-test_chain.py .                                                          [ 16%]
-test_chain_integ.py ..                                                   [ 20%]
-test_chain_link.py ..                                                    [ 25%]
-test_del.py .                                                            [ 27%]
-test_dump.py .                                                           [ 30%]
-test_find.py ..                                                          [ 34%]
-test_findrec.py ..                                                       [ 39%]
-test_getoffs.py ...                                                      [ 46%]
-test_getrec.py .                                                         [ 48%]
-test_inplace.py ...                                                      [ 55%]
-test_integrity.py .                                                      [ 58%]
-test_list.py ..                                                          [ 62%]
-test_lockrel.py ..                                                       [ 67%]
-test_multi.py ..                                                         [ 72%]
-test_packer.py ......                                                    [ 86%]
-test_randdata.py .                                                       [ 88%]
+test_acreate.py ...                                                      [  6%]
+test_bigdata.py .                                                        [  9%]
+test_bindata.py .                                                        [ 11%]
+test_chain.py .                                                          [ 13%]
+test_chain_data.py .                                                     [ 15%]
+test_chain_link.py ..                                                    [ 20%]
+test_del.py .                                                            [ 22%]
+test_dump.py .                                                           [ 25%]
+test_find.py ..                                                          [ 29%]
+test_findrec.py ..                                                       [ 34%]
+test_getoffs.py ...                                                      [ 40%]
+test_getrec.py .                                                         [ 43%]
+test_handles.py .....                                                    [ 54%]
+test_inplace.py ...                                                      [ 61%]
+test_integrity.py .                                                      [ 63%]
+test_list.py ..                                                          [ 68%]
+test_lockrel.py .                                                        [ 70%]
+test_multi.py ..                                                         [ 75%]
+test_packer.py ......                                                    [ 88%]
 test_reindex.py .                                                        [ 90%]
 test_search.py ...                                                       [ 97%]
 test_vacuum.py .                                                         [100%]
 
-============================== 43 passed in 0.68s ==============================
-</pre> <h1><a class="anchor" id="autotoc_md20"></a>
+============================== 44 passed in 0.57s ==============================
+</pre> <h1><a class="anchor" id="autotoc_md19"></a>
 History</h1>
 <pre class="fragment">1.1         Tue 20.Feb.2024     Initial release
 1.2.0       Mon 26.Feb.2024     Moved pip home to pydbase/
@@ -298,10 +295,11 @@ History</h1>
 1.4.6       Mon 04.Mar.2024     Vacuum count on vacuumed records
 1.4.7       Tue 05.Mar.2024     In place record update
 1.4.8       Sat 09.Mar.2024     Added new locking mechanism
-</pre> <h1><a class="anchor" id="autotoc_md21"></a>
-Errata</h1>
-<pre class="fragment">Chain is still in development, most of it functions well.
-Not for production.
+1.4.9       Mon 01.Apr.2024     Updated to run on MSYS2, new locking
+1.5.0       Tue 02.Apr.2024     Cleaned, pip upload
+1.5.1       Wed 10.Apr.2024     Dangling lock .. fixed
+1.6.0       Thu 25.Apr.2024     Added IDX pre and post callbacks
+1.6.1       Mon 29.Apr.2024     D: option corrected
 </pre><p> // EOF </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
